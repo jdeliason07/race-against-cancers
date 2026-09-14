@@ -63,22 +63,26 @@ export const MIN_DONATION_FUN_RUN  = 49;  // Fun Run minimum, per athlete
 // The donation minimum is the per-athlete minimum times this count.
 export const MAX_PARTICIPANTS_PER_REGISTRATION = 100;
 // --- DONATION PROMISE ---------------------------------------
-// The reassurance line shown under the donation amount at checkout.
-// Set to "" and the line disappears everywhere it is used.
+// Where the money goes, said once and reused everywhere it appears: at
+// checkout (the donation amount and the payment summary), on /about, on
+// /faq and on /sponsor. Edit here and all five move together.
 //
-// Only make this claim while it is literally true. Two things have to hold:
-//   1. Sponsorship covers the cost of putting on the race, and
-//   2. Sponsorship also covers card processing — Stripe takes 2.9% + $0.30
-//      out of every payment before the money ever reaches us (that is $3.17
-//      of a $99 entry), so a literal 100% is impossible without it.
+// DONATION_PROMISE is the claim; DONATION_PROMISE_WHY is the reason it can
+// be true. Keep them together — a bare "100%" is an assertion, while "100%,
+// because sponsors cover the race and the card fees" is an explanation, and
+// only the second one survives a sceptical reader.
 //
-// If either is not locked in, say what is true instead, for example:
-//   `Every dollar we can get to them goes to ${CHARITY_NAME}.`
+// This claim holds only while sponsorship covers BOTH the cost of putting on
+// the race AND card processing (Stripe takes 2.9% + $0.30 of every payment —
+// $3.17 of a $99 entry — before the money reaches us). If sponsorship ever
+// falls short of that, change these two lines first, before race day.
 //
-// /faq, /about and /sponsor currently say we are still seeking sponsors to
-// cover race costs. Whatever this line claims, keep those three in step with
-// it — a promise at the moment of payment is the one people act on.
+// Set DONATION_PROMISE to "" and the checkout lines disappear; the /about,
+// /faq and /sponsor copy still reads correctly without them.
 export const DONATION_PROMISE: string = `100% of your donation goes to ${CHARITY_NAME}.`;
+export const DONATION_PROMISE_WHY =
+  'Sponsors cover the cost of putting on the race — permits, course, bibs, aid stations, ' +
+  'and card processing — so your entire donation reaches the cancer center.';
 
 export const TEN_K_LABEL           = "10K (6.2 mi)";
 export const FUN_RUN_LABEL         = "Fun Run (~2 mi)";

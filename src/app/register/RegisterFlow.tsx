@@ -21,6 +21,7 @@ import {
   FUN_RUN_LABEL,
   REFERRAL_ENABLED,
   DONATION_PROMISE,
+  DONATION_PROMISE_WHY,
 } from '@/config/site';
 import { ReferralRewardCallout } from '@/components/ui/ReferralReward';
 import { Heart } from 'lucide-react';
@@ -504,6 +505,13 @@ function StepAthleteInfo({
             ? `Minimum $${minDonation} — $${perAthleteMin} × ${participantCount} athletes. Give more if you're able.`
             : `Minimum $${minDonation}. Give more if you're able.`}
         </p>
+        {DONATION_PROMISE && (
+          <p className="mb-3 font-body text-xs text-ash">
+            <Heart size={12} className="mr-1.5 inline-block align-[-1px] text-pink" aria-hidden="true" />
+            <span className="font-bold text-ink">{DONATION_PROMISE}</span>{' '}
+            {DONATION_PROMISE_WHY}
+          </p>
+        )}
         <input
           id="donationAmount"
           type="number"

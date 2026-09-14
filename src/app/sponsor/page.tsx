@@ -1,10 +1,10 @@
 import { SponsorForm } from './SponsorForm';
-import { CHARITY_NAME } from '@/config/site';
+import { CHARITY_NAME, DONATION_PROMISE } from '@/config/site';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Become a Sponsor',
-  description: `Sponsor Race Against Cancers and help cover the cost of the race, so more of every runner's donation reaches ${CHARITY_NAME}.`,
+  description: `Sponsor Race Against Cancers and cover the cost of the race, so that every runner's donation reaches ${CHARITY_NAME} in full.`,
 };
 
 export default function SponsorPage() {
@@ -21,8 +21,10 @@ export default function SponsorPage() {
 
       <div className="mx-auto max-w-2xl px-6 py-20 text-center">
         <p className="font-body text-lg leading-relaxed text-ash">
-          Sponsor us and your donation helps cover the cost of putting on the race — so more of
-          every runner&apos;s money reaches {CHARITY_NAME}.
+          We make every runner a promise: {DONATION_PROMISE}{' '}
+          Sponsors are how we keep it &mdash; your support pays for the permits, the course, the
+          bibs, the aid stations and the card processing, so not one dollar of a runner&apos;s
+          donation has to.
         </p>
 
         <div className="mt-12 rounded-card border border-line bg-mist p-8 text-left">

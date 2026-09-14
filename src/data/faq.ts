@@ -1,5 +1,7 @@
 import {
   CONTACT_EMAIL,
+  DONATION_PROMISE,
+  DONATION_PROMISE_WHY,
   MAX_PARTICIPANTS_PER_REGISTRATION,
   MIN_DONATION_AMOUNT,
   MIN_DONATION_FUN_RUN,
@@ -65,7 +67,7 @@ export const faqs: FAQItem[] = [
   },
   {
     question: "Where does my donation go?",
-    answer: "Donations from registration benefit Intermountain Cancer Center Utah Valley in Provo. We are seeking sponsors to cover the cost of putting on the race, so that as much of what you give as possible reaches the cancer center.",
+    answer: `${DONATION_PROMISE} ${DONATION_PROMISE_WHY} Your registration is not an entry fee with a donation attached — it is the donation.`,
   },
   {
     question: "Is this a timed race?",

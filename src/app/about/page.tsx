@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { CHARITY_NAME, CHARITY_URL, REGISTRATION_OPEN } from '@/config/site';
+import {
+  CHARITY_NAME, CHARITY_URL, REGISTRATION_OPEN,
+  DONATION_PROMISE, DONATION_PROMISE_WHY,
+} from '@/config/site';
 import { RegistrationTeaser } from '@/components/ui/RegistrationTeaser';
 import type { Metadata } from 'next';
 
@@ -77,9 +80,10 @@ export default function AboutPage() {
               Donations benefit {CHARITY_NAME}
             </p>
             <p className="font-body text-sm leading-relaxed text-ash">
-              Registration donations support Intermountain Cancer Center Utah Valley. We are
-              actively seeking sponsors to cover the cost of putting on the race, so that as much
-              of what runners give as possible reaches the cause.
+              <span className="font-bold text-ink">{DONATION_PROMISE}</span>{' '}
+              {DONATION_PROMISE_WHY}{' '}
+              Your registration is not an entry fee with a donation attached &mdash; it is the
+              donation.
             </p>
           </div>
         </section>
