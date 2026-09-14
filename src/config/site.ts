@@ -38,7 +38,7 @@ export const COURSE_GPX_URL          = "";
 // REGISTRATION_OPENS_DATE controls the copy on the waitlist page. Leave it ""
 // while the date is undecided and the page reads "Registration opens soon";
 // set it (e.g. 'October 1, 2026') to announce a date.
-export const REGISTRATION_OPEN       = false;
+export const REGISTRATION_OPEN       = true;
 // Annotated as `string` so setting or clearing the date stays a one-word edit
 // — without it TypeScript narrows to this exact literal and the checks that
 // ask "is a date set?" become type errors.
