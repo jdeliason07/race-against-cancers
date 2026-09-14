@@ -3,7 +3,7 @@ import {
   EVENT_NAME, EVENT_DATE_DISPLAY, EVENT_DATE_ISO,
   CHARITY_NAME, MIN_DONATION_AMOUNT, MIN_DONATION_FUN_RUN,
   TEN_K_LABEL, FUN_RUN_LABEL,
-  EVENT_LOCATION_NAME, FUN_RUN_LOCATION_NAME,
+  START_LOCATION_NAME, FINISH_LOCATION_NAME, FINISH_LOCATION_ADDRESS,
   ORG_NAME, SITE_URL, REGISTRATION_OPEN,
 } from '@/config/site';
 import { getDonationTotal } from '@/lib/getDonationTotal';
@@ -30,10 +30,10 @@ const eventJsonLd = {
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
   location: {
     '@type': 'Place',
-    name: 'University Ave & Center St',
+    name: FINISH_LOCATION_NAME,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'University Ave & Center St',
+      streetAddress: FINISH_LOCATION_ADDRESS,
       addressLocality: 'Provo',
       addressRegion: 'UT',
       postalCode: '84601',
@@ -121,7 +121,7 @@ export default async function HomePage() {
               {
                 step: '01',
                 heading: 'Choose your distance',
-                body: `Run the ${TEN_K_LABEL} through Provo from $${MIN_DONATION_AMOUNT}, or bring the family for the ${FUN_RUN_LABEL} from LaVell Edwards Stadium to downtown — from $${MIN_DONATION_FUN_RUN}, and short enough for kids to finish.`,
+                body: `Both races start at LaVell Edwards Stadium and finish at the Utah County Courthouse downtown. Run the ${TEN_K_LABEL} from $${MIN_DONATION_AMOUNT}, or bring the family for the ${FUN_RUN_LABEL} from $${MIN_DONATION_FUN_RUN} — short enough for kids to finish.`,
               },
               {
                 step: '02',
@@ -162,11 +162,12 @@ export default async function HomePage() {
             <span className="section-label">The Race</span>
             <div className="h-px flex-1 bg-line" aria-hidden="true" />
           </div>
-          <dl className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <dl className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
             {[
               { dt: 'Events',   dd: `${TEN_K_LABEL} + ${FUN_RUN_LABEL}` },
               { dt: 'Date',     dd: EVENT_DATE_DISPLAY },
-              { dt: 'Start',    dd: `10K: ${EVENT_LOCATION_NAME} · Fun Run: ${FUN_RUN_LOCATION_NAME}` },
+              { dt: 'Start',    dd: START_LOCATION_NAME },
+              { dt: 'Finish',   dd: FINISH_LOCATION_NAME },
               { dt: 'Entry',    dd: `10K $${MIN_DONATION_AMOUNT}+ · Fun Run $${MIN_DONATION_FUN_RUN}+` },
             ].map((fact) => (
               <div key={fact.dt} className="rounded-card border border-line p-6">

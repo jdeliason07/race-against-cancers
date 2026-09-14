@@ -20,14 +20,22 @@ export const FUN_RUN_START_TIME  = "8:00 AM";
 export const EVENT_YEAR          = "2026";
 
 // --- LOCATION -----------------------------------------------
-// 10K: point-to-point — start near mouth of Provo Canyon, finish downtown Provo
-export const EVENT_LOCATION_NAME     = "Canyon Crest Elementary School";   // 10K start
-export const EVENT_LOCATION_ADDRESS  = "4664 N Canyon Rd, Provo, UT 84604";
-export const FINISH_LOCATION_NAME    = "University Ave & Center St";   // shared finish
-export const FINISH_LOCATION_ADDRESS = "University Ave & Center St, Provo, UT 84601";
-// Fun Run: point-to-point ~2 mi — starts at LaVell Edwards Stadium, shares finish with 10K
-export const FUN_RUN_LOCATION_NAME    = "LaVell Edwards Stadium";
-export const FUN_RUN_LOCATION_ADDRESS = "LaVell Edwards Stadium, Provo, UT 84602";
+// Both races now start and finish in the same two places:
+//   START  — LaVell Edwards Stadium, BYU campus
+//   FINISH — the Utah County Courthouse, University Ave & Center St, downtown Provo
+// The 10K gets its 6.2 miles by running north on University Ave to a turnaround
+// above the Provo River and coming back down; the Fun Run runs only the ~2-mile
+// southbound stretch. See src/components/course/CourseMap.tsx for the geometry.
+export const START_LOCATION_NAME     = "LaVell Edwards Stadium";
+export const START_LOCATION_ADDRESS  = "1700 N Canyon Rd, Provo, UT 84602";
+export const FINISH_LOCATION_NAME    = "Utah County Courthouse";
+export const FINISH_LOCATION_ADDRESS = "51 S University Ave, Provo, UT 84601";
+// Both races share one start line, so these older per-race names are aliases.
+// Change START_LOCATION_* above and every start reference on the site follows.
+export const EVENT_LOCATION_NAME      = START_LOCATION_NAME;   // 10K start
+export const EVENT_LOCATION_ADDRESS   = START_LOCATION_ADDRESS;
+export const FUN_RUN_LOCATION_NAME    = START_LOCATION_NAME;   // Fun Run start
+export const FUN_RUN_LOCATION_ADDRESS = START_LOCATION_ADDRESS;
 // Set to "" until an official GPS recording of the 10K course exists —
 // the race-details page automatically shows "GPX Coming Soon" when empty.
 export const COURSE_GPX_URL          = "";
@@ -85,7 +93,7 @@ export const REFERRAL_REWARD_LOGO_HEIGHT = 512;
 // --- CHECK-IN -----------------------------------------------
 export const CHECK_IN_DATE     = "Saturday, November 7, 2026";
 export const CHECK_IN_TIME     = "7:00 AM (1 hour before race start)";
-export const CHECK_IN_LOCATION = "Canyon Crest Elementary School parking lot, 4664 N Canyon Rd, Provo";
+export const CHECK_IN_LOCATION = "LaVell Edwards Stadium, 1700 N Canyon Rd, Provo";
 
 // --- CONTACT ------------------------------------------------
 export const CONTACT_EMAIL = "events@raceagainstcancers.org";
