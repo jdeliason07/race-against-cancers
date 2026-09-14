@@ -62,6 +62,24 @@ export const MIN_DONATION_FUN_RUN  = 49;  // Fun Run minimum, per athlete
 // One person can register and pay for a group (a company, a team, a family).
 // The donation minimum is the per-athlete minimum times this count.
 export const MAX_PARTICIPANTS_PER_REGISTRATION = 100;
+// --- DONATION PROMISE ---------------------------------------
+// The reassurance line shown under the donation amount at checkout.
+// Set to "" and the line disappears everywhere it is used.
+//
+// Only make this claim while it is literally true. Two things have to hold:
+//   1. Sponsorship covers the cost of putting on the race, and
+//   2. Sponsorship also covers card processing — Stripe takes 2.9% + $0.30
+//      out of every payment before the money ever reaches us (that is $3.17
+//      of a $99 entry), so a literal 100% is impossible without it.
+//
+// If either is not locked in, say what is true instead, for example:
+//   `Every dollar we can get to them goes to ${CHARITY_NAME}.`
+//
+// /faq, /about and /sponsor currently say we are still seeking sponsors to
+// cover race costs. Whatever this line claims, keep those three in step with
+// it — a promise at the moment of payment is the one people act on.
+export const DONATION_PROMISE: string = `100% of your donation goes to ${CHARITY_NAME}.`;
+
 export const TEN_K_LABEL           = "10K (6.2 mi)";
 export const FUN_RUN_LABEL         = "Fun Run (~2 mi)";
 

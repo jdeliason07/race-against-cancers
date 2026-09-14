@@ -20,8 +20,10 @@ import {
   TEN_K_LABEL,
   FUN_RUN_LABEL,
   REFERRAL_ENABLED,
+  DONATION_PROMISE,
 } from '@/config/site';
 import { ReferralRewardCallout } from '@/components/ui/ReferralReward';
+import { Heart } from 'lucide-react';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -715,6 +717,12 @@ function PaymentForm({
             <span className="font-bold">Bandana:</span> {bandanaColor}
           </span>
         </div>
+        {DONATION_PROMISE && (
+          <p className="mt-3 border-t border-line pt-3 font-body text-xs text-ash">
+            <Heart size={12} className="mr-1.5 inline-block align-[-1px] text-pink" aria-hidden="true" />
+            {DONATION_PROMISE}
+          </p>
+        )}
       </div>
 
       <h2 className="font-display text-3xl uppercase text-ink mb-6">Payment</h2>
