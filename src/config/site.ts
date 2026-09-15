@@ -6,12 +6,21 @@
 // ============================================================
 
 // --- CHARITY ------------------------------------------------
+// The beneficiary. We don't publish Intermountain's own tax ID — the entity
+// that receives registrations, and so the one a donor would cite, is us.
 export const CHARITY_NAME = "Intermountain Cancer Center Utah Valley";
 export const CHARITY_URL  = "https://intermountainhealthcare.org/locations/utah-valley-clinic/cancer-center-utah-valley";
-export const CHARITY_EIN  = "[[EIN / 501(c)(3) number]]";
 
 // --- EVENT --------------------------------------------------
 export const ORG_NAME            = "Race Against Cancers Inc.";
+// Our federal tax ID. Section 9.2 of the Participant Agreement has us
+// receiving the registration as a donation and granting the proceeds on, so
+// this is the number that belongs on any receipt or acknowledgment.
+//
+// An EIN is a tax ID and nothing more — it is not itself proof of 501(c)(3)
+// status, which is a separate IRS determination. Don't pair this number with a
+// 501(c)(3) claim anywhere public unless that determination letter exists.
+export const ORG_EIN             = "42-3071442";
 export const EVENT_NAME          = "Race Against Cancers 2026";
 export const EVENT_DATE_ISO      = "2026-11-07T08:00:00-07:00"; // 10K & Fun Run start 8:00 AM MST
 export const EVENT_DATE_DISPLAY  = "Saturday, November 7, 2026";
