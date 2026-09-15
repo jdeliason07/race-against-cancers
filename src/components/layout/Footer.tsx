@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {
   SOCIAL_INSTAGRAM, SOCIAL_FACEBOOK,
-  SOCIAL_TWITTER, SOCIAL_YOUTUBE, CHARITY_NAME, EVENT_YEAR, CONTACT_PHONE, ORG_NAME,
+  SOCIAL_TWITTER, SOCIAL_YOUTUBE, CHARITY_NAME, EVENT_YEAR, CONTACT_PHONE, ORG_NAME, ORG_NAME_SHORT,
   ORG_EIN, REGISTRATION_OPEN,
 } from '@/config/site';
 import { Phone } from 'lucide-react';
@@ -96,7 +96,7 @@ export function Footer() {
         </div>
 
         <p className="mt-8 text-center font-body text-xs text-white/40">
-          {ORG_NAME} is a registered 501(c)(3) nonprofit organization. EIN {ORG_EIN}.
+          {ORG_NAME_SHORT} is a registered 501(c)(3) nonprofit organization. EIN {ORG_EIN}.
         </p>
         <p className="mt-2 text-center font-body text-xs text-white/25">
           © {EVENT_YEAR} {ORG_NAME} All rights reserved.
