@@ -72,7 +72,10 @@ const eventJsonLd = {
 };
 
 export default async function HomePage() {
-  const raised = await getDonationTotal();
+  // TEMP (test): hardcoded display value for the progress bar.
+  // Restore live totals with: const raised = await getDonationTotal();
+  const raised = 53386;
+  void getDonationTotal;
   const pct = Math.min(Math.round((raised / GOAL) * 100), 100);
   return (
     <>
