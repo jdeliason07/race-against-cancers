@@ -17,8 +17,25 @@ export default async function InvitePage({
   params: Promise<{ code: string }>;
 }) {
   const { code } = await params;
+
+  // A hand-edited or mangled link can carry a stray % that decodeURIComponent
+  // throws on. That should show the same friendly page as a wrong code, not a
+  // 500, so fall back to the raw segment and let checkCompCode reject it.
+  let supplied: string;
+  try {
+    supplied = decodeURIComponent(code);
+  } catch {
+    supplied = code;
+  }
+
   const stripe = getStripe();
-  const comp = stripe ? await checkCompCode(stripe, decodeURIComponent(code)) : null;
+  if (!stripe) {
+    // The one refusal checkCompCode never sees, so it logs its own reason.
+    console.warn(
+      '[comp-registration] link refused: stripe-not-configured — STRIPE_SECRET_KEY is unset. Set it and redeploy.',
+    );
+  }
+  const comp = stripe ? await checkCompCode(stripe, supplied) : null;
 
   if (!comp) {
     return (

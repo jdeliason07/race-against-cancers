@@ -58,9 +58,48 @@ async function countUsed(stripe: Stripe, code: string): Promise<number | null> {
 }
 
 /**
+ * Why a link was refused. A visitor sees one generic message for all of these
+ * on purpose — an invite link is a secret, and a page that says "right code,
+ * wrong limit" tells an attacker they guessed the code. The organizer still
+ * needs to tell these apart when setting the block up, so the reason goes to
+ * the server log (Vercel → Deployments → Runtime Logs) and never to the page.
+ */
+type RefusalReason =
+  | 'code-not-configured'
+  | 'limit-not-configured'
+  | 'no-code-in-link'
+  | 'code-mismatch'
+  | 'count-unavailable'
+  | 'block-exhausted';
+
+const REFUSAL_HELP: Record<RefusalReason, string> = {
+  'code-not-configured': 'COMP_REGISTRATION_CODE is unset or empty. Set it and redeploy.',
+  'limit-not-configured':
+    'COMP_REGISTRATION_LIMIT is unset, zero, or not a positive whole number. Set it and redeploy.',
+  'no-code-in-link': 'The link had no code after /register/invite/.',
+  'code-mismatch': 'The code in the link does not match COMP_REGISTRATION_CODE.',
+  'count-unavailable': 'Stripe could not be searched, so claimed entries could not be counted.',
+  'block-exhausted': 'Every entry this code covers has already been claimed.',
+};
+
+/**
+ * Logs why a link was refused, without ever logging the code itself — a
+ * server log is not a safe place for a shared secret. Lengths are enough to
+ * spot a truncated paste, which is the usual cause of a mismatch.
+ */
+function refuse(reason: RefusalReason, detail?: Record<string, unknown>): null {
+  console.warn(
+    `[comp-registration] link refused: ${reason} — ${REFUSAL_HELP[reason]}`,
+    detail ?? {},
+  );
+  return null;
+}
+
+/**
  * Validates a code from a link. Returns null when comped registration is
  * switched off, the code is wrong, or the block is used up — the caller
- * shouldn't distinguish those in what it shows a visitor.
+ * shouldn't distinguish those in what it shows a visitor. The reason is
+ * logged server-side; see RefusalReason above.
  */
 export async function checkCompCode(
   stripe: Stripe,
@@ -68,13 +107,23 @@ export async function checkCompCode(
 ): Promise<CompStatus | null> {
   const expected = process.env.COMP_REGISTRATION_CODE?.trim();
   const limit = configuredLimit();
-  if (!expected || limit === 0) return null;
+  if (!expected) return refuse('code-not-configured');
+  if (limit === 0) {
+    return refuse('limit-not-configured', { rawValue: process.env.COMP_REGISTRATION_LIMIT });
+  }
 
   const supplied = candidate.trim();
-  if (!supplied || !matches(supplied, expected)) return null;
+  if (!supplied) return refuse('no-code-in-link');
+  if (!matches(supplied, expected)) {
+    return refuse('code-mismatch', {
+      suppliedLength: supplied.length,
+      expectedLength: expected.length,
+    });
+  }
 
   const used = await countUsed(stripe, expected);
-  if (used === null || used >= limit) return null;
+  if (used === null) return refuse('count-unavailable');
+  if (used >= limit) return refuse('block-exhausted', { used, limit });
 
   return { code: expected, used, limit, remaining: limit - used };
 }
