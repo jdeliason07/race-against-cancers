@@ -55,9 +55,6 @@ export default function RegisterPage() {
           <p className="mt-3 font-body text-base text-ash">
             10K &amp; Family Fun Run — benefiting {CHARITY_NAME}
           </p>
-          <p className="mt-2 font-body text-sm text-ash">
-            Registering a family, team, or company? Enter how many athletes and the recommended amount adjusts.
-          </p>
         </div>
       </section>
       <div className="mx-auto max-w-2xl px-6 py-8">
