@@ -2,8 +2,8 @@ import Link from 'next/link';
 import {
   EVENT_NAME, EVENT_DATE_DISPLAY, EVENT_DATE_ISO,
   CHARITY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_FUN_RUN,
-  TEN_K_LABEL, FUN_RUN_LABEL,
-  EVENT_LOCATION_NAME, FUN_RUN_LOCATION_NAME,
+  FIVE_MILE_LABEL, FUN_RUN_LABEL,
+  EVENT_LOCATION_NAME,
   ORG_NAME, SITE_URL, REGISTRATION_OPEN,
 } from '@/config/site';
 import { getDonationTotal } from '@/lib/getDonationTotal';
@@ -12,7 +12,7 @@ import { ReferralAnnouncement } from '@/components/ui/ReferralReward';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Race Against Cancers 2026 — 10K & Fun Run',
+  title: 'Race Against Cancers 2026 — 5 Miler & Fun Run',
 };
 
 export const revalidate = 300; // refresh every 5 minutes
@@ -23,7 +23,7 @@ const eventJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SportsEvent',
   name: EVENT_NAME,
-  description: `A 10K & Fun Run charity race benefiting ${CHARITY_NAME}. Run through Provo, Utah on ${EVENT_DATE_DISPLAY}.`,
+  description: `A 5 Miler & Fun Run charity race benefiting ${CHARITY_NAME}. Run through Provo, Utah on ${EVENT_DATE_DISPLAY}.`,
   startDate: EVENT_DATE_ISO,
   endDate: '2026-11-07T12:00:00-07:00',
   eventStatus: 'https://schema.org/EventScheduled',
@@ -45,14 +45,14 @@ const eventJsonLd = {
     name: ORG_NAME,
     url: SITE_URL,
   },
-  // Both entries, so search results don't quote only the 10K number. There is
+  // Both entries, so search results don't quote only the 5 Miler number. There is
   // no minimum donation, so these are the recommended amounts — schema.org has
   // no "suggested donation" field, and quoting the recommendation is closer to
   // the truth than quoting 0.
   offers: [
     {
       '@type': 'Offer',
-      name: TEN_K_LABEL,
+      name: FIVE_MILE_LABEL,
       price: String(RECOMMENDED_DONATION_AMOUNT),
       priceCurrency: 'USD',
       url: `${SITE_URL}/register`,
@@ -100,8 +100,8 @@ export default async function HomePage() {
           </h1>
 
           <p className="mt-8 max-w-xl font-body text-lg text-ash">
-            A 10K & Fun Run benefiting {CHARITY_NAME}. Your registration
-            is a donation to the cause — we recommend ${RECOMMENDED_DONATION_AMOUNT} for the 10K
+            A 5 Miler & Fun Run benefiting {CHARITY_NAME}. Your registration
+            is a donation to the cause — we recommend ${RECOMMENDED_DONATION_AMOUNT} for the 5 Miler
             and ${RECOMMENDED_DONATION_FUN_RUN} for the family Fun Run.
           </p>
 
@@ -127,7 +127,7 @@ export default async function HomePage() {
               {
                 step: '01',
                 heading: 'Choose your distance',
-                body: `Run the ${TEN_K_LABEL} through Provo — $${RECOMMENDED_DONATION_AMOUNT} recommended — or bring the family for the ${FUN_RUN_LABEL} from LaVell Edwards Stadium to downtown, $${RECOMMENDED_DONATION_FUN_RUN} recommended and short enough for kids to finish.`,
+                body: `Run the ${FIVE_MILE_LABEL} through Provo — $${RECOMMENDED_DONATION_AMOUNT} recommended — or bring the family for the ${FUN_RUN_LABEL} from LaVell Edwards Stadium to downtown, $${RECOMMENDED_DONATION_FUN_RUN} recommended and short enough for kids to finish.`,
               },
               {
                 step: '02',
@@ -170,10 +170,10 @@ export default async function HomePage() {
           </div>
           <dl className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { dt: 'Events',   dd: `${TEN_K_LABEL} + ${FUN_RUN_LABEL}` },
+              { dt: 'Events',   dd: `${FIVE_MILE_LABEL} + ${FUN_RUN_LABEL}` },
               { dt: 'Date',     dd: EVENT_DATE_DISPLAY },
-              { dt: 'Start',    dd: `10K: ${EVENT_LOCATION_NAME} · Fun Run: ${FUN_RUN_LOCATION_NAME}` },
-              { dt: 'Entry',    dd: `10K $${RECOMMENDED_DONATION_AMOUNT} · Fun Run $${RECOMMENDED_DONATION_FUN_RUN}` },
+              { dt: 'Start',    dd: `Both races: ${EVENT_LOCATION_NAME}` },
+              { dt: 'Entry',    dd: `5 Miler $${RECOMMENDED_DONATION_AMOUNT} · Fun Run $${RECOMMENDED_DONATION_FUN_RUN}` },
             ].map((fact) => (
               <div key={fact.dt} className="rounded-card border border-line p-6">
                 <dt className="section-label mb-2">{fact.dt}</dt>

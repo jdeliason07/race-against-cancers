@@ -1,5 +1,5 @@
 import {
-  EVENT_NAME, EVENT_DATE_DISPLAY, TEN_K_START_TIME, FUN_RUN_START_TIME,
+  EVENT_NAME, EVENT_DATE_DISPLAY, FIVE_MILE_START_TIME, FUN_RUN_START_TIME,
   EVENT_LOCATION_NAME, EVENT_LOCATION_ADDRESS, EVENT_DATE_ISO,
   FINISH_LOCATION_NAME, FINISH_LOCATION_ADDRESS,
   CHECK_IN_DATE, CHECK_IN_TIME, CHECK_IN_LOCATION,
@@ -44,8 +44,8 @@ const waves = [
 ];
 
 const aidStations = [
-  { mile: 'Mile 2',    supplies: 'Water + sports drink — at the 10K turnaround' },
-  { mile: 'Mile 4',    supplies: 'Water + sports drink — back at the stadium' },
+  { mile: 'Mile 1.5',  supplies: 'Water + sports drink — at the turnaround' },
+  { mile: 'Mile 3',    supplies: 'Water + sports drink — back at the stadium' },
   { mile: 'Finish',    supplies: 'Full recovery station — water and sports drink' },
 ];
 
@@ -75,7 +75,7 @@ export default function RaceDetailsPage() {
                 <dt className="section-label">Start Times</dt>
               </div>
               <dd className="font-body text-sm text-ink leading-relaxed">
-                10K: {TEN_K_START_TIME}<br />
+                5 Miler: {FIVE_MILE_START_TIME}<br />
                 Fun Run: {FUN_RUN_START_TIME}
               </dd>
             </div>
@@ -84,7 +84,7 @@ export default function RaceDetailsPage() {
             <div className="rounded-card border border-line p-6">
               <div className="mb-2 flex items-center gap-2">
                 <MapPin size={16} className="text-pink shrink-0" aria-hidden="true" />
-                <dt className="section-label">Start — 10K &amp; Fun Run</dt>
+                <dt className="section-label">Start — 5 Miler &amp; Fun Run</dt>
               </div>
               <dd className="font-body text-sm text-ink leading-relaxed">
                 {EVENT_LOCATION_NAME}<br />
@@ -109,7 +109,7 @@ export default function RaceDetailsPage() {
                 <dt className="section-label">Entry Donation</dt>
               </div>
               <dd className="font-body text-sm text-ink leading-relaxed">
-                10K: ${RECOMMENDED_DONATION_AMOUNT} recommended<br />
+                5 Miler: ${RECOMMENDED_DONATION_AMOUNT} recommended<br />
                 Fun Run: ${RECOMMENDED_DONATION_FUN_RUN} recommended<br />
                 <span className="text-ash text-xs">Give more if you&rsquo;re able</span>
               </dd>
@@ -121,7 +121,7 @@ export default function RaceDetailsPage() {
                 <dt className="section-label">Check-In</dt>
               </div>
               <dd className="font-body text-sm text-ink leading-relaxed whitespace-pre-line">
-                <span className="font-semibold">10K:</span> {CHECK_IN_DATE}{CHECK_IN_TIME ? `\n${CHECK_IN_TIME}` : ''}{CHECK_IN_LOCATION ? `\n${CHECK_IN_LOCATION}` : ''}
+                <span className="font-semibold">5 Miler:</span> {CHECK_IN_DATE}{CHECK_IN_TIME ? `\n${CHECK_IN_TIME}` : ''}{CHECK_IN_LOCATION ? `\n${CHECK_IN_LOCATION}` : ''}
                 {'\n\n'}<span className="font-semibold">Fun Run:</span> {CHECK_IN_DATE}{'\n'}7:00 AM · LaVell Edwards Stadium
                 {'\n\n'}Includes: race bib + bandana
               </dd>
@@ -129,23 +129,24 @@ export default function RaceDetailsPage() {
           </dl>
         </section>
 
-        {/* 10K Route */}
+        {/* 5 Miler Route */}
         <section>
-          <h2 className="mb-6 font-display text-3xl uppercase text-ink">The 10K Course</h2>
+          <h2 className="mb-6 font-display text-3xl uppercase text-ink">The 5 Miler Course</h2>
           <div className="space-y-4 font-body text-base leading-relaxed text-ash">
             <p>
-              The 10K is an out-and-back down a single straight road: 6.2 miles on University
-              Avenue with one turnaround and no course navigation to think about.
+              The 5 Miler is an out-and-back down a single straight road: 5.1 miles on
+              University Avenue with one turnaround and no course navigation to think about.
             </p>
             <p>
               Runners start at LaVell Edwards Stadium on the BYU campus, at an elevation of
               roughly 4,660 feet, and head north on University Avenue toward the mouth of Provo
-              Canyon. That first leg is the only climb on the course — about 99 feet over two
-              miles, with the canyon walls rising ahead. At the two-mile turnaround runners
-              reverse and run the same road back, and everything from there is downhill.
+              Canyon. That first leg is the only climb on the course — about 67 feet, with the
+              canyon walls rising ahead. At the turnaround just past 3700 North, a mile and a
+              half in, runners reverse and run the same road back, and everything from there is
+              downhill.
             </p>
             <p>
-              Back past the stadium at mile four, the course keeps dropping through Provo to the
+              Back past the stadium at mile three, the course keeps dropping through Provo to the
               finish at University Avenue and Center Street, in front of the Utah County
               Courthouse, at roughly 4,576 feet. The last two miles are the fastest on the
               course, and the closing stretch is lined with spectators as runners pour into the
@@ -168,24 +169,24 @@ export default function RaceDetailsPage() {
           <h2 className="mb-6 font-display text-3xl uppercase text-ink">The Fun Run Course</h2>
           <div className="space-y-4 font-body text-base leading-relaxed text-ash">
             <p>
-              The Fun Run is the last two miles of the 10K. It starts at LaVell Edwards Stadium
-              alongside the 10K, follows University Avenue south through Provo, and crosses the
+              The Fun Run is the last two miles of the 5 Miler. It starts at LaVell Edwards
+              Stadium alongside it, follows University Avenue south through Provo, and crosses the
               same finish line at University Avenue and Center Street, in front of the Utah
               County Courthouse.
             </p>
             <p>
-              It skips the 10K&rsquo;s climb entirely — this is the downhill half, on a straight,
+              It skips the 5 Miler&rsquo;s climb entirely — this is the downhill half, on a straight,
               wide road, accessible for all paces and fitness levels. It&rsquo;s the option most
               families pick: short enough
               for kids to finish, easy to walk the whole way, and strollers are welcome. Whether
               you&rsquo;re a casual walker or a first-time runner, this is your chance to cross a
               finish line for a great cause. The recommended donation is ${RECOMMENDED_DONATION_FUN_RUN},
-              compared with ${RECOMMENDED_DONATION_AMOUNT} for the 10K.
+              compared with ${RECOMMENDED_DONATION_AMOUNT} for the 5 Miler.
             </p>
             <div className="rounded-card border border-petal bg-blush p-5 mt-4">
               <p className="font-body text-sm font-bold uppercase tracking-widest text-pink mb-2">Getting to the start</p>
               <p className="font-body text-sm text-ash">
-                The Fun Run starts at LaVell Edwards Stadium, the same place as the 10K, and
+                The Fun Run starts at LaVell Edwards Stadium, the same place as the 5 Miler, and
                 check-in is there — plan to arrive by 7:00 AM. The race starts promptly at
                 8:00 AM. Participants are responsible for their own transportation to the
                 stadium, and the course finishes downtown rather than back at the start.
@@ -196,13 +197,13 @@ export default function RaceDetailsPage() {
 
         {/* Elevation profile */}
         <section>
-          <h2 className="mb-6 font-display text-3xl uppercase text-ink">10K Elevation Profile</h2>
+          <h2 className="mb-6 font-display text-3xl uppercase text-ink">5 Miler Elevation Profile</h2>
           <ElevationChartSection />
         </section>
 
         {/* Map */}
         <section>
-          <h2 className="mb-6 font-display text-3xl uppercase text-ink">10K Course Map</h2>
+          <h2 className="mb-6 font-display text-3xl uppercase text-ink">5 Miler Course Map</h2>
           <CourseMapSection />
           <div className="mt-4 flex flex-wrap gap-3">
             {COURSE_GPX_URL ? (
@@ -244,7 +245,7 @@ export default function RaceDetailsPage() {
             <Clock size={22} className="shrink-0 text-pink" />
             <h2 className="font-display text-3xl uppercase text-ink">Wave Starts</h2>
           </div>
-          <p className="mb-6 font-body text-sm text-ash">10K — {EVENT_DATE_DISPLAY}</p>
+          <p className="mb-6 font-body text-sm text-ash">5 Miler — {EVENT_DATE_DISPLAY}</p>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[480px] border-collapse font-body text-sm">
               <thead>
@@ -271,7 +272,7 @@ export default function RaceDetailsPage() {
         <section>
           <h2 className="mb-6 font-display text-3xl uppercase text-ink">Aid Stations</h2>
           <p className="mb-4 font-body text-xs font-bold uppercase tracking-widest text-ash">
-            10K — locations subject to confirmation
+            5 Miler — locations subject to confirmation
           </p>
           <div className="space-y-0">
             {aidStations.map((a, i) => (

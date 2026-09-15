@@ -5,7 +5,7 @@ import {
   EVENT_DATE_DISPLAY, CHARITY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_FUN_RUN,
 } from '@/config/site';
 
-export const alt = `Race Against Cancers 2026 — 10K $${RECOMMENDED_DONATION_AMOUNT} & Family Fun Run $${RECOMMENDED_DONATION_FUN_RUN} · Benefiting Intermountain Cancer Center Utah Valley`;
+export const alt = `Race Against Cancers 2026 — 5 Miler $${RECOMMENDED_DONATION_AMOUNT} & Family Fun Run $${RECOMMENDED_DONATION_FUN_RUN} · Benefiting Intermountain Cancer Center Utah Valley`;
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -38,12 +38,12 @@ export default async function Image() {
 
         {/* Date & distance */}
         <div style={{ display: 'flex', marginTop: '28px', fontFamily: 'sans-serif', fontSize: '26px', color: '#6E5C64', letterSpacing: '0.18em', textTransform: 'uppercase' }}>
-          10K &amp; Fun Run · {EVENT_DATE_DISPLAY}
+          5 Miler &amp; Fun Run · {EVENT_DATE_DISPLAY}
         </div>
 
         {/* Entry donations — the Fun Run number gets missed, so it goes on the share card */}
         <div style={{ display: 'flex', marginTop: '18px', fontFamily: 'sans-serif', fontSize: '22px', color: '#1C1719' }}>
-          10K ${RECOMMENDED_DONATION_AMOUNT} · Family Fun Run ${RECOMMENDED_DONATION_FUN_RUN}
+          5 Miler ${RECOMMENDED_DONATION_AMOUNT} · Family Fun Run ${RECOMMENDED_DONATION_FUN_RUN}
         </div>
 
         {/* Charity */}

@@ -23,27 +23,27 @@ export const ORG_NAME            = "Race Against Cancers Inc.";
 // ever lapses, drop the 501(c)(3) wording in Footer.tsx before the number.
 export const ORG_EIN             = "42-3071442";
 export const EVENT_NAME          = "Race Against Cancers 2026";
-export const EVENT_DATE_ISO      = "2026-11-07T08:00:00-07:00"; // 10K & Fun Run start 8:00 AM MST
+export const EVENT_DATE_ISO      = "2026-11-07T08:00:00-07:00"; // 5 Miler & Fun Run start 8:00 AM MST
 export const EVENT_DATE_DISPLAY  = "Saturday, November 7, 2026";
-export const TEN_K_START_TIME    = "8:00 AM";
+export const FIVE_MILE_START_TIME = "8:00 AM";
 export const FUN_RUN_START_TIME  = "8:00 AM";
 export const EVENT_YEAR          = "2026";
 
 // --- LOCATION -----------------------------------------------
 // Both races start at LaVell Edwards Stadium and finish at the courthouse.
-// 10K, 6.2 mi: two miles north on University Ave, turn around, then roughly
-// four miles south to the finish. Fun Run, ~2 mi: the last leg of that, the
+// 5 Miler, 5.1 mi: north on University Ave to the turnaround just past 3700 N,
+// back down, then on to the finish. Fun Run, ~2 mi: the last leg of that, the
 // stadium straight down to the same finish.
 export const EVENT_LOCATION_NAME     = "LaVell Edwards Stadium";   // shared start
 export const EVENT_LOCATION_ADDRESS  = "LaVell Edwards Stadium, Provo, UT 84602";
 export const FINISH_LOCATION_NAME    = "Utah County Courthouse";   // shared finish
 export const FINISH_LOCATION_ADDRESS = "University Ave & Center St, Provo, UT 84601";
-// The Fun Run shares the 10K's start. Kept as its own pair of constants because
+// The Fun Run shares the 5 Miler's start. Kept as its own pair of constants because
 // the two have been separate venues before and may be again — point them back
 // at the shared start rather than retyping the address.
 export const FUN_RUN_LOCATION_NAME    = EVENT_LOCATION_NAME;
 export const FUN_RUN_LOCATION_ADDRESS = EVENT_LOCATION_ADDRESS;
-// Set to "" until an official GPS recording of the 10K course exists —
+// Set to "" until an official GPS recording of the 5 Miler course exists —
 // the race-details page automatically shows "GPX Coming Soon" when empty.
 export const COURSE_GPX_URL          = "";
 
@@ -67,7 +67,7 @@ export const REGISTRATION_OPENS_LABEL = REGISTRATION_OPENS_DATE || 'soon';
 // There is no donation minimum: any amount registers an athlete. These are the
 // recommended amounts — the number quoted across the site and the value the
 // donation field is pre-filled with. Registrants can give less, or more.
-export const RECOMMENDED_DONATION_AMOUNT  = 99; // 10K, per athlete
+export const RECOMMENDED_DONATION_AMOUNT  = 99; // 5 Miler, per athlete
 export const RECOMMENDED_DONATION_FUN_RUN = 49; // Fun Run, per athlete
 // The one hard floor, and it is a payments constraint rather than a policy:
 // Stripe rejects a charge under $0.50, so the form and the server both require
@@ -77,12 +77,16 @@ export const MIN_DONATION_DOLLARS = 1;
 // The first entry is the recommendation and the amount the field pre-fills
 // with, so it has to stay the recommended constant above. Keep the two ladders
 // the same length — the chosen rung carries over when someone switches race.
-export const DONATION_PRESETS_10K     = [RECOMMENDED_DONATION_AMOUNT, 199, 499];
+export const DONATION_PRESETS_FIVE_MILE = [RECOMMENDED_DONATION_AMOUNT, 199, 499];
 export const DONATION_PRESETS_FUN_RUN = [RECOMMENDED_DONATION_FUN_RUN, 99, 199];
 // One person can register and pay for a group (a company, a team, a family).
 // The recommended donation is the per-athlete recommendation times this count.
 export const MAX_PARTICIPANTS_PER_REGISTRATION = 100;
-export const TEN_K_LABEL           = "10K (6.2 mi)";
+// The long race measures 5.08 mi along the course polyline: out to the
+// turnaround just past University Ave & 3700 N and back, then on to the finish.
+// It was a 6.2 mi 10K until the turnaround moved to 3700 N. Change this one
+// constant and the label follows everywhere it is shown.
+export const FIVE_MILE_LABEL       = "5 Miler (5.1 mi)";
 export const FUN_RUN_LABEL         = "Fun Run (~2 mi)";
 
 // --- CARD PROCESSING FEE ------------------------------------
@@ -143,4 +147,4 @@ export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";
 // Used by sitemap, robots.txt, metadataBase, and JSON-LD schema.
 export const SITE_URL         = "https://raceagainstcancers.org";
 export const META_DESCRIPTION =
-  `Run for a reason. ${EVENT_NAME} — a 10K & Fun Run on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. 10K recommended donation $${RECOMMENDED_DONATION_AMOUNT}, family-friendly Fun Run $${RECOMMENDED_DONATION_FUN_RUN}.`;
+  `Run for a reason. ${EVENT_NAME} — a 5 Miler & Fun Run on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. 5 Miler recommended donation $${RECOMMENDED_DONATION_AMOUNT}, family-friendly Fun Run $${RECOMMENDED_DONATION_FUN_RUN}.`;
