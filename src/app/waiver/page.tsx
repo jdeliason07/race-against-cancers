@@ -7,6 +7,7 @@ import {
   WAIVER_EFFECTIVE_DATE,
   WAIVER_EVENT_LOCATION,
   WAIVER_SHORT_TITLE,
+  WAIVER_SUBTITLE,
   WAIVER_VERSION,
 } from '@/data/waiver';
 import { EVENT_DATE_DISPLAY, EVENT_NAME, REGISTRATION_OPEN } from '@/config/site';
@@ -23,11 +24,9 @@ export default function WaiverPage() {
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="section-label mb-4">Legal</p>
           <h1 className="font-display text-5xl uppercase text-ink md:text-7xl">
-            Participant Agreement
+            {WAIVER_SHORT_TITLE}
           </h1>
-          <p className="mt-4 font-body text-sm text-ash">
-            Assumption of Risk, Release of Liability, and Indemnification
-          </p>
+          <p className="mt-4 font-body text-sm text-ash">{WAIVER_SUBTITLE}</p>
           <p className="mt-2 font-body text-sm text-ash">
             Version {WAIVER_VERSION} · Effective {WAIVER_EFFECTIVE_DATE}
           </p>

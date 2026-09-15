@@ -6,11 +6,15 @@
 //   • the scroll box in the register flow (src/components/legal/WaiverText.tsx)
 //   • the full-page version at /waiver
 //
+// Version 2.0 is final: reviewed and approved by the organizer's legal
+// counsel, and it is the version registrants accept.
+//
 // Section 11.9 of the agreement makes the accepted VERSION the thing that
 // controls, so WAIVER_VERSION below is written into every registration's Stripe
-// metadata. Never edit the wording of an existing version in place — change the
-// text and bump WAIVER_VERSION together, so a stored version string always
-// points at the words that person actually agreed to.
+// metadata. Once a single registration has been recorded against a version, its
+// wording is frozen: never edit it in place. Change the text and bump
+// WAIVER_VERSION together, so a stored version string always points at the
+// words that person actually agreed to.
 //
 // Plain apostrophes and quotes are fine here: these strings are rendered as
 // text nodes, not written as JSX, so React escapes them for us.
@@ -22,14 +26,13 @@ export const WAIVER_VERSION = '2.0';
 /**
  * The date this version took effect, shown in the document header.
  *
- * Set to race day at the organizer's direction. Worth knowing: people accept
- * this agreement when they register, which is months earlier, and Section 1.2
- * defines the Event to include registration, packet pickup, and everything
- * else before the race. An effective date of race day therefore postdates the
- * acceptances and the conduct it covers. Moving it back to the day
- * registration opened would close that gap.
+ * This is the day registration opened, not race day, because registrants
+ * accept the agreement when they register and Section 1.2 defines the Event to
+ * include registration, packet pickup, and everything else leading up to the
+ * race. The agreement is therefore in force for every acceptance it receives
+ * and every activity it covers.
  */
-export const WAIVER_EFFECTIVE_DATE = 'November 7, 2026';
+export const WAIVER_EFFECTIVE_DATE = 'September 15, 2026';
 
 /** The Event location as the document states it, for the header block. */
 export const WAIVER_EVENT_LOCATION = 'Provo, Utah';
@@ -37,14 +40,18 @@ export const WAIVER_EVENT_LOCATION = 'Provo, Utah';
 /** Used for page titles, headings, and the checkbox label. */
 export const WAIVER_SHORT_TITLE = 'Participant Agreement';
 
-export const WAIVER_TITLE =
-  'Race Against Cancers 10K & Fun Run — Participant Agreement, Assumption of Risk, Release of Liability, and Indemnification';
+/** The rest of the document's formal title, shown under the heading. */
+export const WAIVER_SUBTITLE =
+  'Assumption of Risk, Release of Liability, and Indemnification';
 
 /** The all-caps warning that opens the document. */
 export const WAIVER_PREAMBLE =
   'PLEASE READ THIS AGREEMENT CAREFULLY BEFORE REGISTERING. IT IS A LEGALLY BINDING CONTRACT. IT AFFECTS YOUR LEGAL RIGHTS, INCLUDING YOUR RIGHT TO BRING CERTAIN CLAIMS AGAINST THE ORGANIZER AND OTHER RELEASED PARTIES FOR ORDINARY NEGLIGENCE. BY ACCEPTING THIS AGREEMENT, YOU ACKNOWLEDGE THAT YOU HAVE READ AND UNDERSTAND IT AND AGREE TO BE BOUND BY ITS TERMS.';
 
-/** Section 12's acknowledgment paragraph, shown above the accept checkbox. */
+/** The final section's heading. Its number is derived from WAIVER_SECTIONS. */
+export const WAIVER_ACKNOWLEDGMENT_HEADING = 'Acknowledgment and Acceptance';
+
+/** The acknowledgment paragraph, shown directly above the accept checkbox. */
 export const WAIVER_ACKNOWLEDGMENT =
   'I HAVE READ THIS PARTICIPANT AGREEMENT, ASSUMPTION OF RISK, RELEASE OF LIABILITY, AND INDEMNIFICATION. I UNDERSTAND THAT PARTICIPATION IN THE EVENT INVOLVES RISKS OF SERIOUS INJURY, DISABILITY, DEATH, AND PROPERTY LOSS. I UNDERSTAND THAT I AM RELEASING CERTAIN CLAIMS AGAINST THE RELEASEES, INCLUDING CLAIMS ARISING FROM THEIR ORDINARY NEGLIGENCE, TO THE FULLEST EXTENT PERMITTED BY UTAH LAW. I HAVE HAD AN OPPORTUNITY TO READ THIS AGREEMENT AND AGREE TO ITS TERMS VOLUNTARILY.';
 

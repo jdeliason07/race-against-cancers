@@ -1,5 +1,6 @@
 import {
   WAIVER_ACKNOWLEDGMENT,
+  WAIVER_ACKNOWLEDGMENT_HEADING,
   WAIVER_EFFECTIVE_DATE,
   WAIVER_PREAMBLE,
   WAIVER_EVENT_LOCATION,
@@ -54,8 +55,12 @@ export function WaiverText({ variant = 'page' }: { variant?: 'compact' | 'page' 
         </section>
       ))}
 
+      {/* The closing section carries no numbered clauses, so it is not in
+          WAIVER_SECTIONS — but it still numbers on from the last one. */}
       <section>
-        <h3 className={`${heading} mb-2`}>12. Acknowledgment and Acceptance</h3>
+        <h3 className={`${heading} mb-2`}>
+          {WAIVER_SECTIONS.length + 1}. {WAIVER_ACKNOWLEDGMENT_HEADING}
+        </h3>
         <p className={`${body} font-bold uppercase text-ink`}>{WAIVER_ACKNOWLEDGMENT}</p>
       </section>
     </div>
