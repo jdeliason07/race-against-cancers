@@ -1,8 +1,9 @@
 import {
+  CHARITY_NAME,
   CONTACT_EMAIL,
   MAX_PARTICIPANTS_PER_REGISTRATION,
-  MIN_DONATION_AMOUNT,
-  MIN_DONATION_FUN_RUN,
+  RECOMMENDED_DONATION_AMOUNT,
+  RECOMMENDED_DONATION_FUN_RUN,
   REFERRAL_ENABLED,
   REFERRAL_REWARD,
   REGISTRATION_OPEN,
@@ -29,11 +30,11 @@ export const faqs: FAQItem[] = [
     : []),
   {
     question: "What is the registration fee?",
-    answer: "There is no flat entry fee. Registration requires a minimum $99 donation to Intermountain Cancer Center Utah Valley for the 10K, or a minimum $49 donation for the family-friendly Fun Run. The minimum is per athlete, so a family of four doing the Fun Run gives at least $196 — and you can register all four in one go rather than filling in the form four times. We warmly encourage you to give as much more as you're willing.",
+    answer: `There is no flat entry fee and no donation minimum — your registration is simply a donation to ${CHARITY_NAME}. We recommend $${RECOMMENDED_DONATION_AMOUNT} for the 10K and $${RECOMMENDED_DONATION_FUN_RUN} for the family-friendly Fun Run. The recommendation is per athlete, so a family of four doing the Fun Run is pointed at $${RECOMMENDED_DONATION_FUN_RUN * 4} — and you can register all four in one go rather than filling in the form four times. Give more if you're able, or less if that's what works; every athlete is welcome either way.`,
   },
   {
     question: "Can I register a group, or pay for other people?",
-    answer: `Yes. On the registration form, enter how many athletes you're registering and the donation minimum adjusts automatically — $${MIN_DONATION_AMOUNT} per athlete for the 10K, $${MIN_DONATION_FUN_RUN} per athlete for the Fun Run. This works for a family, a team, a company, or anyone who wants to cover entries for others. You give us your contact details once; each athlete's name and waiver are collected at check-in on race morning. For groups larger than ${MAX_PARTICIPANTS_PER_REGISTRATION}, email ${CONTACT_EMAIL} and we'll sort it out with you.`,
+    answer: `Yes. On the registration form, enter how many athletes you're registering and the recommended donation adjusts automatically — $${RECOMMENDED_DONATION_AMOUNT} per athlete for the 10K, $${RECOMMENDED_DONATION_FUN_RUN} per athlete for the Fun Run. This works for a family, a team, a company, or anyone who wants to cover entries for others. You give us your contact details once; each athlete's name and waiver are collected at check-in on race morning. For groups larger than ${MAX_PARTICIPANTS_PER_REGISTRATION}, email ${CONTACT_EMAIL} and we'll sort it out with you.`,
   },
   {
     question: "Can I register without fundraising?",
@@ -41,7 +42,7 @@ export const faqs: FAQItem[] = [
   },
   {
     question: "What's the difference between the 10K and the Fun Run?",
-    answer: "The 10K is 6.2 miles and follows a point-to-point, predominantly downhill route: it starts in front of Canyon Crest Elementary School on N Canyon Road, runs to the mouth of Provo Canyon, then makes its single turn onto University Avenue and heads straight to the finish at Center Street in downtown Provo. The minimum donation is $99. The Fun Run is approximately 2 miles, starting at LaVell Edwards Stadium on the BYU campus and following University Avenue south to the same finish line, with a $49 minimum donation. It's the one most families choose — short enough for kids to finish, easy to walk the whole way, and strollers are welcome. Both events take place on November 7, 2026.",
+    answer: `The 10K is 6.2 miles and follows a point-to-point, predominantly downhill route: it starts in front of Canyon Crest Elementary School on N Canyon Road, runs to the mouth of Provo Canyon, then makes its single turn onto University Avenue and heads straight to the finish at Center Street in downtown Provo. The recommended donation is $${RECOMMENDED_DONATION_AMOUNT}. The Fun Run is approximately 2 miles, starting at LaVell Edwards Stadium on the BYU campus and following University Avenue south to the same finish line, with a $${RECOMMENDED_DONATION_FUN_RUN} recommended donation. It's the one most families choose — short enough for kids to finish, easy to walk the whole way, and strollers are welcome. Both events take place on November 7, 2026.`,
   },
   {
     question: "How do I get to the 10K start line?",

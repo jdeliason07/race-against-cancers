@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {
   EVENT_NAME, EVENT_DATE_DISPLAY, EVENT_DATE_ISO,
-  CHARITY_NAME, MIN_DONATION_AMOUNT, MIN_DONATION_FUN_RUN,
+  CHARITY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_FUN_RUN,
   TEN_K_LABEL, FUN_RUN_LABEL,
   EVENT_LOCATION_NAME, FUN_RUN_LOCATION_NAME,
   ORG_NAME, SITE_URL, REGISTRATION_OPEN,
@@ -45,12 +45,15 @@ const eventJsonLd = {
     name: ORG_NAME,
     url: SITE_URL,
   },
-  // Both entries, so search results don't quote only the 10K price.
+  // Both entries, so search results don't quote only the 10K number. There is
+  // no minimum donation, so these are the recommended amounts — schema.org has
+  // no "suggested donation" field, and quoting the recommendation is closer to
+  // the truth than quoting 0.
   offers: [
     {
       '@type': 'Offer',
       name: TEN_K_LABEL,
-      price: String(MIN_DONATION_AMOUNT),
+      price: String(RECOMMENDED_DONATION_AMOUNT),
       priceCurrency: 'USD',
       url: `${SITE_URL}/register`,
       availability: 'https://schema.org/InStock',
@@ -59,7 +62,7 @@ const eventJsonLd = {
     {
       '@type': 'Offer',
       name: FUN_RUN_LABEL,
-      price: String(MIN_DONATION_FUN_RUN),
+      price: String(RECOMMENDED_DONATION_FUN_RUN),
       priceCurrency: 'USD',
       url: `${SITE_URL}/register`,
       availability: 'https://schema.org/InStock',
@@ -95,8 +98,8 @@ export default async function HomePage() {
 
           <p className="mt-8 max-w-xl font-body text-lg text-ash">
             A 10K & Fun Run benefiting {CHARITY_NAME}. Your registration
-            is a donation to the cause — 10K from ${MIN_DONATION_AMOUNT}, family Fun Run
-            from ${MIN_DONATION_FUN_RUN}.
+            is a donation to the cause — we recommend ${RECOMMENDED_DONATION_AMOUNT} for the 10K
+            and ${RECOMMENDED_DONATION_FUN_RUN} for the family Fun Run, with no minimum.
           </p>
 
           <div className="mt-10">
@@ -121,7 +124,7 @@ export default async function HomePage() {
               {
                 step: '01',
                 heading: 'Choose your distance',
-                body: `Run the ${TEN_K_LABEL} through Provo from $${MIN_DONATION_AMOUNT}, or bring the family for the ${FUN_RUN_LABEL} from LaVell Edwards Stadium to downtown — from $${MIN_DONATION_FUN_RUN}, and short enough for kids to finish.`,
+                body: `Run the ${TEN_K_LABEL} through Provo — $${RECOMMENDED_DONATION_AMOUNT} recommended — or bring the family for the ${FUN_RUN_LABEL} from LaVell Edwards Stadium to downtown, $${RECOMMENDED_DONATION_FUN_RUN} recommended and short enough for kids to finish.`,
               },
               {
                 step: '02',
@@ -167,7 +170,7 @@ export default async function HomePage() {
               { dt: 'Events',   dd: `${TEN_K_LABEL} + ${FUN_RUN_LABEL}` },
               { dt: 'Date',     dd: EVENT_DATE_DISPLAY },
               { dt: 'Start',    dd: `10K: ${EVENT_LOCATION_NAME} · Fun Run: ${FUN_RUN_LOCATION_NAME}` },
-              { dt: 'Entry',    dd: `10K $${MIN_DONATION_AMOUNT}+ · Fun Run $${MIN_DONATION_FUN_RUN}+` },
+              { dt: 'Entry',    dd: `10K $${RECOMMENDED_DONATION_AMOUNT} · Fun Run $${RECOMMENDED_DONATION_FUN_RUN} suggested` },
             ].map((fact) => (
               <div key={fact.dt} className="rounded-card border border-line p-6">
                 <dt className="section-label mb-2">{fact.dt}</dt>

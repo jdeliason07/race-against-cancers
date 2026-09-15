@@ -52,8 +52,10 @@ calls the webhook, which copies those details onto the customer and flags it `re
 That flag — not the browser — is what makes a registration official.
 
 ### Group registrations
-One person can register and pay for several athletes: the form asks how many, and the donation
-minimum becomes the per-athlete minimum × that count (enforced server-side, not just in the UI).
+One person can register and pay for several athletes: the form asks how many, and the recommended
+donation becomes the per-athlete recommendation × that count. There is no donation minimum — the
+recommended amount only pre-fills the field, and the server accepts any amount of
+`MIN_DONATION_DOLLARS` or more (that floor exists because Stripe will not charge less).
 `MAX_PARTICIPANTS_PER_REGISTRATION` in `src/config/site.ts` caps it; above that the form points
 people at `CONTACT_EMAIL`.
 

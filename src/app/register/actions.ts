@@ -4,8 +4,7 @@ import {
   CONTACT_EMAIL,
   EVENT_NAME,
   MAX_PARTICIPANTS_PER_REGISTRATION,
-  MIN_DONATION_AMOUNT,
-  MIN_DONATION_FUN_RUN,
+  MIN_DONATION_DOLLARS,
   REFERRAL_ENABLED,
 } from '@/config/site';
 import { normalizePhone } from '@/lib/phone';
@@ -24,7 +23,7 @@ const WAIVER_VERSION = '2026-v2';
 interface RegistrationInput {
   raceType: string;
   bandanaColor: string;
-  amount: number; // in cents, e.g. 9900 for $99
+  amount: number; // in cents, e.g. 9900 for $99 (the recommended 10K amount)
   participantCount: number; // 1 for a solo athlete; more when paying for a group
   firstName: string;
   lastName: string;
@@ -131,15 +130,13 @@ export async function createPaymentIntent(
     }
   }
 
-  // Enforce minimum on the server — UI minimum can be bypassed
-  const perAthleteCents =
-    (registrationData.raceType === 'fun-run' ? MIN_DONATION_FUN_RUN : MIN_DONATION_AMOUNT) * 100;
-  const minCents = perAthleteCents * participantCount;
-  if (registrationData.amount < minCents) {
+  // There is no donation minimum — any amount registers an athlete. What the
+  // server still has to reject is an amount Stripe itself cannot charge, since
+  // this action is reachable by direct POST with anything in the field.
+  const floorCents = MIN_DONATION_DOLLARS * 100;
+  if (!Number.isInteger(registrationData.amount) || registrationData.amount < floorCents) {
     return {
-      error: isGroup
-        ? `Minimum donation for ${participantCount} athletes is $${minCents / 100} ($${perAthleteCents / 100} each). Please increase your donation amount.`
-        : `Minimum donation for this event is $${minCents / 100}. Please increase your donation amount.`,
+      error: `Enter a donation of at least $${MIN_DONATION_DOLLARS}.`,
     };
   }
 

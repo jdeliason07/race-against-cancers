@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import {
-  CHARITY_NAME, MIN_DONATION_AMOUNT, MIN_DONATION_FUN_RUN,
+  CHARITY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_FUN_RUN,
   REGISTRATION_OPEN, REGISTRATION_OPENS_LABEL,
 } from '@/config/site';
 import { RegisterFlow } from './RegisterFlow';
@@ -32,7 +32,7 @@ export default function RegisterPage() {
               Be the first to know the moment registration opens.
             </p>
             <p className="mt-3 font-body text-base text-ink">
-              10K from ${MIN_DONATION_AMOUNT} · Family Fun Run from ${MIN_DONATION_FUN_RUN}
+              10K ${RECOMMENDED_DONATION_AMOUNT} · Family Fun Run ${RECOMMENDED_DONATION_FUN_RUN} — suggested donations, no minimum
             </p>
             <p className="mt-1 font-body text-sm text-ash">
               The ~2-mile Fun Run is short enough for kids to finish and easy to walk the whole way.
@@ -53,10 +53,10 @@ export default function RegisterPage() {
           <p className="section-label mb-4">November 7, 2026</p>
           <h1 className="font-display text-5xl uppercase text-ink md:text-7xl">Register</h1>
           <p className="mt-4 font-body text-base text-ash">
-            10K from ${MIN_DONATION_AMOUNT} · Family Fun Run from ${MIN_DONATION_FUN_RUN} — benefiting {CHARITY_NAME}
+            10K ${RECOMMENDED_DONATION_AMOUNT} · Family Fun Run ${RECOMMENDED_DONATION_FUN_RUN} suggested — benefiting {CHARITY_NAME}
           </p>
           <p className="mt-2 font-body text-sm text-ash">
-            Registering a family, team, or company? Enter how many athletes and the minimum adjusts.
+            Registering a family, team, or company? Enter how many athletes and the recommended amount adjusts.
           </p>
         </div>
       </section>

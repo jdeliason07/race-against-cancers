@@ -49,10 +49,17 @@ export const REGISTRATION_OPENS_LABEL = REGISTRATION_OPENS_DATE || 'soon';
 // --- REGISTRATION -------------------------------------------
 // The race has no attendance cap — registration stays open regardless of
 // how many people sign up.
-export const MIN_DONATION_AMOUNT   = 99; // 10K minimum — canonical number, per athlete
-export const MIN_DONATION_FUN_RUN  = 49;  // Fun Run minimum, per athlete
+// There is no donation minimum: any amount registers an athlete. These are the
+// recommended amounts — the number quoted across the site and the value the
+// donation field is pre-filled with. Registrants can give less, or more.
+export const RECOMMENDED_DONATION_AMOUNT  = 99; // 10K, per athlete
+export const RECOMMENDED_DONATION_FUN_RUN = 49; // Fun Run, per athlete
+// The one hard floor, and it is a payments constraint rather than a policy:
+// Stripe rejects a charge under $0.50, so the form and the server both require
+// at least this much.
+export const MIN_DONATION_DOLLARS = 1;
 // One person can register and pay for a group (a company, a team, a family).
-// The donation minimum is the per-athlete minimum times this count.
+// The recommended donation is the per-athlete recommendation times this count.
 export const MAX_PARTICIPANTS_PER_REGISTRATION = 100;
 export const TEN_K_LABEL           = "10K (6.2 mi)";
 export const FUN_RUN_LABEL         = "Fun Run (~2 mi)";
@@ -103,4 +110,4 @@ export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";
 // Used by sitemap, robots.txt, metadataBase, and JSON-LD schema.
 export const SITE_URL         = "https://raceagainstcancers.org";
 export const META_DESCRIPTION =
-  `Run for a reason. ${EVENT_NAME} — a 10K & Fun Run on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. 10K from $${MIN_DONATION_AMOUNT}, or the family-friendly Fun Run from $${MIN_DONATION_FUN_RUN}.`;
+  `Run for a reason. ${EVENT_NAME} — a 10K & Fun Run on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. 10K recommended donation $${RECOMMENDED_DONATION_AMOUNT}, family-friendly Fun Run $${RECOMMENDED_DONATION_FUN_RUN}.`;

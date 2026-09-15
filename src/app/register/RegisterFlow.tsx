@@ -15,8 +15,9 @@ import { submitCompRegistration } from './comp-actions';
 import { ADULT_AGE, isMinorOnRaceDay, isPlausibleDob } from '@/lib/utils';
 import {
   MAX_PARTICIPANTS_PER_REGISTRATION,
-  MIN_DONATION_AMOUNT,
-  MIN_DONATION_FUN_RUN,
+  MIN_DONATION_DOLLARS,
+  RECOMMENDED_DONATION_AMOUNT,
+  RECOMMENDED_DONATION_FUN_RUN,
   TEN_K_LABEL,
   FUN_RUN_LABEL,
   REFERRAL_ENABLED,
@@ -119,8 +120,8 @@ function StepRaceSelection({
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2">
         {([
-          { key: '10k' as const,      label: '10K',      sub: `6.2 mi · $${MIN_DONATION_AMOUNT}+ donation` },
-          { key: 'fun-run' as const,  label: 'Fun Run',  sub: `~2 mi · $${MIN_DONATION_FUN_RUN}+ donation · great for kids & families` },
+          { key: '10k' as const,      label: '10K',      sub: `6.2 mi · $${RECOMMENDED_DONATION_AMOUNT} suggested donation` },
+          { key: 'fun-run' as const,  label: 'Fun Run',  sub: `~2 mi · $${RECOMMENDED_DONATION_FUN_RUN} suggested donation · great for kids & families` },
         ]).map((race) => (
           <button
             key={race.key}
@@ -171,6 +172,8 @@ function StepAthleteInfo({
   setBandanaColor,
   donationAmount,
   setDonationAmount,
+  donationEdited,
+  setDonationEdited,
   participantCount,
   setParticipantCount,
   waiverAgreed,
@@ -187,6 +190,8 @@ function StepAthleteInfo({
   setBandanaColor: (c: string) => void;
   donationAmount: number;
   setDonationAmount: (a: number) => void;
+  donationEdited: boolean;
+  setDonationEdited: (v: boolean) => void;
   participantCount: number;
   setParticipantCount: (n: number) => void;
   waiverAgreed: boolean;
@@ -197,8 +202,9 @@ function StepAthleteInfo({
   loading: boolean;
 }) {
   const [touched, setTouched] = useState<Partial<Record<keyof FormData, boolean>>>({});
-  const perAthleteMin = raceType === 'fun-run' ? MIN_DONATION_FUN_RUN : MIN_DONATION_AMOUNT;
-  const minDonation = perAthleteMin * participantCount;
+  const perAthleteSuggested =
+    raceType === 'fun-run' ? RECOMMENDED_DONATION_FUN_RUN : RECOMMENDED_DONATION_AMOUNT;
+  const suggestedDonation = perAthleteSuggested * participantCount;
 
   // One person paying for several athletes is registering a group, not
   // themselves — so the personal fields below become their contact details and
@@ -241,7 +247,7 @@ function StepAthleteInfo({
         formData.emergencyName.trim() &&
         formData.emergencyPhone.trim())) &&
     (!isMinor || formData.guardianName.trim()) &&
-    (isComp || donationAmount >= minDonation) &&
+    (isComp || donationAmount >= MIN_DONATION_DOLLARS) &&
     bandanaColor !== '' &&
     waiverAgreed;
 
@@ -257,7 +263,7 @@ function StepAthleteInfo({
         {isGroup ? 'Organizer Info' : 'Athlete Info'}
       </h2>
 
-      {/* Headcount — drives the donation minimum below */}
+      {/* Headcount — drives the suggested donation below */}
       {!isComp && (
       <div className="mb-6 rounded-card border border-line bg-mist p-5">
         <label htmlFor="participantCount" className={labelClass}>
@@ -276,16 +282,17 @@ function StepAthleteInfo({
               ? 1
               : Math.min(Math.max(parsed, 1), MAX_PARTICIPANTS_PER_REGISTRATION);
             setParticipantCount(next);
-            // Keep the donation at or above the new minimum.
-            if (donationAmount < perAthleteMin * next) setDonationAmount(perAthleteMin * next);
+            // The field follows the recommendation as the headcount changes —
+            // until someone types their own number, which is theirs to keep.
+            if (!donationEdited) setDonationAmount(perAthleteSuggested * next);
           }}
           className={inputClass + ' bg-white'}
           aria-describedby="participantCount-hint"
         />
         <p id="participantCount-hint" className="mt-2 font-body text-sm text-ash">
           {isGroup
-            ? `Covering ${participantCount} athletes at $${perAthleteMin} each — a $${minDonation} minimum donation. We'll collect each athlete's name and waiver at check-in.`
-            : `Registering more than one? Enter the number here and the donation minimum adjusts — $${perAthleteMin} per athlete.`}
+            ? `Covering ${participantCount} athletes at the suggested $${perAthleteSuggested} each — $${suggestedDonation} in all. We'll collect each athlete's name and waiver at check-in.`
+            : `Registering more than one? Enter the number here and the suggested donation adjusts — $${perAthleteSuggested} per athlete.`}
         </p>
       </div>
       )}
@@ -491,7 +498,7 @@ function StepAthleteInfo({
         )}
       </div>
 
-      {/* Donation amount */}
+      {/* Donation amount — pre-filled with the recommendation, not a floor */}
       {!isComp && (
       <div className="mb-6 rounded-card border border-petal bg-blush p-5">
         <label htmlFor="donationAmount" className="mb-2 font-body text-xs font-bold uppercase tracking-widest text-ash block">
@@ -499,26 +506,45 @@ function StepAthleteInfo({
         </label>
         <p className="mb-3 font-body text-sm text-ash">
           {isGroup
-            ? `Minimum $${minDonation} — $${perAthleteMin} × ${participantCount} athletes. Give more if you're able.`
-            : `Minimum $${minDonation}. Give more if you're able.`}
+            ? `Recommended: $${suggestedDonation} — $${perAthleteSuggested} × ${participantCount} athletes. There's no minimum, so give what you're able.`
+            : `Recommended: $${suggestedDonation}. There's no minimum, so give what you're able.`}
         </p>
         <input
           id="donationAmount"
           type="number"
-          min={minDonation}
-          value={donationAmount}
+          min={MIN_DONATION_DOLLARS}
+          // 0 stands for an empty field, so clearing it doesn't strand a "0"
+          // the registrant has to delete before typing their own number.
+          value={donationAmount === 0 ? '' : donationAmount}
           onChange={(e) => {
             const val = parseInt(e.target.value, 10);
-            setDonationAmount(isNaN(val) ? minDonation : val);
+            // Their number from here on — the recommendation stops overwriting it.
+            setDonationEdited(true);
+            setDonationAmount(isNaN(val) || val < 0 ? 0 : val);
           }}
           className="border border-petal rounded-card px-4 py-3 font-body text-sm text-ink w-full focus:outline-none focus:border-pink bg-white"
-          aria-describedby="donation-min-hint"
+          aria-describedby="donation-amount-hint"
         />
-        <p id="donation-min-hint" className="mt-1 font-body text-xs text-ash sr-only">
-          Minimum donation: ${minDonation}
+        <p id="donation-amount-hint" className="mt-1 font-body text-xs text-ash sr-only">
+          Recommended donation: ${suggestedDonation}. No minimum — any amount of $
+          {MIN_DONATION_DOLLARS} or more registers you.
         </p>
-        {donationAmount < minDonation && (
-          <p className="mt-1 font-body text-xs text-red-700" role="alert">Minimum donation is ${minDonation}</p>
+        {donationEdited && donationAmount !== suggestedDonation && (
+          <button
+            type="button"
+            onClick={() => {
+              setDonationEdited(false);
+              setDonationAmount(suggestedDonation);
+            }}
+            className="mt-2 font-body text-xs font-bold uppercase tracking-widest text-pink underline"
+          >
+            Use recommended ${suggestedDonation}
+          </button>
+        )}
+        {donationAmount < MIN_DONATION_DOLLARS && (
+          <p className="mt-1 font-body text-xs text-red-700" role="alert">
+            Enter a donation of at least ${MIN_DONATION_DOLLARS}.
+          </p>
         )}
       </div>
       )}
@@ -914,7 +940,10 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
   const [step, setStep] = useState<Step>(1);
   const [raceType, setRaceType] = useState<RaceType>(null);
   const [bandanaColor, setBandanaColor] = useState('');
-  const [donationAmount, setDonationAmount] = useState(MIN_DONATION_AMOUNT);
+  const [donationAmount, setDonationAmount] = useState(RECOMMENDED_DONATION_AMOUNT);
+  // Until someone types their own amount, the field tracks the recommendation
+  // for whichever race and headcount they pick.
+  const [donationEdited, setDonationEdited] = useState(false);
   const [participantCount, setParticipantCount] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
@@ -997,9 +1026,13 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
           raceType={raceType}
           setRaceType={setRaceType}
           onNext={() => {
-            const perAthlete =
-              raceType === 'fun-run' ? MIN_DONATION_FUN_RUN : MIN_DONATION_AMOUNT;
-            setDonationAmount(perAthlete * participantCount);
+            if (!donationEdited) {
+              const perAthlete =
+                raceType === 'fun-run'
+                  ? RECOMMENDED_DONATION_FUN_RUN
+                  : RECOMMENDED_DONATION_AMOUNT;
+              setDonationAmount(perAthlete * participantCount);
+            }
             setStep(2);
           }}
         />
@@ -1015,6 +1048,8 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
             setBandanaColor={setBandanaColor}
             donationAmount={donationAmount}
             setDonationAmount={setDonationAmount}
+            donationEdited={donationEdited}
+            setDonationEdited={setDonationEdited}
             participantCount={participantCount}
             setParticipantCount={setParticipantCount}
             waiverAgreed={waiverAgreed}
