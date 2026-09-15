@@ -91,13 +91,8 @@ export const TEN_K_LABEL           = "10K (6.2 mi)";
 export const FUN_RUN_LABEL         = "Fun Run (~2 mi)";
 
 // --- FUNDRAISING GOAL ---------------------------------------
-// The number on the home page thermometer and the /register momentum bar.
+// The number on the home page thermometer.
 export const FUNDRAISING_GOAL = 500000;
-// A progress bar reading "$0 · 0% of goal" argues against registering — it is
-// the opposite of the momentum it is meant to show. So the bar stays hidden
-// until real money is in, and the goal is stated forward-looking instead.
-// Lower this the moment the total clears it; set it to 0 to always show the bar.
-export const MOMENTUM_MIN_RAISED = 5000;
 
 // --- CARD PROCESSING FEE ------------------------------------
 // Stripe keeps 2.9% + $0.30 of every card charge. Rather than letting that come
@@ -135,21 +130,6 @@ export const REFERRAL_REWARD_LOGO: string = "";
 export const REFERRAL_REWARD_LOGO_ALT = "";
 export const REFERRAL_REWARD_LOGO_WIDTH = 512;
 export const REFERRAL_REWARD_LOGO_HEIGHT = 512;
-
-// --- QR CAMPAIGN --------------------------------------------
-// Every printed QR code carries its own ?s= code, e.g.
-// raceagainstcancers.org/registration?s=dsm. The code is stored for the
-// session and recorded on the Stripe record, so /admin can tell which poster
-// actually produced registrations rather than which one produced scans.
-//
-// Codes listed here get their own opening line on the landing page; anything
-// else is still tracked, just without custom copy. Keep them short — they are
-// printed under a QR code and typed by hand when someone gives up scanning.
-export const QR_SOURCE_HEADLINES: Record<string, string> = {
-  // The deliberately plain "DON'T SCAN ME" codes. Closing the loop is the whole
-  // reason that code works, so it gets the payoff it earned.
-  dsm: "You were told not to scan it.",
-};
 
 // --- CHECK-IN -----------------------------------------------
 export const CHECK_IN_DATE     = "Saturday, November 7, 2026";

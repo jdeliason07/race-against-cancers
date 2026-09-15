@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 import {
@@ -13,7 +13,7 @@ import {
 import { createPaymentIntent } from './actions';
 import { submitCompRegistration } from './comp-actions';
 import { ADULT_AGE, isMinorOnRaceDay, isPlausibleDob } from '@/lib/utils';
-import { readSource } from '@/lib/qrSource';
+import { captureSource, readSource } from '@/lib/qrSource';
 import {
   DONATION_PRESETS_10K,
   DONATION_PRESETS_FUN_RUN,
@@ -123,50 +123,47 @@ function StepIndicator({ step, labels }: { step: Step; labels: string[] }) {
   );
 }
 
-// Step 1 — Race Selection (two buttons only)
+// Step 1 — Race Selection.
+//
+// One tap, not two: picking a race also advances, so there is no separate Next
+// button to find and no disabled state to puzzle over. The race is still
+// changeable from step 2's Back button, which is the only thing the old
+// select-then-confirm pattern was buying.
 function StepRaceSelection({
-  raceType,
   setRaceType,
   onNext,
 }: {
-  raceType: RaceType;
   setRaceType: (r: RaceType) => void;
   onNext: () => void;
 }) {
-  return (
-    <div>
-      <h2 className="font-display text-3xl uppercase text-ink mb-6">Choose Your Race</h2>
+  const races = [
+    { key: '10k' as const,     label: '10K',     amount: RECOMMENDED_DONATION_AMOUNT },
+    { key: 'fun-run' as const, label: 'Fun Run', amount: RECOMMENDED_DONATION_FUN_RUN },
+  ];
 
-      <div className="mb-8 grid gap-4 sm:grid-cols-2">
-        {([
-          { key: '10k' as const,      label: '10K',      sub: `6.2 mi · $${RECOMMENDED_DONATION_AMOUNT} donation (recommended)` },
-          { key: 'fun-run' as const,  label: 'Fun Run',  sub: `~2 mi · $${RECOMMENDED_DONATION_FUN_RUN} donation (recommended) · great for kids & families` },
-        ]).map((race) => (
+  return (
+    <div className="rounded-card border-2 border-pink bg-blush p-6 text-center">
+      <h2 className="font-display text-2xl uppercase leading-tight text-ink">
+        Ready when you are
+      </h2>
+      <div className="mt-4 flex flex-col gap-3">
+        {races.map((race) => (
           <button
             key={race.key}
             type="button"
-            onClick={() => setRaceType(race.key)}
-            aria-pressed={raceType === race.key}
-            className="rounded-card border-2 p-6 text-left transition-colors duration-150 focus-visible:outline-none"
-            style={{
-              borderColor: raceType === race.key ? '#F0307A' : '#ECE2E6',
-              backgroundColor: raceType === race.key ? '#FDE7F0' : '#FFFFFF',
+            onClick={() => {
+              setRaceType(race.key);
+              onNext();
             }}
+            className="btn-primary w-full flex-col gap-0 py-3 leading-tight"
           >
-            <p className="font-display text-2xl uppercase text-ink">{race.label}</p>
-            <p className="font-body text-sm text-ash mt-1">{race.sub}</p>
+            <span>Register for the {race.label}</span>
+            <span className="font-body text-xs font-semibold normal-case tracking-normal text-white/80">
+              ${race.amount} recommended · no minimum
+            </span>
           </button>
         ))}
       </div>
-
-      <button
-        type="button"
-        onClick={onNext}
-        disabled={raceType === null}
-        className="btn-primary w-full disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        Next: Athlete Info
-      </button>
     </div>
   );
 }
@@ -973,20 +970,7 @@ function StepConfirmation({
 }
 
 // Main orchestrator
-export function RegisterFlow({
-  comp,
-  initialRace = null,
-}: {
-  comp?: { code: string };
-  /**
-   * The race picked on the landing page. The landing page *is* step 1, so
-   * arriving with a choice already made opens the form at step 2 rather than
-   * asking the same question twice. It also means the progress bar starts
-   * half-filled, which is the point: people finish what already looks started.
-   * Step 1 stays reachable via Back, so the choice is never trapped.
-   */
-  initialRace?: RaceType;
-}) {
+export function RegisterFlow({ comp }: { comp?: { code: string } }) {
   // A covered entry skips payment, so the flow is one step shorter.
   const isComp = !!comp;
   const stepLabels = isComp
@@ -994,8 +978,8 @@ export function RegisterFlow({
     : ['Race Selection', 'Athlete Info', 'Payment', 'Confirmation'];
   const confirmationStep = (isComp ? 3 : 4) as Step;
 
-  const [step, setStep] = useState<Step>(initialRace ? 2 : 1);
-  const [raceType, setRaceType] = useState<RaceType>(initialRace);
+  const [step, setStep] = useState<Step>(1);
+  const [raceType, setRaceType] = useState<RaceType>(null);
   const [bandanaColor, setBandanaColor] = useState('');
   // Which rung of the donation ladder is selected — 0 is the recommendation the
   // form opens on, null means they typed their own amount instead. Holding the
@@ -1031,6 +1015,13 @@ export function RegisterFlow({
 
   const [loadingIntent, setLoadingIntent] = useState(false);
   const [intentError, setIntentError] = useState<string | null>(null);
+
+  // Remember which printed QR code brought them here, before anything in the
+  // flow can change the URL. Writes to sessionStorage only — no state, so it
+  // cannot re-render anything.
+  useEffect(() => {
+    captureSource();
+  }, []);
 
   // Not memoized by hand — the React Compiler handles that, and a manual
   // useCallback here blocks it from optimizing the component at all.
@@ -1095,7 +1086,6 @@ export function RegisterFlow({
 
       {step === 1 && (
         <StepRaceSelection
-          raceType={raceType}
           setRaceType={setRaceType}
           onNext={() => setStep(2)}
         />
