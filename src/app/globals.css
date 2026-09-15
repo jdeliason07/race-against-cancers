@@ -68,3 +68,24 @@
     @apply flex items-center gap-4 text-pink;
   }
 }
+
+/* Permanent labels on the course map (src/components/course/CourseMap.tsx).
+   Overrides Leaflet's default white callout, and hides its arrow since these
+   sit beside their dot rather than pointing down at it. */
+.leaflet-tooltip.course-label {
+  background: #1C1719;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-family: Saira, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.leaflet-tooltip.course-label::before {
+  display: none;
+}

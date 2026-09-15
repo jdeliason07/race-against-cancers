@@ -30,7 +30,7 @@ const eventJsonLd = {
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
   location: {
     '@type': 'Place',
-    name: 'University Ave & Center St',
+    name: 'Utah County Courthouse — University Ave & Center St',
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'University Ave & Center St',

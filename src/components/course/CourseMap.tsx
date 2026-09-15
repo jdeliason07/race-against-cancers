@@ -1,46 +1,27 @@
 'use client';
 import { useEffect, useRef } from 'react';
 
-// 10K course — identical to the Utah Valley 10K route.
-// Start in front of Canyon Crest Elementary (4664 N Canyon Rd), run north on
-// Canyon Road to the mouth of Provo Canyon, take the single left turn onto
-// University Ave (US-189), and follow it straight south to Center St.
-// Geometry traced from OpenStreetMap road centerlines.
-// Net drop: ~285 ft (4,852 ft → 4,567 ft); only one turn on the entire course.
-const route: [number, number][] = [
-  [40.2959, -111.6534], // Start: N Canyon Rd at Canyon Crest Elementary
-  [40.2959, -111.6535],
-  [40.2966, -111.6536],
-  [40.2969, -111.6537],
-  [40.2979, -111.6538],
-  [40.2989, -111.6540],
-  [40.2997, -111.6541],
-  [40.3002, -111.6542],
-  [40.3011, -111.6543],
-  [40.3015, -111.6544],
-  [40.3021, -111.6544],
-  [40.3029, -111.6545],
-  [40.3034, -111.6546],
-  [40.3041, -111.6547],
-  [40.3049, -111.6547],
-  [40.3056, -111.6547],
-  [40.3065, -111.6548],
-  [40.3075, -111.6549],
-  [40.3076, -111.6549],
-  [40.3077, -111.6550],
-  [40.3077, -111.6551], // Turn onto University Ave (US-189) at the mouth of Provo Canyon
-  [40.3069, -111.6552],
-  [40.3030, -111.6558],
-  [40.2997, -111.6565],
-  [40.2961, -111.6573],
-  [40.2911, -111.6583],
-  [40.2877, -111.6586],
-  [40.2839, -111.6586],
-  [40.2793, -111.6579],
-  [40.2758, -111.6575],
-  [40.2720, -111.6571],
+// Both races start at LaVell Edwards Stadium and finish at the Utah County
+// Courthouse, University Ave & Center St. Geometry traced from OpenStreetMap
+// road centerlines; distances measured along these polylines.
+
+// The 10K's north spur — out and back up University Ave, 2.03 mi each way.
+// The Fun Run never runs this.
+const northSpur: [number, number][] = [
+  [40.2649, -111.6582], // Start: LaVell Edwards Stadium
   [40.2685, -111.6572],
-  [40.2649, -111.6582], // Fun Run joins here — LaVell Edwards Stadium area (~2 mi to finish)
+  [40.2720, -111.6571],
+  [40.2758, -111.6575],
+  [40.2793, -111.6579],
+  [40.2839, -111.6586],
+  [40.2877, -111.6586],
+  [40.2911, -111.6583],
+  [40.2941, -111.6577], // Turnaround — 2.03 mi north of the stadium
+];
+
+// Stadium south to the finish: the Fun Run in full, and the 10K's last 2.15 mi.
+const toFinish: [number, number][] = [
+  [40.2649, -111.6582], // LaVell Edwards Stadium
   [40.2611, -111.6586],
   [40.2576, -111.6586],
   [40.2539, -111.6586],
@@ -49,12 +30,19 @@ const route: [number, number][] = [
   [40.2432, -111.6587],
   [40.2394, -111.6587],
   [40.2362, -111.6587],
-  [40.2338, -111.6585], // Finish: University Ave & Center St
+  [40.2338, -111.6585], // Finish: Utah County Courthouse, University Ave & Center St
 ];
 
-// Fun Run: shares the last ~2 miles of the 10K route.
-// Starts at LaVell Edwards Stadium on the BYU campus, follows University Ave south.
-const funRunRoute: [number, number][] = route.slice(32); // starts at index 32 (40.2649)
+// Full 10K, 6.21 mi: up the spur, back down it, then south to the finish.
+// slice() copies before reverse(), which would otherwise mutate northSpur.
+const route: [number, number][] = [
+  ...northSpur,
+  ...northSpur.slice(0, -1).reverse(),
+  ...toFinish.slice(1),
+];
+
+// Fun Run, 2.15 mi: the stadium-to-finish leg on its own.
+const funRunRoute: [number, number][] = toFinish;
 
 export function CourseMap() {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -84,35 +72,60 @@ export function CourseMap() {
       // Fun Run route — blue, drawn on top so the overlap is visible as blue
       L.polyline(funRunRoute, { color: '#2563EB', weight: 4, opacity: 0.9 }).addTo(map);
 
-      // 10K start marker
-      const startIcon10K = L.divIcon({
-        html: '<div style="background:#16A34A;color:#fff;font-weight:700;font-size:11px;padding:3px 7px;border-radius:999px;white-space:nowrap;font-family:sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.3)">10K START</div>',
-        className: '',
-        iconAnchor: [36, 14],
-      });
-      L.marker(route[0], { icon: startIcon10K })
-        .addTo(map)
-        .bindPopup('<b>10K START</b><br>N Canyon Rd at Canyon Crest Elementary<br>8:00 AM');
+      // One start point for both races, one turnaround, one finish. Each is a
+      // dot on the exact coordinate plus a permanent tooltip beside it —
+      // Leaflet places tooltips relative to the point, so the labels don't
+      // have to be nudged by hand and can't land on top of their own marker.
+      const point = (
+        latlng: [number, number],
+        color: string,
+        label: string,
+        popup: string,
+      ) => {
+        L.circleMarker(latlng, {
+          radius: 6,
+          color: '#fff',
+          weight: 2,
+          fillColor: color,
+          fillOpacity: 1,
+        })
+          .addTo(map)
+          .bindTooltip(label, {
+            permanent: true,
+            // All three sit to the right of the line. Leaflet's 'left'
+            // direction mispositions these once the label is restyled, and
+            // the three points are far enough apart vertically that one side
+            // is enough. Labels stay short so they clear the map's right edge
+            // at phone width.
+            direction: 'right',
+            offset: [10, 0],
+            className: 'course-label',
+            opacity: 1,
+          })
+          .bindPopup(popup);
+      };
 
-      // Fun Run start marker
-      const startIconFunRun = L.divIcon({
-        html: '<div style="background:#2563EB;color:#fff;font-weight:700;font-size:11px;padding:3px 7px;border-radius:999px;white-space:nowrap;font-family:sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.3)">FUN RUN START</div>',
-        className: '',
-        iconAnchor: [52, 14],
-      });
-      L.marker(funRunRoute[0], { icon: startIconFunRun })
-        .addTo(map)
-        .bindPopup('<b>FUN RUN START</b><br>LaVell Edwards Stadium, BYU<br>8:00 AM · ~2 miles');
+      // Both races leave from the same line, so this is one marker, not two.
+      point(
+        route[0],
+        '#16A34A',
+        'START · BOTH RACES',
+        '<b>START — 10K &amp; FUN RUN</b><br>LaVell Edwards Stadium, BYU<br>8:00 AM',
+      );
 
-      // Shared finish marker
-      const finishIcon = L.divIcon({
-        html: '<div style="background:#F0307A;color:#fff;font-weight:700;font-size:11px;padding:3px 7px;border-radius:999px;white-space:nowrap;font-family:sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.3)">FINISH</div>',
-        className: '',
-        iconAnchor: [28, 14],
-      });
-      L.marker(route[route.length - 1], { icon: finishIcon })
-        .addTo(map)
-        .bindPopup('<b>FINISH</b><br>University Ave & Center St<br>Downtown Provo<br><em>Shared finish — 10K & Fun Run</em>');
+      point(
+        northSpur[northSpur.length - 1],
+        '#1C1719',
+        '10K TURNAROUND',
+        '<b>10K TURNAROUND</b><br>Mile 2 on University Ave<br>Aid station<br><em>10K only — the Fun Run never comes up here</em>',
+      );
+
+      point(
+        route[route.length - 1],
+        '#F0307A',
+        'FINISH',
+        '<b>FINISH</b><br>Utah County Courthouse<br>University Ave &amp; Center St, downtown Provo<br><em>Shared finish — 10K &amp; Fun Run</em>',
+      );
     });
   }, []);
 
@@ -120,7 +133,7 @@ export function CourseMap() {
     <div
       ref={mapRef}
       className="h-96 w-full rounded-card border border-line"
-      aria-label="Course map: pink line shows the full 10K route from Canyon Crest Elementary to downtown Provo; blue line shows the Fun Run route from LaVell Edwards Stadium to the same finish"
+      aria-label="Course map: both races start at LaVell Edwards Stadium. The pink line shows the 10K, which runs two miles north on University Avenue, turns around, and heads south to the finish at the Utah County Courthouse in downtown Provo. The blue line shows the Fun Run, the final two miles from the stadium to the same finish."
     />
   );
 }
