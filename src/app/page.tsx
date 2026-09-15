@@ -92,8 +92,8 @@ export default async function HomePage() {
           </div>
 
           <h1 className="font-display text-[clamp(52px,10vw,132px)] uppercase leading-[0.92] tracking-[0.01em] text-ink">
-            RUN. GIVE.{' '}
-            <em className="not-italic text-pink">CHANGE LIVES.</em>
+            MILES MEAN{' '}
+            <em className="not-italic text-pink">MORE HERE</em>
           </h1>
 
           <p className="mt-8 max-w-xl font-body text-lg text-ash">
@@ -170,7 +170,7 @@ export default async function HomePage() {
               { dt: 'Events',   dd: `${TEN_K_LABEL} + ${FUN_RUN_LABEL}` },
               { dt: 'Date',     dd: EVENT_DATE_DISPLAY },
               { dt: 'Start',    dd: `10K: ${EVENT_LOCATION_NAME} · Fun Run: ${FUN_RUN_LOCATION_NAME}` },
-              { dt: 'Entry',    dd: `10K $${RECOMMENDED_DONATION_AMOUNT} · Fun Run $${RECOMMENDED_DONATION_FUN_RUN} suggested` },
+              { dt: 'Entry',    dd: `10K $${RECOMMENDED_DONATION_AMOUNT} · Fun Run $${RECOMMENDED_DONATION_FUN_RUN}` },
             ].map((fact) => (
               <div key={fact.dt} className="rounded-card border border-line p-6">
                 <dt className="section-label mb-2">{fact.dt}</dt>

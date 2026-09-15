@@ -122,8 +122,8 @@ function StepRaceSelection({
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2">
         {([
-          { key: '10k' as const,      label: '10K',      sub: `6.2 mi · $${RECOMMENDED_DONATION_AMOUNT} suggested donation` },
-          { key: 'fun-run' as const,  label: 'Fun Run',  sub: `~2 mi · $${RECOMMENDED_DONATION_FUN_RUN} suggested donation · great for kids & families` },
+          { key: '10k' as const,      label: '10K',      sub: `6.2 mi · $${RECOMMENDED_DONATION_AMOUNT} donation` },
+          { key: 'fun-run' as const,  label: 'Fun Run',  sub: `~2 mi · $${RECOMMENDED_DONATION_FUN_RUN} donation · great for kids & families` },
         ]).map((race) => (
           <button
             key={race.key}
@@ -205,8 +205,8 @@ function StepAthleteInfo({
 }) {
   const [touched, setTouched] = useState<Partial<Record<keyof FormData, boolean>>>({});
   // The first rung of the ladder is the recommendation, per athlete.
-  const perAthleteSuggested = donationPresets[0];
-  const suggestedDonation = perAthleteSuggested * participantCount;
+  const perAthleteRecommended = donationPresets[0];
+  const recommendedDonation = perAthleteRecommended * participantCount;
 
   // One person paying for several athletes is registering a group, not
   // themselves — so the personal fields below become their contact details and
@@ -265,7 +265,7 @@ function StepAthleteInfo({
         {isGroup ? 'Organizer Info' : 'Athlete Info'}
       </h2>
 
-      {/* Headcount — drives the suggested donation below */}
+      {/* Headcount — drives the recommended donation below */}
       {!isComp && (
       <div className="mb-6 rounded-card border border-line bg-mist p-5">
         <label htmlFor="participantCount" className={labelClass}>
@@ -290,8 +290,8 @@ function StepAthleteInfo({
         />
         <p id="participantCount-hint" className="mt-2 font-body text-sm text-ash">
           {isGroup
-            ? `Covering ${participantCount} athletes at the suggested $${perAthleteSuggested} each — $${suggestedDonation} in all. We'll collect each athlete's name and waiver at check-in.`
-            : `Registering more than one? Enter the number here and the suggested donation adjusts — $${perAthleteSuggested} per athlete.`}
+            ? `Covering ${participantCount} athletes at the recommended $${perAthleteRecommended} each — $${recommendedDonation} in all. We'll collect each athlete's name and waiver at check-in.`
+            : `Registering more than one? Enter the number here and the recommended donation adjusts — $${perAthleteRecommended} per athlete.`}
         </p>
       </div>
       )}
@@ -505,13 +505,13 @@ function StepAthleteInfo({
         </p>
         <p className="mb-3 font-body text-sm text-ash">
           {isGroup
-            ? `Recommended: $${suggestedDonation} — $${perAthleteSuggested} × ${participantCount} athletes. Give more if you're able.`
-            : `Recommended: $${suggestedDonation}. Give more if you're able.`}
+            ? `Recommended: $${recommendedDonation} — $${perAthleteRecommended} × ${participantCount} athletes. Give more if you're able.`
+            : `Recommended: $${recommendedDonation}. Give more if you're able.`}
         </p>
 
         {/* One-tap amounts. They're per athlete, so they scale with the
             headcount and the first one always matches the recommendation. */}
-        <div className="mb-3 grid grid-cols-3 gap-2" role="group" aria-label="Suggested donation amounts">
+        <div className="mb-3 grid grid-cols-3 gap-2" role="group" aria-label="Donation amounts">
           {donationPresets.map((perAthlete, i) => {
             const total = perAthlete * participantCount;
             const selected = presetIndex === i;
@@ -567,7 +567,7 @@ function StepAthleteInfo({
           aria-describedby="donation-amount-hint"
         />
         <p id="donation-amount-hint" className="mt-1 font-body text-xs text-ash sr-only">
-          Recommended donation: ${suggestedDonation}. Enter any amount of $
+          Recommended donation: ${recommendedDonation}. Enter any amount of $
           {MIN_DONATION_DOLLARS} or more.
         </p>
         {donationAmount < MIN_DONATION_DOLLARS && (
