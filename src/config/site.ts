@@ -12,12 +12,12 @@ export const CHARITY_NAME = "Intermountain Cancer Center Utah Valley";
 export const CHARITY_URL  = "https://intermountainhealthcare.org/locations/utah-valley-clinic/cancer-center-utah-valley";
 
 // --- EVENT --------------------------------------------------
-// The registered entity name. Used where the legal person is meant: schema.org
-// organizer, the privacy policy, email from-names, the copyright line.
-export const ORG_NAME            = "Race Against Cancers Inc.";
-// The same organization without the corporate suffix, for prose that reads
-// better without it. Not a second entity — the EIN identifies which one.
-export const ORG_NAME_SHORT      = "Race Against Cancers";
+// The registered entity name, in full. There is no corporate suffix — the
+// organization is registered as "Race Against Cancers", not "... Inc." — so
+// this one constant serves both prose and the places that mean the legal
+// person: schema.org organizer, the privacy policy, email from-names, and the
+// copyright line.
+export const ORG_NAME            = "Race Against Cancers";
 // Our federal tax ID. Section 9.2 of the Participant Agreement has us
 // receiving the registration as a donation and granting the proceeds on, so
 // this is the number that belongs on any receipt or acknowledgment. Shown in
