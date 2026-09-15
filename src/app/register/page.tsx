@@ -32,7 +32,7 @@ export default function RegisterPage() {
               Be the first to know the moment registration opens.
             </p>
             <p className="mt-3 font-body text-base text-ink">
-              10K ${RECOMMENDED_DONATION_AMOUNT} · Family Fun Run ${RECOMMENDED_DONATION_FUN_RUN} — suggested donations, no minimum
+              10K ${RECOMMENDED_DONATION_AMOUNT} · Family Fun Run ${RECOMMENDED_DONATION_FUN_RUN} — suggested donations
             </p>
             <p className="mt-1 font-body text-sm text-ash">
               The ~2-mile Fun Run is short enough for kids to finish and easy to walk the whole way.

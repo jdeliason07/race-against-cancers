@@ -122,7 +122,7 @@ export default function RaceDetailsPage() {
               <dd className="font-body text-sm text-ink leading-relaxed">
                 10K: ${RECOMMENDED_DONATION_AMOUNT} recommended<br />
                 Fun Run: ${RECOMMENDED_DONATION_FUN_RUN} recommended<br />
-                <span className="text-ash text-xs">No minimum — give what you&rsquo;re able</span>
+                <span className="text-ash text-xs">Give more if you&rsquo;re able</span>
               </dd>
             </div>
 
@@ -190,8 +190,7 @@ export default function RaceDetailsPage() {
               for kids to finish, easy to walk the whole way, and strollers are welcome. Whether
               you&rsquo;re a casual walker or a first-time runner, this is your chance to cross a
               finish line for a great cause. The recommended donation is ${RECOMMENDED_DONATION_FUN_RUN},
-              compared with ${RECOMMENDED_DONATION_AMOUNT} for the 10K — and there is no minimum
-              either way.
+              compared with ${RECOMMENDED_DONATION_AMOUNT} for the 10K.
             </p>
             <div className="rounded-card border border-petal bg-blush p-5 mt-4">
               <p className="font-body text-sm font-bold uppercase tracking-widest text-pink mb-2">Getting to the start</p>

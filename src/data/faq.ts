@@ -30,7 +30,7 @@ export const faqs: FAQItem[] = [
     : []),
   {
     question: "What is the registration fee?",
-    answer: `There is no flat entry fee and no donation minimum — your registration is simply a donation to ${CHARITY_NAME}. We recommend $${RECOMMENDED_DONATION_AMOUNT} for the 10K and $${RECOMMENDED_DONATION_FUN_RUN} for the family-friendly Fun Run. The recommendation is per athlete, so a family of four doing the Fun Run is pointed at $${RECOMMENDED_DONATION_FUN_RUN * 4} — and you can register all four in one go rather than filling in the form four times. Give more if you're able, or less if that's what works; every athlete is welcome either way.`,
+    answer: `There is no flat entry fee — your registration is simply a donation to ${CHARITY_NAME}. We recommend $${RECOMMENDED_DONATION_AMOUNT} for the 10K and $${RECOMMENDED_DONATION_FUN_RUN} for the family-friendly Fun Run. The recommendation is per athlete, so a family of four doing the Fun Run is pointed at $${RECOMMENDED_DONATION_FUN_RUN * 4} — and you can register all four in one go rather than filling in the form four times. We warmly encourage you to give as much as you're willing.`,
   },
   {
     question: "Can I register a group, or pay for other people?",

@@ -497,7 +497,7 @@ function StepAthleteInfo({
         )}
       </div>
 
-      {/* Donation amount — the buttons pre-fill it; none of them is a floor */}
+      {/* Donation amount — the buttons pre-fill it, and any amount is accepted */}
       {!isComp && (
       <div className="mb-6 rounded-card border border-petal bg-blush p-5">
         <p className="mb-2 font-body text-xs font-bold uppercase tracking-widest text-ash">
@@ -505,8 +505,8 @@ function StepAthleteInfo({
         </p>
         <p className="mb-3 font-body text-sm text-ash">
           {isGroup
-            ? `Recommended: $${suggestedDonation} — $${perAthleteSuggested} × ${participantCount} athletes. There's no minimum, so give what you're able.`
-            : `Recommended: $${suggestedDonation}. There's no minimum, so give what you're able.`}
+            ? `Recommended: $${suggestedDonation} — $${perAthleteSuggested} × ${participantCount} athletes. Give more if you're able.`
+            : `Recommended: $${suggestedDonation}. Give more if you're able.`}
         </p>
 
         {/* One-tap amounts. They're per athlete, so they scale with the
@@ -567,8 +567,8 @@ function StepAthleteInfo({
           aria-describedby="donation-amount-hint"
         />
         <p id="donation-amount-hint" className="mt-1 font-body text-xs text-ash sr-only">
-          Recommended donation: ${suggestedDonation}. No minimum — any amount of $
-          {MIN_DONATION_DOLLARS} or more registers you.
+          Recommended donation: ${suggestedDonation}. Enter any amount of $
+          {MIN_DONATION_DOLLARS} or more.
         </p>
         {donationAmount < MIN_DONATION_DOLLARS && (
           <p className="mt-1 font-body text-xs text-red-700" role="alert">

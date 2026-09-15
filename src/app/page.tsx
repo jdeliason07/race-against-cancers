@@ -99,7 +99,7 @@ export default async function HomePage() {
           <p className="mt-8 max-w-xl font-body text-lg text-ash">
             A 10K & Fun Run benefiting {CHARITY_NAME}. Your registration
             is a donation to the cause — we recommend ${RECOMMENDED_DONATION_AMOUNT} for the 10K
-            and ${RECOMMENDED_DONATION_FUN_RUN} for the family Fun Run, with no minimum.
+            and ${RECOMMENDED_DONATION_FUN_RUN} for the family Fun Run.
           </p>
 
           <div className="mt-10">
