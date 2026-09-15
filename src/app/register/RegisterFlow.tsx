@@ -847,7 +847,7 @@ function PaymentForm({
 
           {/* What the asterisk on the donation in the summary bar points at. */}
           <p id="card-fee-note" className="mb-6 font-body text-xs leading-relaxed text-ash">
-            <span aria-hidden="true">*</span> {STRIPE_FEE_LABEL} Credit Card Fee
+            <span aria-hidden="true">*</span> Plus {STRIPE_FEE_LABEL} Credit Card Fee
           </p>
 
           {paymentError && (
