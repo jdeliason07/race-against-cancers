@@ -122,8 +122,8 @@ function StepRaceSelection({
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2">
         {([
-          { key: '10k' as const,      label: '10K',      sub: `6.2 mi · $${RECOMMENDED_DONATION_AMOUNT} donation` },
-          { key: 'fun-run' as const,  label: 'Fun Run',  sub: `~2 mi · $${RECOMMENDED_DONATION_FUN_RUN} donation · great for kids & families` },
+          { key: '10k' as const,      label: '10K',      sub: `6.2 mi · $${RECOMMENDED_DONATION_AMOUNT} donation (recommended)` },
+          { key: 'fun-run' as const,  label: 'Fun Run',  sub: `~2 mi · $${RECOMMENDED_DONATION_FUN_RUN} donation (recommended) · great for kids & families` },
         ]).map((race) => (
           <button
             key={race.key}
