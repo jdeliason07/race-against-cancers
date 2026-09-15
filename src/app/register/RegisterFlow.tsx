@@ -15,6 +15,7 @@ import { submitCompRegistration } from './comp-actions';
 import { ADULT_AGE } from '@/lib/utils';
 import { captureSource, readSource } from '@/lib/qrSource';
 import {
+  CHARITY_NAME,
   DONATION_PRESETS_10K,
   DONATION_PRESETS_FUN_RUN,
   MAX_PARTICIPANTS_PER_REGISTRATION,
@@ -781,30 +782,52 @@ function PaymentForm({
             />
           </div>
 
-          {/* What the asterisk on the donation in the summary bar points at. */}
-          <p id="card-fee-note" className="mb-6 font-body text-xs leading-relaxed text-ash">
-            <span aria-hidden="true">*</span> Plus {STRIPE_FEE_LABEL} Credit Card Fee
-          </p>
-
           {paymentError && (
             <p className="mb-4 rounded-card border border-red-200 bg-red-50 px-4 py-3 font-body text-sm text-red-700" role="alert">
               {paymentError}
             </p>
           )}
 
-          <div className="flex gap-3">
-            <button type="button" onClick={onBack} disabled={submitting} className="btn-ghost flex-1">
-              Back
-            </button>
+          {/* The close. By this point the summary bar at the top has scrolled
+              away, so the last thing before a card is charged was a button with
+              no amount anywhere near it — the amount, and what it is for, belong
+              here. The button takes the full width; Back drops to a quiet line
+              underneath, because this is not a choice between two equals. */}
+          <div className="rounded-card border-2 border-pink bg-blush p-6 text-center">
+            <p className="font-body text-sm uppercase tracking-widest text-ash">
+              You&rsquo;re giving
+            </p>
+            <p className="mt-1 font-display text-[clamp(44px,13vw,64px)] uppercase leading-none text-ink">
+              ${donationAmount}
+            </p>
+            <p className="mt-2 font-body text-sm leading-snug text-ash">
+              to <span className="font-semibold text-ink">{CHARITY_NAME}</span>
+              {participantCount > 1 && <> for {participantCount} athletes</>}.
+            </p>
+
             <button
               type="button"
               onClick={confirmStripe}
               disabled={submitting || !stripe || !elements}
-              className="btn-primary flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="btn-primary mt-5 w-full py-5 text-base disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {submitting ? 'Processing…' : 'Complete Registration'}
             </button>
+
+            {/* What the asterisk on the donation in the summary bar points at. */}
+            <p id="card-fee-note" className="mt-3 font-body text-xs leading-relaxed text-ash">
+              <span aria-hidden="true">*</span> Plus {STRIPE_FEE_LABEL} Credit Card Fee
+            </p>
           </div>
+
+          <button
+            type="button"
+            onClick={onBack}
+            disabled={submitting}
+            className="mt-4 w-full py-2 font-body text-sm font-semibold uppercase tracking-widest text-ash transition-colors hover:text-pink disabled:opacity-40"
+          >
+            Back
+          </button>
     </div>
   );
 }
