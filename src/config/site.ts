@@ -15,11 +15,12 @@ export const CHARITY_URL  = "https://intermountainhealthcare.org/locations/utah-
 export const ORG_NAME            = "Race Against Cancers Inc.";
 // Our federal tax ID. Section 9.2 of the Participant Agreement has us
 // receiving the registration as a donation and granting the proceeds on, so
-// this is the number that belongs on any receipt or acknowledgment.
+// this is the number that belongs on any receipt or acknowledgment. Shown in
+// the footer on every page, alongside our 501(c)(3) status.
 //
-// An EIN is a tax ID and nothing more — it is not itself proof of 501(c)(3)
-// status, which is a separate IRS determination. Don't pair this number with a
-// 501(c)(3) claim anywhere public unless that determination letter exists.
+// That status is a separate IRS determination from having an EIN, and the
+// footer states both. The organizer has confirmed the determination; if it
+// ever lapses, drop the 501(c)(3) wording in Footer.tsx before the number.
 export const ORG_EIN             = "42-3071442";
 export const EVENT_NAME          = "Race Against Cancers 2026";
 export const EVENT_DATE_ISO      = "2026-11-07T08:00:00-07:00"; // 10K & Fun Run start 8:00 AM MST
