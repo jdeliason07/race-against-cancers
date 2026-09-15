@@ -51,9 +51,10 @@ endpoint (and updating `STRIPE_WEBHOOK_SECRET`) is a required part of going live
 ### Who pays the card fee
 Stripe keeps 2.9% + $0.30 of every card charge. Rather than that coming out of the gift, it is
 added on top at checkout: a $99 donation is charged as $102.27, Stripe keeps $3.27, and $99
-arrives. The donation stays $99 everywhere in the form — there is no subtotal line — and the only
-place the total appears is the asterisked note under the payment fields on step 3, before anything
-is confirmed.
+arrives. The donation stays $99 everywhere in the form — there is no subtotal line — and the fee
+is disclosed as an asterisk under the payment fields on step 3: "2.9% + $0.30 Credit Card Fee".
+The charged total itself is not printed on the page; card payers see it on their receipt, and the
+Apple Pay, Google Pay and Link sheets show it before they confirm.
 
 The arithmetic lives in `src/lib/fees.ts`. Note that it is a division, not a 2.9% markup: the fee
 is a cut of the *charge*, so marking the donation up by 2.9% would still leave Stripe taking 2.9%

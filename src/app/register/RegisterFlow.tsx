@@ -25,7 +25,6 @@ import {
   REFERRAL_ENABLED,
   STRIPE_FEE_LABEL,
 } from '@/config/site';
-import { chargeCentsFor, formatCents } from '@/lib/fees';
 import { ReferralRewardCallout } from '@/components/ui/ReferralReward';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -809,8 +808,6 @@ function PaymentForm({
                 // their Wallet yet — tapping it walks them through adding one,
                 // instead of the button silently vanishing.
                 paymentMethods: { applePay: 'always' },
-                // A donation, not a purchase — Apple ships a button for that.
-                buttonType: { applePay: 'donate' },
               }}
               // `availablePaymentMethods` is undefined when no wallet is
               // usable; when it is present, check the flags rather than the
@@ -848,15 +845,9 @@ function PaymentForm({
             />
           </div>
 
-          {/* The one place the charge total is spelled out. The donation stays
-              the number the athlete chose everywhere else — this says what the
-              card is billed and why the two differ. */}
+          {/* What the asterisk on the donation in the summary bar points at. */}
           <p id="card-fee-note" className="mb-6 font-body text-xs leading-relaxed text-ash">
-            <span aria-hidden="true">*</span> Your card will be charged{' '}
-            <span className="font-bold text-ink">{formatCents(chargeCentsFor(donationAmount * 100))}</span> — your $
-            {donationAmount} donation plus the {STRIPE_FEE_LABEL} card processing fee. Covering the
-            fee here is what lets your full ${donationAmount} reach the cause instead of the card
-            network.
+            <span aria-hidden="true">*</span> {STRIPE_FEE_LABEL} Credit Card Fee
           </p>
 
           {paymentError && (
