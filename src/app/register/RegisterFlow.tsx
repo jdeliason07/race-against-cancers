@@ -14,13 +14,13 @@ import { createPaymentIntent } from './actions';
 import { submitCompRegistration } from './comp-actions';
 import { ADULT_AGE, isMinorOnRaceDay, isPlausibleDob } from '@/lib/utils';
 import {
-  DONATION_PRESETS_FIVE_MILE,
+  DONATION_PRESETS_10K,
   DONATION_PRESETS_FUN_RUN,
   MAX_PARTICIPANTS_PER_REGISTRATION,
   MIN_DONATION_DOLLARS,
   RECOMMENDED_DONATION_AMOUNT,
   RECOMMENDED_DONATION_FUN_RUN,
-  FIVE_MILE_LABEL,
+  TEN_K_LABEL,
   FUN_RUN_LABEL,
   REFERRAL_ENABLED,
   STRIPE_FEE_LABEL,
@@ -73,10 +73,6 @@ const stripeAppearance = {
 };
 
 type Step = 1 | 2 | 3 | 4;
-// '10k' is the stored discriminator, not a claim about the distance. It is
-// written into Stripe metadata and read back by the webhook and the admin
-// stats, so registrations taken while the long race was a 10K would be orphaned
-// if it were renamed. The distance shown to people comes from FIVE_MILE_LABEL.
 type RaceType = '10k' | 'fun-run' | null;
 
 interface FormData {
@@ -133,7 +129,7 @@ function StepRaceSelection({
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2">
         {([
-          { key: '10k' as const,      label: '5 Miler', sub: `5.1 mi · $${RECOMMENDED_DONATION_AMOUNT} donation (recommended)` },
+          { key: '10k' as const,      label: '10K',      sub: `6.2 mi · $${RECOMMENDED_DONATION_AMOUNT} donation (recommended)` },
           { key: 'fun-run' as const,  label: 'Fun Run',  sub: `~2 mi · $${RECOMMENDED_DONATION_FUN_RUN} donation (recommended) · great for kids & families` },
         ]).map((race) => (
           <button
@@ -717,7 +713,7 @@ function PaymentForm({
     }
   };
 
-  const raceLabel = raceType === '10k' ? FIVE_MILE_LABEL : FUN_RUN_LABEL;
+  const raceLabel = raceType === '10k' ? TEN_K_LABEL : FUN_RUN_LABEL;
   return (
     <div>
       {/* Summary bar */}
@@ -890,7 +886,7 @@ function StepConfirmation({
   isComp: boolean;
 }) {
   const isGroup = participantCount > 1;
-  const raceLabel = raceType === '10k' ? FIVE_MILE_LABEL : FUN_RUN_LABEL;
+  const raceLabel = raceType === '10k' ? TEN_K_LABEL : FUN_RUN_LABEL;
 
   return (
     <div className="text-center">
@@ -1000,11 +996,11 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
   // Nothing pre-fills the donation field; the amount is read off the ladder, so
-  // it follows the race and the headcount until someone types over it. The
-  // 5 Miler ladder stands in before a race is picked, which is what makes it open
+  // it follows the race and the headcount until someone types over it. The 10K
+  // ladder stands in before a race is picked, which is what makes the form open
   // on the recommended $99.
   const donationPresets =
-    raceType === 'fun-run' ? DONATION_PRESETS_FUN_RUN : DONATION_PRESETS_FIVE_MILE;
+    raceType === 'fun-run' ? DONATION_PRESETS_FUN_RUN : DONATION_PRESETS_10K;
   const donationAmount =
     presetIndex === null
       ? customDonation

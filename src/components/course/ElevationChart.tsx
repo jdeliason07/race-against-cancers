@@ -12,13 +12,13 @@ import { Line } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip);
 
-// 5 Miler course: LaVell Edwards Stadium → north on University Ave to the
-// turnaround just past 3700 N → south to the Utah County Courthouse.
+// 10K course: LaVell Edwards Stadium → 2 mi north on University Ave →
+// turnaround → south to the Utah County Courthouse.
 // Elevations sampled along the actual route (SRTM terrain data).
-// Out is uphill (~67 ft of climb to the mile-1.5 turnaround), everything after
-// it is downhill (~154 ft). Net drop 87 ft over 5.1 miles.
-const miles      = [0,    0.5,  1,    1.5,  2,    3,    4,    5.1];
-const elevations = [4663, 4686, 4708, 4730, 4706, 4661, 4613, 4576];
+// Out is uphill (~99 ft of climb to the mile-2 turnaround), everything after
+// it is downhill (~186 ft). Net drop 87 ft over 6.2 miles.
+const miles      = [0,    1,    2,    3,    4,    5,    6,    6.2];
+const elevations = [4663, 4708, 4762, 4711, 4666, 4619, 4583, 4576];
 
 export function ElevationChart() {
   return (
@@ -62,7 +62,7 @@ export function ElevationChart() {
               },
               y: {
                 min: 4550,
-                max: 4750,
+                max: 4800,
                 grid: { color: '#ECE2E6' },
                 ticks: {
                   font: { family: 'Saira, sans-serif', size: 11 },
@@ -75,8 +75,8 @@ export function ElevationChart() {
         />
       </div>
       <p className="mt-3 text-center font-body text-sm text-ash">
-        Roughly 67 ft of climb to the turnaround just past 3700 North, then 154 ft of
-        descent all the way to the finish — a net drop of 87 ft over 5.1 miles
+        Roughly 99 ft of climb over the first two miles to the turnaround, then 186 ft of
+        descent all the way to the finish — a net drop of 87 ft over 6.2 miles
       </p>
     </div>
   );

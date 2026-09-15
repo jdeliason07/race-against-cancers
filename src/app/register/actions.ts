@@ -21,7 +21,7 @@ import { WAIVER_SHORT_TITLE, WAIVER_VERSION } from '@/data/waiver';
 interface RegistrationInput {
   raceType: string;
   bandanaColor: string;
-  // The donation in cents, e.g. 9900 for $99 (the recommended 5 Miler amount).
+  // The donation in cents, e.g. 9900 for $99 (the recommended 10K amount).
   // The card processing fee is added on top here on the server — the client
   // never sends the charge total, so a tampered form can't skip the fee.
   amount: number;

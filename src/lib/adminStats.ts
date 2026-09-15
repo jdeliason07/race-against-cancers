@@ -101,8 +101,6 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
         athletes += Number.isInteger(count) && count > 0 ? count : 1;
 
         if (meta.raceType === 'fun-run') funRun++;
-        // '10k' is the stored key for the long race, kept across its rename to
-        // the 5 Miler so existing registrations still count.
         else if (meta.raceType === '10k') tenK++;
         if (meta.source === COMP_SOURCE) covered++;
         return;
