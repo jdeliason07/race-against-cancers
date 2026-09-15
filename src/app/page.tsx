@@ -4,7 +4,7 @@ import {
   CHARITY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_FUN_RUN,
   TEN_K_LABEL, FUN_RUN_LABEL,
   EVENT_LOCATION_NAME, FUN_RUN_LOCATION_NAME,
-  ORG_NAME, SITE_URL, REGISTRATION_OPEN,
+  ORG_NAME, SITE_URL, REGISTRATION_OPEN, FUNDRAISING_GOAL,
 } from '@/config/site';
 import { getDonationTotal } from '@/lib/getDonationTotal';
 import { RegistrationTeaser } from '@/components/ui/RegistrationTeaser';
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 300; // refresh every 5 minutes
 
-const GOAL = 500000;
+const GOAL = FUNDRAISING_GOAL;
 
 const eventJsonLd = {
   '@context': 'https://schema.org',
@@ -72,10 +72,7 @@ const eventJsonLd = {
 };
 
 export default async function HomePage() {
-  // TEMP (test): hardcoded display value for the progress bar.
-  // Restore live totals with: const raised = await getDonationTotal();
-  const raised = 53386;
-  void getDonationTotal;
+  const raised = await getDonationTotal();
   const pct = Math.min(Math.round((raised / GOAL) * 100), 100);
   return (
     <>
@@ -189,7 +186,7 @@ export default async function HomePage() {
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="section-label mb-6">Our goal</p>
           <p className="font-display text-[clamp(64px,12vw,120px)] uppercase leading-none text-ink">
-            $500,000
+            ${GOAL.toLocaleString()}
           </p>
           <p className="mt-6 max-w-lg mx-auto font-body text-base text-ash">
             That&rsquo;s what we&rsquo;re raising for the cause. Every registration gets us closer.
@@ -210,7 +207,7 @@ export default async function HomePage() {
               aria-valuenow={pct}
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-label={`${pct}% of $500,000 goal raised`}
+              aria-label={`${pct}% of $${GOAL.toLocaleString()} goal raised`}
             >
               <div
                 className="h-full rounded-pill bg-pink transition-all duration-700"
@@ -218,7 +215,7 @@ export default async function HomePage() {
               />
             </div>
             <div className="mt-2 text-right">
-              <span className="font-body text-xs text-ash">Goal: $500,000</span>
+              <span className="font-body text-xs text-ash">Goal: ${GOAL.toLocaleString()}</span>
             </div>
           </div>
 

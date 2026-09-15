@@ -1,12 +1,22 @@
 import type { Metadata } from 'next';
 import {
-  CHARITY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_FUN_RUN,
+  CHARITY_NAME, FUNDRAISING_GOAL, MOMENTUM_MIN_RAISED,
+  RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_FUN_RUN,
   REGISTRATION_OPEN, REGISTRATION_OPENS_LABEL,
 } from '@/config/site';
-import { RegisterFlow } from './RegisterFlow';
+import { getDonationTotal } from '@/lib/getDonationTotal';
+import { RegistrationLanding } from './RegistrationLanding';
 import { PreSignupForm } from './PreSignupForm';
 
 const opensCopy = `Registration opens ${REGISTRATION_OPENS_LABEL}`;
+
+// This is the QR landing page, so it has to be quick. Statically rendered and
+// refreshed every 5 minutes: the donation total behind it is a paginated Stripe
+// search, and putting that in the request path would make every scanner wait on
+// it. That is also why the campaign `?s=` code is read in the browser rather
+// than from searchParams — reading searchParams here would force the page
+// dynamic and undo this.
+export const revalidate = 300;
 
 export const metadata: Metadata = REGISTRATION_OPEN
   ? {
@@ -18,7 +28,7 @@ export const metadata: Metadata = REGISTRATION_OPEN
       description: `${opensCopy}. Join the waitlist to be notified the moment registration goes live for Race Against Cancers 2026.`,
     };
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
   if (!REGISTRATION_OPEN) {
     return (
       <div className="bg-paper min-h-screen">
@@ -46,23 +56,13 @@ export default function RegisterPage() {
     );
   }
 
+  const raised = await getDonationTotal();
+
   return (
-    <div className="bg-paper min-h-screen">
-      <section className="border-b border-line bg-mist py-16">
-        <div className="mx-auto max-w-3xl px-6 text-center">
-          <p className="section-label mb-4">November 7, 2026</p>
-          <h1 className="font-display text-5xl uppercase text-ink md:text-7xl">Register</h1>
-          <p className="mt-4 font-body text-base text-ash">
-            10K ${RECOMMENDED_DONATION_AMOUNT} · Family Fun Run ${RECOMMENDED_DONATION_FUN_RUN} — benefiting {CHARITY_NAME}
-          </p>
-          <p className="mt-2 font-body text-sm text-ash">
-            Registering a family, team, or company? Enter how many athletes and the recommended amount adjusts.
-          </p>
-        </div>
-      </section>
-      <div className="mx-auto max-w-2xl px-6 py-16">
-        <RegisterFlow />
-      </div>
-    </div>
+    <RegistrationLanding
+      raised={raised}
+      goal={FUNDRAISING_GOAL}
+      showMomentum={raised >= MOMENTUM_MIN_RAISED}
+    />
   );
 }

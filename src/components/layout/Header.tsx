@@ -23,9 +23,18 @@ export function Header() {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith('/admin') ?? false;
 
+  // /register is the QR landing page and it has exactly one job. Every nav
+  // link on it is an exit from the only funnel we have, and the Register
+  // button is a button back to the page you are already on. So the header
+  // there is the wordmark alone — kept, rather than removed outright, because
+  // a page asking for a card number should still let you look at whose page
+  // it is.
+  const isFocused = pathname === '/register';
+  const showNav = !isAdmin && !isFocused;
+
   // Nothing to announce once registration is live, and the organizer pages
   // aren't being sold to either.
-  const announceOpening = !isAdmin && !REGISTRATION_OPEN && REGISTRATION_OPENS_DATE !== '';
+  const announceOpening = showNav && !REGISTRATION_OPEN && REGISTRATION_OPENS_DATE !== '';
 
   // Close on outside click
   useEffect(() => {
@@ -56,17 +65,25 @@ export function Header() {
         <div className="bg-pink py-1.5" aria-hidden="true" />
       )}
 
-      <header className="sticky top-0 z-50 border-b border-line bg-paper/90 backdrop-blur-sm">
+      <header
+        className={
+          isFocused
+            ? 'border-b border-line bg-paper'
+            : 'sticky top-0 z-50 border-b border-line bg-paper/90 backdrop-blur-sm'
+        }
+      >
         {/* On admin, a three-column grid with an empty first cell so the
             wordmark is centred against the viewport, not against the menu. */}
         <div
           className={
-            isAdmin
-              ? 'mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-4 py-4 sm:px-6'
-              : 'mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6'
+            showNav
+              ? 'mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6'
+              : isFocused
+                ? 'mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-4 py-3 sm:px-6'
+                : 'mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-4 py-4 sm:px-6'
           }
         >
-          {isAdmin && <span aria-hidden="true" />}
+          {!showNav && <span aria-hidden="true" />}
 
           <Link
             href="/"
@@ -82,14 +99,15 @@ export function Header() {
           </Link>
 
           {/* Register button + hamburger */}
-          <div className={isAdmin ? 'flex items-center justify-end' : 'flex items-center gap-2 sm:gap-3'}>
-            {!isAdmin && (
+          <div className={showNav ? 'flex items-center gap-2 sm:gap-3' : 'flex items-center justify-end'}>
+            {showNav && (
               <Link href="/register" className="btn-primary py-3 px-4 text-xs sm:px-5">
                 {REGISTRATION_OPEN ? 'Register' : 'Join the Waitlist'}
               </Link>
             )}
 
             {/* Hamburger */}
+            {!isFocused && (
             <div ref={menuRef} className="relative">
             <button
               onClick={() => setOpen(!open)}
@@ -124,6 +142,7 @@ export function Header() {
               </nav>
             )}
           </div>
+            )}
           </div>
         </div>
       </header>

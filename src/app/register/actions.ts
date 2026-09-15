@@ -9,6 +9,7 @@ import {
 } from '@/config/site';
 import { chargeCentsFor } from '@/lib/fees';
 import { normalizePhone } from '@/lib/phone';
+import { normalizeSource } from '@/lib/qrSource';
 import { ADULT_AGE, ageOnRaceDay, isPlausibleDob } from '@/lib/utils';
 import {
   canonicalEmail,
@@ -36,6 +37,10 @@ interface RegistrationInput {
   guardianName: string; // required when the athlete is under 18 on race day
   waiverAgreed: boolean;
   referredByName: string; // full name of whoever referred them; '' when nobody
+  // Which printed QR code this registration came from, e.g. 'dsm' for the plain
+  // "DON'T SCAN ME" codes. Attribution only — nothing about the charge depends
+  // on it, and it is empty whenever someone arrived by any other route.
+  qrSource?: string;
 }
 
 /**
@@ -213,6 +218,10 @@ export async function createPaymentIntent(
         // Copied onto the customer by the webhook, so a referral only counts
         // once the payment actually succeeds.
         referredByName,
+        // Which QR code produced this. Scans are easy to count and tell you
+        // nothing; this is the number that says which poster was worth
+        // printing again.
+        qrSource: normalizeSource(registrationData.qrSource),
       },
     });
 

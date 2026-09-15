@@ -1,0 +1,104 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Phone } from 'lucide-react';
+import {
+  CONTACT_PHONE, REGISTRATION_OPEN,
+  SOCIAL_INSTAGRAM, SOCIAL_FACEBOOK, SOCIAL_TWITTER, SOCIAL_YOUTUBE,
+} from '@/config/site';
+
+/**
+ * The footer's link cluster, split out so it can disappear on the QR landing
+ * page. /register has one job, and nine footer links plus four social icons are
+ * nine-plus-four ways to leave it. The legal line below stays on every page —
+ * that one is a reason to trust the form, not a way out of it.
+ */
+export function FooterLinks({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (pathname === '/register') return null;
+
+  return (
+    <div className="flex flex-col items-center gap-6 border-t border-white/10 pt-10 md:flex-row md:justify-between">
+      <p className="font-body text-xs text-white/40 tracking-widest uppercase">{children}</p>
+      <nav className="flex flex-wrap items-center justify-center gap-5" aria-label="Footer navigation">
+        <Link href="/register" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">{REGISTRATION_OPEN ? 'Register' : 'Join the Waitlist'}</Link>
+        <Link href="/race-details" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">Race Details</Link>
+        <Link href="/volunteer" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">Volunteer</Link>
+        <Link href="/sponsor" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">Sponsor</Link>
+        <Link href="/faq" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">FAQ</Link>
+        <Link href="/about" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">About</Link>
+        <Link href="/privacy" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">Privacy</Link>
+        <Link href="/waiver" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">Waiver</Link>
+        <a href={`tel:${CONTACT_PHONE.replace(/-/g, '')}`} className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest flex items-center gap-1">
+          <Phone size={13} /> {CONTACT_PHONE}
+        </a>
+      </nav>
+      <FooterSocial />
+    </div>
+  );
+}
+
+function IconInstagram({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
+  );
+}
+
+function IconFacebook({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  );
+}
+
+function IconTwitterX({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
+function IconYoutube({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
+      <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" />
+    </svg>
+  );
+}
+
+// Each link is rendered only once a real URL replaces the placeholder in
+// site.ts — the '[[' check is what keeps '[[https://instagram.com/YOURHANDLE]]'
+// off the live site.
+function FooterSocial() {
+  const socials: { url: string; label: string; Icon: (p: { size?: number }) => React.ReactElement }[] = [
+    { url: SOCIAL_INSTAGRAM, label: 'Instagram',   Icon: IconInstagram },
+    { url: SOCIAL_FACEBOOK,  label: 'Facebook',    Icon: IconFacebook },
+    { url: SOCIAL_TWITTER,   label: 'Twitter / X', Icon: IconTwitterX },
+    { url: SOCIAL_YOUTUBE,   label: 'YouTube',     Icon: IconYoutube },
+  ].filter((s) => s.url && !s.url.includes('[['));
+
+  return (
+    <div className="flex items-center gap-4">
+      {socials.map(({ url, label, Icon }) => (
+        <a
+          key={label}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={label}
+          className="text-white/40 hover:text-pink transition-colors"
+        >
+          <Icon size={18} />
+        </a>
+      ))}
+    </div>
+  );
+}

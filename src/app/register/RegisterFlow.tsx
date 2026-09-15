@@ -13,6 +13,7 @@ import {
 import { createPaymentIntent } from './actions';
 import { submitCompRegistration } from './comp-actions';
 import { ADULT_AGE, isMinorOnRaceDay, isPlausibleDob } from '@/lib/utils';
+import { readSource } from '@/lib/qrSource';
 import {
   DONATION_PRESETS_10K,
   DONATION_PRESETS_FUN_RUN,
@@ -33,7 +34,16 @@ import {
   WAIVER_SHORT_TITLE,
 } from '@/data/waiver';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+// Loaded on demand rather than at module scope. This is the QR landing page's
+// bundle: fetching Stripe.js for every curious scanner who never reaches the
+// payment step costs them a round-trip on whatever signal they are standing in,
+// and most of them will never need it. Cached after the first call, so stepping
+// back and forth between steps does not re-fetch.
+let stripeJs: ReturnType<typeof loadStripe> | null = null;
+function getStripeJs() {
+  if (!stripeJs) stripeJs = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+  return stripeJs;
+}
 
 const stripeAppearance = {
   theme: 'stripe' as const,
@@ -853,7 +863,7 @@ function StepPayment({
 }) {
   return (
     <Elements
-      stripe={stripePromise}
+      stripe={getStripeJs()}
       options={{ clientSecret, appearance: stripeAppearance }}
     >
       <PaymentForm
@@ -963,7 +973,20 @@ function StepConfirmation({
 }
 
 // Main orchestrator
-export function RegisterFlow({ comp }: { comp?: { code: string } }) {
+export function RegisterFlow({
+  comp,
+  initialRace = null,
+}: {
+  comp?: { code: string };
+  /**
+   * The race picked on the landing page. The landing page *is* step 1, so
+   * arriving with a choice already made opens the form at step 2 rather than
+   * asking the same question twice. It also means the progress bar starts
+   * half-filled, which is the point: people finish what already looks started.
+   * Step 1 stays reachable via Back, so the choice is never trapped.
+   */
+  initialRace?: RaceType;
+}) {
   // A covered entry skips payment, so the flow is one step shorter.
   const isComp = !!comp;
   const stepLabels = isComp
@@ -971,8 +994,8 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
     : ['Race Selection', 'Athlete Info', 'Payment', 'Confirmation'];
   const confirmationStep = (isComp ? 3 : 4) as Step;
 
-  const [step, setStep] = useState<Step>(1);
-  const [raceType, setRaceType] = useState<RaceType>(null);
+  const [step, setStep] = useState<Step>(initialRace ? 2 : 1);
+  const [raceType, setRaceType] = useState<RaceType>(initialRace);
   const [bandanaColor, setBandanaColor] = useState('');
   // Which rung of the donation ladder is selected — 0 is the recommendation the
   // form opens on, null means they typed their own amount instead. Holding the
@@ -1051,6 +1074,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
         guardianName: formData.guardianName,
         waiverAgreed,
         referredByName: formData.referredByName,
+        qrSource: readSource(),
       });
       if ('error' in result) {
         setIntentError(result.error);
