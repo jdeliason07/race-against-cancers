@@ -23,7 +23,9 @@ import {
   TEN_K_LABEL,
   FUN_RUN_LABEL,
   REFERRAL_ENABLED,
+  STRIPE_FEE_LABEL,
 } from '@/config/site';
+import { chargeCentsFor, formatCents } from '@/lib/fees';
 import { ReferralRewardCallout } from '@/components/ui/ReferralReward';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -721,7 +723,15 @@ function PaymentForm({
   const elements = useElements();
   const [submitting, setSubmitting] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
-  const [expressAvailable, setExpressAvailable] = useState(false);
+  // 'pending' until Stripe reports back which wallets this browser can use.
+  // The container is kept in the layout (just invisible) while pending —
+  // mounting the Express Checkout Element inside a `display: none` parent can
+  // leave the Apple Pay button unable to measure itself and it never appears.
+  // Once we know, it either shows or collapses.
+  const [expressState, setExpressState] = useState<'pending' | 'available' | 'unavailable'>(
+    'pending',
+  );
+  const expressAvailable = expressState === 'available';
 
   // Shared by the card form and the Express Checkout
   // (Google Pay / Apple Pay / Link) button.
@@ -765,6 +775,13 @@ function PaymentForm({
           )}
           <span>
             <span className="font-bold">Donation:</span> ${donationAmount}
+            <a
+              href="#card-fee-note"
+              className="font-bold text-pink no-underline"
+              aria-label="See the note about the card processing fee"
+            >
+              *
+            </a>
           </span>
           <span>
             <span className="font-bold">Bandana:</span> {bandanaColor}
@@ -774,10 +791,38 @@ function PaymentForm({
 
       <h2 className="font-display text-3xl uppercase text-ink mb-6">Payment</h2>
 
-          {/* Express Checkout — prominent Google Pay / Apple Pay / Link buttons */}
-          <div className={expressAvailable ? 'mb-2' : 'hidden'}>
+          {/* Express Checkout — prominent Apple Pay / Google Pay / Link buttons */}
+          <div
+            className={
+              expressState === 'available'
+                ? 'mb-2'
+                : expressState === 'unavailable'
+                  ? 'hidden'
+                  : 'invisible'
+            }
+          >
             <ExpressCheckoutElement
-              onReady={({ availablePaymentMethods }) => setExpressAvailable(!!availablePaymentMethods)}
+              options={{
+                // Apple Pay only renders where the browser supports it (Safari,
+                // and Chrome/Edge on macOS). 'always' is what keeps the button
+                // there for someone who supports Apple Pay but has no card in
+                // their Wallet yet — tapping it walks them through adding one,
+                // instead of the button silently vanishing.
+                paymentMethods: { applePay: 'always' },
+                // A donation, not a purchase — Apple ships a button for that.
+                buttonType: { applePay: 'donate' },
+              }}
+              // `availablePaymentMethods` is undefined when no wallet is
+              // usable; when it is present, check the flags rather than the
+              // object, since an object with every wallet false is still truthy.
+              onReady={({ availablePaymentMethods }) =>
+                setExpressState(
+                  availablePaymentMethods &&
+                    Object.values(availablePaymentMethods).some(Boolean)
+                    ? 'available'
+                    : 'unavailable',
+                )
+              }
               onConfirm={confirmStripe}
             />
           </div>
@@ -802,6 +847,17 @@ function PaymentForm({
               }}
             />
           </div>
+
+          {/* The one place the charge total is spelled out. The donation stays
+              the number the athlete chose everywhere else — this says what the
+              card is billed and why the two differ. */}
+          <p id="card-fee-note" className="mb-6 font-body text-xs leading-relaxed text-ash">
+            <span aria-hidden="true">*</span> Your card will be charged{' '}
+            <span className="font-bold text-ink">{formatCents(chargeCentsFor(donationAmount * 100))}</span> — your $
+            {donationAmount} donation plus the {STRIPE_FEE_LABEL} card processing fee. Covering the
+            fee here is what lets your full ${donationAmount} reach the cause instead of the card
+            network.
+          </p>
 
           {paymentError && (
             <p className="mb-4 rounded-card border border-red-200 bg-red-50 px-4 py-3 font-body text-sm text-red-700" role="alert">

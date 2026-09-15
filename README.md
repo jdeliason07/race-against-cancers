@@ -41,9 +41,46 @@ endpoint (and updating `STRIPE_WEBHOOK_SECRET`) is a required part of going live
 2. Add the webhook endpoint in the Stripe Dashboard → Developers → Webhooks:
    URL `https://<your-domain>/api/stripe/webhook`, event `payment_intent.succeeded`.
    Copy the signing secret into `STRIPE_WEBHOOK_SECRET`.
-3. Flip `REGISTRATION_OPEN` to `true` in `src/config/site.ts`. Every nav link, button, and page
+3. Register the site for Apple Pay — Stripe Dashboard → Settings → Payments → **Payment method
+   domains** → add `raceagainstcancers.org` (and any preview domain you want wallets to work on).
+   See "Apple Pay and Google Pay" below.
+4. Flip `REGISTRATION_OPEN` to `true` in `src/config/site.ts`. Every nav link, button, and page
    switches from "Join the Waitlist" to "Register" automatically.
-4. Email the waitlist from `/admin` — see "Emailing the waitlist" below.
+5. Email the waitlist from `/admin` — see "Emailing the waitlist" below.
+
+### Who pays the card fee
+Stripe keeps 2.9% + $0.30 of every card charge. Rather than that coming out of the gift, it is
+added on top at checkout: a $99 donation is charged as $102.27, Stripe keeps $3.27, and $99
+arrives. The donation stays $99 everywhere in the form — there is no subtotal line — and the only
+place the total appears is the asterisked note under the payment fields on step 3, before anything
+is confirmed.
+
+The arithmetic lives in `src/lib/fees.ts`. Note that it is a division, not a 2.9% markup: the fee
+is a cut of the *charge*, so marking the donation up by 2.9% would still leave Stripe taking 2.9%
+of the markup and the gift short by a few cents. `STRIPE_FEE_PERCENT` and `STRIPE_FEE_FIXED_CENTS`
+in `src/config/site.ts` hold the rate — set both to `0` to go back to absorbing the fee, and the
+markup and the footnote both disappear.
+
+The charge total is computed on the server when the PaymentIntent is created, so it applies to
+wallets as well as cards and cannot be edited out of the request. Each intent carries
+`donationCents` and `feeCents` in its metadata, and every total we report — the home page
+thermometer, the `/admin` money panel, `donationAmount` on the customer record — counts the
+donation rather than the gross, so the fee never inflates what looks like money raised.
+
+### Apple Pay and Google Pay
+Both appear as buttons above the card fields, drawn by Stripe's Express Checkout Element. Apple Pay
+has two requirements beyond the Stripe keys, and until **both** are met the button simply doesn't
+render — there is no error to see:
+
+1. **The domain association file must be reachable.** It is committed at
+   `public/.well-known/apple-developer-merchantid-domain-association` and served as plain text with
+   no redirect (the header rule in `next.config.ts`). Apple fetches it over HTTPS.
+2. **Each domain must be registered once with Stripe**, under Settings → Payments → Payment method
+   domains. Do this for production and for any preview domain you plan to test on.
+
+Then test on real hardware: Apple Pay only exists in Safari, and in Chrome or Edge on macOS. It
+never shows on `http://localhost` (Apple requires HTTPS), and it never shows in Chrome on Windows
+or Android — that is expected, not a bug. Google Pay is the one that shows up there instead.
 
 ### How a registration is recorded
 Checkout creates a Stripe **Customer** (reusing the waitlist one if that email already joined) and a

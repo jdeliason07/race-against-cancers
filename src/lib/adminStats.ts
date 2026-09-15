@@ -2,7 +2,7 @@
 // two passes: one over customers, one over this event's PaymentIntents.
 import type Stripe from 'stripe';
 import { EVENT_NAME } from '@/config/site';
-import { WAITLIST_SOURCE, eachEventIntent } from '@/lib/stripeRegistration';
+import { WAITLIST_SOURCE, donationCentsOf, eachEventIntent } from '@/lib/stripeRegistration';
 import { COMP_SOURCE } from '@/lib/compRegistration';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -121,7 +121,9 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
 
   const intentPass = eachEventIntent(stripe, (intent) => {
     if (intent.status !== 'succeeded') return;
-    const amount = intent.amount_received || intent.amount;
+    // The donation, not the gross charge — registrants cover the card fee on
+    // top of it, and that part never reaches us.
+    const amount = donationCentsOf(intent);
     totalCents += amount;
     payingRegistrations++;
     const paidMs = intent.created * 1000;

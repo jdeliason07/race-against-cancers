@@ -70,6 +70,18 @@ export const MAX_PARTICIPANTS_PER_REGISTRATION = 100;
 export const TEN_K_LABEL           = "10K (6.2 mi)";
 export const FUN_RUN_LABEL         = "Fun Run (~2 mi)";
 
+// --- CARD PROCESSING FEE ------------------------------------
+// Stripe keeps 2.9% + $0.30 of every card charge. Rather than letting that come
+// out of the gift, it is added on top at checkout so the charity receives the
+// full amount the athlete chose to give. The form shows the donation as chosen
+// and discloses the total charge in a footnote under the payment fields.
+// Set both numbers to 0 to go back to absorbing the fee ourselves — the
+// footnote and the markup disappear on their own.
+export const STRIPE_FEE_PERCENT     = 2.9;
+export const STRIPE_FEE_FIXED_CENTS = 30;
+// How the fee is described to registrants. Keep it in step with the numbers.
+export const STRIPE_FEE_LABEL       = "2.9% + $0.30";
+
 // --- REFERRAL INCENTIVE -------------------------------------
 // Registrants name whoever referred them in a box on the form. Each named
 // person earns the reward below — unlimited times. A report of who referred

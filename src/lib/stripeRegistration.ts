@@ -35,6 +35,23 @@ export function isRegistered(customer: Stripe.Customer): boolean {
 }
 
 /**
+ * The donation inside a charge, in cents.
+ *
+ * Registrants cover Stripe's fee, so the charge is the donation plus that fee
+ * — and every total we report is about donations, not about the cut the card
+ * network takes. Intents created before the fee was added on top carry no
+ * `donationCents`, and for those the whole charge was the donation, so they
+ * still count correctly.
+ */
+export function donationCentsOf(intent: Stripe.PaymentIntent): number {
+  const charged = intent.amount_received || intent.amount;
+  const recorded = Number.parseInt(intent.metadata?.donationCents ?? '', 10);
+  // Guarded rather than trusted: metadata is free-form, and a donation larger
+  // than the charge would inflate the total it's meant to keep honest.
+  return Number.isInteger(recorded) && recorded > 0 && recorded <= charged ? recorded : charged;
+}
+
+/**
  * Walks every PaymentIntent belonging to this event.
  *
  * Uses search rather than listing the whole account so Stripe does the

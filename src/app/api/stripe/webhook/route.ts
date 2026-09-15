@@ -12,7 +12,7 @@
 import type Stripe from 'stripe';
 import { revalidatePath } from 'next/cache';
 import { EVENT_NAME } from '@/config/site';
-import { getStripe } from '@/lib/stripeRegistration';
+import { donationCentsOf, getStripe } from '@/lib/stripeRegistration';
 
 /**
  * Copies the registration details onto the Stripe Customer and flags it as
@@ -35,6 +35,9 @@ async function recordSuccessfulRegistration(
   // Stripe retries and can deliver the same event more than once.
   if (customer.metadata?.registeredPaymentIntent === intent.id) return;
 
+  const chargedCents = intent.amount_received || intent.amount;
+  const donatedCents = donationCentsOf(intent);
+
   await stripe.customers.update(customerId, {
     metadata: {
       registered: 'true',
@@ -42,7 +45,11 @@ async function recordSuccessfulRegistration(
       registeredPaymentIntent: intent.id,
       raceType: intent.metadata.raceType ?? '',
       bandanaColor: intent.metadata.bandanaColor ?? '',
-      donationAmount: String(intent.amount_received || intent.amount),
+      // The donation in cents, without the card fee the registrant covered —
+      // `cardFeeAmount` keeps that visible, and the two add up to what their
+      // statement shows.
+      donationAmount: String(donatedCents),
+      cardFeeAmount: String(chargedCents - donatedCents),
       // How many bibs this registration is owed at check-in.
       participantCount: intent.metadata.participantCount ?? '1',
       dob: intent.metadata.dob ?? '',

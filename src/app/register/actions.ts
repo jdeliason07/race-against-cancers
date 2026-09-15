@@ -7,6 +7,7 @@ import {
   MIN_DONATION_DOLLARS,
   REFERRAL_ENABLED,
 } from '@/config/site';
+import { chargeCentsFor } from '@/lib/fees';
 import { normalizePhone } from '@/lib/phone';
 import { ADULT_AGE, ageOnRaceDay, isPlausibleDob } from '@/lib/utils';
 import {
@@ -23,7 +24,10 @@ const WAIVER_VERSION = '2026-v2';
 interface RegistrationInput {
   raceType: string;
   bandanaColor: string;
-  amount: number; // in cents, e.g. 9900 for $99 (the recommended 10K amount)
+  // The donation in cents, e.g. 9900 for $99 (the recommended 10K amount).
+  // The card processing fee is added on top here on the server — the client
+  // never sends the charge total, so a tampered form can't skip the fee.
+  amount: number;
   participantCount: number; // 1 for a solo athlete; more when paying for a group
   firstName: string;
   lastName: string;
@@ -140,6 +144,13 @@ export async function createPaymentIntent(
     };
   }
 
+  // What the card is actually charged: the donation plus the fee Stripe takes,
+  // so the full donation reaches the charity. Disclosed under the payment
+  // fields on step 3 before anything is confirmed.
+  const donationCents = registrationData.amount;
+  const chargeCents = chargeCentsFor(donationCents);
+  const feeCents = chargeCents - donationCents;
+
   try {
     const existingCustomer = await findCustomerByEmail(stripe, registrationData.email);
     // Group organizers often come back to register themselves, so only a
@@ -164,7 +175,7 @@ export async function createPaymentIntent(
       : '';
 
     const intent = await stripe.paymentIntents.create({
-      amount: registrationData.amount,
+      amount: chargeCents,
       currency: 'usd',
       customer: customer.id,
       // Enables card + wallet methods (Google Pay / Apple Pay / Link) that are
@@ -176,6 +187,11 @@ export async function createPaymentIntent(
         : `${EVENT_NAME} — ${registrationData.raceType}`,
       metadata: {
         event: EVENT_NAME,
+        // The charge is donation + fee, so the two are recorded separately —
+        // every total we report (the public thermometer, the admin dashboard)
+        // counts the donation, not the cut Stripe keeps.
+        donationCents: String(donationCents),
+        feeCents: String(feeCents),
         raceType: registrationData.raceType,
         bandanaColor: registrationData.bandanaColor,
         firstName: registrationData.firstName.trim(),
