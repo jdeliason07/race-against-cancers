@@ -12,7 +12,12 @@ export const CHARITY_NAME = "Intermountain Cancer Center Utah Valley";
 export const CHARITY_URL  = "https://intermountainhealthcare.org/locations/utah-valley-clinic/cancer-center-utah-valley";
 
 // --- EVENT --------------------------------------------------
-export const ORG_NAME            = "Race Against Cancers Inc.";
+// The registered entity name, in full. There is no corporate suffix — the
+// organization is registered as "Race Against Cancers", not "... Inc." — so
+// this one constant serves both prose and the places that mean the legal
+// person: schema.org organizer, the privacy policy, email from-names, and the
+// copyright line.
+export const ORG_NAME            = "Race Against Cancers";
 // Our federal tax ID. Section 9.2 of the Participant Agreement has us
 // receiving the registration as a donation and granting the proceeds on, so
 // this is the number that belongs on any receipt or acknowledgment. Shown in
@@ -30,14 +35,19 @@ export const FUN_RUN_START_TIME  = "8:00 AM";
 export const EVENT_YEAR          = "2026";
 
 // --- LOCATION -----------------------------------------------
-// 10K: point-to-point — start near mouth of Provo Canyon, finish downtown Provo
-export const EVENT_LOCATION_NAME     = "Canyon Crest Elementary School";   // 10K start
-export const EVENT_LOCATION_ADDRESS  = "4664 N Canyon Rd, Provo, UT 84604";
-export const FINISH_LOCATION_NAME    = "University Ave & Center St";   // shared finish
+// Both races start at LaVell Edwards Stadium and finish at the courthouse.
+// 10K, 6.2 mi: two miles north on University Ave, turn around, then roughly
+// four miles south to the finish. Fun Run, ~2 mi: the last leg of that, the
+// stadium straight down to the same finish.
+export const EVENT_LOCATION_NAME     = "LaVell Edwards Stadium";   // shared start
+export const EVENT_LOCATION_ADDRESS  = "LaVell Edwards Stadium, Provo, UT 84602";
+export const FINISH_LOCATION_NAME    = "Utah County Courthouse";   // shared finish
 export const FINISH_LOCATION_ADDRESS = "University Ave & Center St, Provo, UT 84601";
-// Fun Run: point-to-point ~2 mi — starts at LaVell Edwards Stadium, shares finish with 10K
-export const FUN_RUN_LOCATION_NAME    = "LaVell Edwards Stadium";
-export const FUN_RUN_LOCATION_ADDRESS = "LaVell Edwards Stadium, Provo, UT 84602";
+// The Fun Run shares the 10K's start. Kept as its own pair of constants because
+// the two have been separate venues before and may be again — point them back
+// at the shared start rather than retyping the address.
+export const FUN_RUN_LOCATION_NAME    = EVENT_LOCATION_NAME;
+export const FUN_RUN_LOCATION_ADDRESS = EVENT_LOCATION_ADDRESS;
 // Set to "" until an official GPS recording of the 10K course exists —
 // the race-details page automatically shows "GPX Coming Soon" when empty.
 export const COURSE_GPX_URL          = "";
@@ -144,7 +154,7 @@ export const QR_SOURCE_HEADLINES: Record<string, string> = {
 // --- CHECK-IN -----------------------------------------------
 export const CHECK_IN_DATE     = "Saturday, November 7, 2026";
 export const CHECK_IN_TIME     = "7:00 AM (1 hour before race start)";
-export const CHECK_IN_LOCATION = "Canyon Crest Elementary School parking lot, 4664 N Canyon Rd, Provo";
+export const CHECK_IN_LOCATION = "LaVell Edwards Stadium, Provo — both races";
 
 // --- CONTACT ------------------------------------------------
 export const CONTACT_EMAIL = "events@raceagainstcancers.org";
@@ -153,7 +163,7 @@ export const VOLUNTEER_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScX-
 
 // --- SOCIAL LINKS -------------------------------------------
 // Set to "" to hide that icon in the footer
-export const SOCIAL_INSTAGRAM = "[[https://instagram.com/YOURHANDLE]]";
+export const SOCIAL_INSTAGRAM = "https://www.instagram.com/raceagainstcancers";
 export const SOCIAL_FACEBOOK  = "[[https://facebook.com/YOURPAGE]]";
 export const SOCIAL_TWITTER   = "[[https://twitter.com/YOURHANDLE]]";
 export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";

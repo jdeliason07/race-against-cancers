@@ -2,7 +2,6 @@ import {
   EVENT_NAME, EVENT_DATE_DISPLAY, TEN_K_START_TIME, FUN_RUN_START_TIME,
   EVENT_LOCATION_NAME, EVENT_LOCATION_ADDRESS, EVENT_DATE_ISO,
   FINISH_LOCATION_NAME, FINISH_LOCATION_ADDRESS,
-  FUN_RUN_LOCATION_NAME, FUN_RUN_LOCATION_ADDRESS,
   CHECK_IN_DATE, CHECK_IN_TIME, CHECK_IN_LOCATION,
   COURSE_GPX_URL, SITE_URL, ORG_NAME, REGISTRATION_OPEN,
   RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_FUN_RUN,
@@ -45,8 +44,8 @@ const waves = [
 ];
 
 const aidStations = [
-  { mile: 'Mile 2',    supplies: 'Water + sports drink' },
-  { mile: 'Mile 4',    supplies: 'Water + sports drink' },
+  { mile: 'Mile 2',    supplies: 'Water + sports drink — at the 10K turnaround' },
+  { mile: 'Mile 4',    supplies: 'Water + sports drink — back at the stadium' },
   { mile: 'Finish',    supplies: 'Full recovery station — water and sports drink' },
 ];
 
@@ -81,10 +80,11 @@ export default function RaceDetailsPage() {
               </dd>
             </div>
 
+            {/* Both races start in the same place, so this card covers both. */}
             <div className="rounded-card border border-line p-6">
               <div className="mb-2 flex items-center gap-2">
                 <MapPin size={16} className="text-pink shrink-0" aria-hidden="true" />
-                <dt className="section-label">10K Start</dt>
+                <dt className="section-label">Start — 10K &amp; Fun Run</dt>
               </div>
               <dd className="font-body text-sm text-ink leading-relaxed">
                 {EVENT_LOCATION_NAME}<br />
@@ -100,17 +100,6 @@ export default function RaceDetailsPage() {
               <dd className="font-body text-sm text-ink leading-relaxed">
                 {FINISH_LOCATION_NAME}<br />
                 <span className="text-ash text-xs">{FINISH_LOCATION_ADDRESS}</span>
-              </dd>
-            </div>
-
-            <div className="rounded-card border border-line p-6">
-              <div className="mb-2 flex items-center gap-2">
-                <MapPin size={16} className="text-pink shrink-0" aria-hidden="true" />
-                <dt className="section-label">Fun Run Start</dt>
-              </div>
-              <dd className="font-body text-sm text-ink leading-relaxed">
-                {FUN_RUN_LOCATION_NAME}<br />
-                <span className="text-ash text-xs">{FUN_RUN_LOCATION_ADDRESS}</span>
               </dd>
             </div>
 
@@ -145,30 +134,30 @@ export default function RaceDetailsPage() {
           <h2 className="mb-6 font-display text-3xl uppercase text-ink">The 10K Course</h2>
           <div className="space-y-4 font-body text-base leading-relaxed text-ash">
             <p>
-              The 10K is a point-to-point, predominantly downhill course that drops more than
-              284 feet over 6.2 miles through Provo, Utah. With only one turn on the entire
-              course, it is one of the cleanest and most runnable 10K routes in the state.
+              The 10K is an out-and-back down a single straight road: 6.2 miles on University
+              Avenue with one turnaround and no course navigation to think about.
             </p>
             <p>
-              Runners start on North Canyon Road in front of Canyon Crest Elementary School, at an
-              elevation of approximately 4,850 feet, and head north toward the mouth of Provo
-              Canyon with the canyon walls rising ahead. At the canyon mouth the course makes
-              its single left turn onto University Avenue (US-189) and follows it straight
-              south through Provo. The consistent, gentle downhill grade makes this course
-              fast for all paces.
+              Runners start at LaVell Edwards Stadium on the BYU campus, at an elevation of
+              roughly 4,660 feet, and head north on University Avenue toward the mouth of Provo
+              Canyon. That first leg is the only climb on the course — about 99 feet over two
+              miles, with the canyon walls rising ahead. At the two-mile turnaround runners
+              reverse and run the same road back, and everything from there is downhill.
             </p>
             <p>
-              The finish line sits at the intersection of University Avenue and Center Street in
-              downtown Provo, in front of the Utah County Courthouse, at an elevation of
-              roughly 4,567 feet. The final stretch is lined with spectators as runners pour
-              into the heart of downtown.
+              Back past the stadium at mile four, the course keeps dropping through Provo to the
+              finish at University Avenue and Center Street, in front of the Utah County
+              Courthouse, at roughly 4,576 feet. The last two miles are the fastest on the
+              course, and the closing stretch is lined with spectators as runners pour into the
+              heart of downtown.
             </p>
             <div className="rounded-card border border-petal bg-blush p-5 mt-4">
               <p className="font-body text-sm font-bold uppercase tracking-widest text-pink mb-2">Getting to the start</p>
               <p className="font-body text-sm text-ash">
-                Because the 10K is point-to-point, runners are responsible for their own
-                transportation to the start line. Check-in is in the Canyon Crest Elementary
-                School parking lot — plan to arrive by 7:00 AM. Race starts promptly at 8:00 AM.
+                Both races start at LaVell Edwards Stadium, and check-in for both is there —
+                plan to arrive by 7:00 AM. Runners are responsible for their own transportation
+                to the stadium, and the course finishes downtown rather than back at the start.
+                Race starts promptly at 8:00 AM.
               </p>
             </div>
           </div>
@@ -179,14 +168,15 @@ export default function RaceDetailsPage() {
           <h2 className="mb-6 font-display text-3xl uppercase text-ink">The Fun Run Course</h2>
           <div className="space-y-4 font-body text-base leading-relaxed text-ash">
             <p>
-              The Fun Run is a ~2-mile point-to-point course starting at LaVell Edwards Stadium
-              on the BYU campus. Participants follow University Avenue south through Provo,
-              sharing the final stretch with the 10K and crossing the same finish line at
-              University Avenue and Center Street in downtown Provo.
+              The Fun Run is the last two miles of the 10K. It starts at LaVell Edwards Stadium
+              alongside the 10K, follows University Avenue south through Provo, and crosses the
+              same finish line at University Avenue and Center Street, in front of the Utah
+              County Courthouse.
             </p>
             <p>
-              The course is predominantly downhill along a straight, wide road — accessible for
-              all paces and fitness levels. It&rsquo;s the option most families pick: short enough
+              It skips the 10K&rsquo;s climb entirely — this is the downhill half, on a straight,
+              wide road, accessible for all paces and fitness levels. It&rsquo;s the option most
+              families pick: short enough
               for kids to finish, easy to walk the whole way, and strollers are welcome. Whether
               you&rsquo;re a casual walker or a first-time runner, this is your chance to cross a
               finish line for a great cause. The recommended donation is ${RECOMMENDED_DONATION_FUN_RUN},
@@ -195,9 +185,10 @@ export default function RaceDetailsPage() {
             <div className="rounded-card border border-petal bg-blush p-5 mt-4">
               <p className="font-body text-sm font-bold uppercase tracking-widest text-pink mb-2">Getting to the start</p>
               <p className="font-body text-sm text-ash">
-                Check-in for the Fun Run is at LaVell Edwards Stadium — plan to arrive by 7:00 AM.
-                The race starts promptly at 8:00 AM. Participants are responsible for their own
-                transportation to the stadium.
+                The Fun Run starts at LaVell Edwards Stadium, the same place as the 10K, and
+                check-in is there — plan to arrive by 7:00 AM. The race starts promptly at
+                8:00 AM. Participants are responsible for their own transportation to the
+                stadium, and the course finishes downtown rather than back at the start.
               </p>
             </div>
           </div>
@@ -227,21 +218,22 @@ export default function RaceDetailsPage() {
                 <Download size={14} /> GPX Coming Soon
               </span>
             )}
-            <a
-              href="https://maps.google.com/?q=4664+N+Canyon+Rd,+Provo,+UT+84604"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary inline-flex items-center gap-2 text-xs"
-            >
-              <MapPin size={14} /> Directions to 10K Start
-            </a>
+            {/* One start for both races now, so one directions button. */}
             <a
               href="https://maps.google.com/?q=LaVell+Edwards+Stadium,+Provo,+UT+84602"
               target="_blank"
               rel="noopener noreferrer"
+              className="btn-primary inline-flex items-center gap-2 text-xs"
+            >
+              <MapPin size={14} /> Directions to the Start
+            </a>
+            <a
+              href="https://maps.google.com/?q=University+Ave+%26+Center+St,+Provo,+UT+84601"
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-ghost inline-flex items-center gap-2 text-xs"
             >
-              <MapPin size={14} /> Directions to Fun Run Start
+              <MapPin size={14} /> Directions to the Finish
             </a>
           </div>
         </section>

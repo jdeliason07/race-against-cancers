@@ -42,15 +42,15 @@ export const faqs: FAQItem[] = [
   },
   {
     question: "What's the difference between the 10K and the Fun Run?",
-    answer: `The 10K is 6.2 miles and follows a point-to-point, predominantly downhill route: it starts in front of Canyon Crest Elementary School on N Canyon Road, runs to the mouth of Provo Canyon, then makes its single turn onto University Avenue and heads straight to the finish at Center Street in downtown Provo. The recommended donation is $${RECOMMENDED_DONATION_AMOUNT}. The Fun Run is approximately 2 miles, starting at LaVell Edwards Stadium on the BYU campus and following University Avenue south to the same finish line, with a $${RECOMMENDED_DONATION_FUN_RUN} recommended donation. It's the one most families choose — short enough for kids to finish, easy to walk the whole way, and strollers are welcome. Both events take place on November 7, 2026.`,
+    answer: `Both races start at LaVell Edwards Stadium on the BYU campus and finish at University Avenue and Center Street, in front of the Utah County Courthouse in downtown Provo. The 10K is 6.2 miles: north on University Avenue for two miles, a turnaround, then roughly four miles south to the finish. The recommended donation is $${RECOMMENDED_DONATION_AMOUNT}. The Fun Run is approximately 2 miles — the last leg of the 10K, straight from the stadium down to the same finish line — with a $${RECOMMENDED_DONATION_FUN_RUN} recommended donation. It's the one most families choose — short enough for kids to finish, easy to walk the whole way, and strollers are welcome. Both events take place on November 7, 2026.`,
   },
   {
     question: "How do I get to the 10K start line?",
-    answer: "Because the 10K is point-to-point, runners are responsible for their own transportation to the start line at Canyon Crest Elementary School (4664 N Canyon Rd, Provo). Plan to arrive at check-in by 7:00 AM — the race starts promptly at 8:00 AM.",
+    answer: "Both races start at LaVell Edwards Stadium on the BYU campus, and both finish downtown rather than back at the start, so runners are responsible for their own transportation to the stadium. Plan to arrive at check-in by 7:00 AM — the race starts promptly at 8:00 AM.",
   },
   {
     question: "How do I get to the Fun Run start?",
-    answer: "The Fun Run starts at LaVell Edwards Stadium on the BYU campus in Provo. Participants are responsible for their own transportation to the stadium. Check-in is at the stadium — plan to arrive by 7:00 AM. The race starts promptly at 8:00 AM.",
+    answer: "The Fun Run starts at LaVell Edwards Stadium on the BYU campus in Provo, the same start as the 10K. Participants are responsible for their own transportation to the stadium. Check-in is at the stadium — plan to arrive by 7:00 AM. The race starts promptly at 8:00 AM.",
   },
   {
     question: "What's included with registration?",
@@ -62,7 +62,7 @@ export const faqs: FAQItem[] = [
   },
   {
     question: "When and where is check-in?",
-    answer: "Check-in is on race morning — Saturday, November 7, 2026. 10K check-in is at 7:00 AM in the Canyon Crest Elementary School parking lot (4664 N Canyon Rd, Provo). Fun Run check-in is at 7:00 AM at LaVell Edwards Stadium. Your bib and bandana will be available at your respective check-in location.",
+    answer: "Check-in is on race morning — Saturday, November 7, 2026, at 7:00 AM at LaVell Edwards Stadium for both races. Your bib and bandana will be there.",
   },
   {
     question: "Where does my donation go?",

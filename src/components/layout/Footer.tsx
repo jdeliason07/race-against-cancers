@@ -21,7 +21,7 @@ export function Footer() {
           {ORG_NAME} is a registered 501(c)(3) nonprofit organization. EIN {ORG_EIN}.
         </p>
         <p className="mt-2 text-center font-body text-xs text-white/25">
-          © {EVENT_YEAR} {ORG_NAME} All rights reserved.
+          © {EVENT_YEAR} {ORG_NAME}. All rights reserved.
         </p>
       </div>
     </footer>

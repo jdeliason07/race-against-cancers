@@ -136,7 +136,7 @@ export default function PrivacyPage() {
         </section>
 
         <p className="font-body text-xs text-ash border-t border-line pt-8">
-          © {EVENT_YEAR} {ORG_NAME} All rights reserved.
+          © {EVENT_YEAR} {ORG_NAME}. All rights reserved.
         </p>
       </div>
     </div>
