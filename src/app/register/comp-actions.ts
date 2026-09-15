@@ -1,7 +1,6 @@
 'use server';
 import { CONTACT_EMAIL, EVENT_NAME } from '@/config/site';
-import { normalizePhone } from '@/lib/phone';
-import { ADULT_AGE, ageOnRaceDay, isPlausibleDob } from '@/lib/utils';
+import { ADULT_AGE } from '@/lib/utils';
 import {
   canonicalEmail,
   findCustomerByEmail,
@@ -27,10 +26,10 @@ export async function submitCompRegistration(data: {
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
-  dob: string;
-  emergencyName: string;
-  emergencyPhone: string;
+  // Whether the athlete will be 18 or older on race day — what decides
+  // whether a guardian has to accept the waiver. See the same field on
+  // RegistrationInput in ./actions.ts.
+  isAdult: boolean | null;
   guardianName: string;
   waiverAgreed: boolean;
 }): Promise<{ ok: true } | { error: string }> {
@@ -61,23 +60,11 @@ export async function submitCompRegistration(data: {
     return { error: 'Choose which race you want to run.' };
   }
 
-  const phone = normalizePhone(data.phone);
-  if (!phone) {
-    return { error: 'Enter a valid phone number, e.g. (555) 123-4567.' };
-  }
-  const emergencyPhone = normalizePhone(data.emergencyPhone);
-  if (!emergencyPhone) {
-    return { error: 'Enter a valid emergency contact phone number.' };
-  }
-  if (!data.emergencyName.trim()) {
-    return { error: 'Enter an emergency contact name.' };
-  }
-  if (!isPlausibleDob(data.dob)) {
-    return { error: 'Enter a valid date of birth.' };
+  if (typeof data.isAdult !== 'boolean') {
+    return { error: `Tell us whether the athlete will be ${ADULT_AGE} or older on race day.` };
   }
 
-  const age = ageOnRaceDay(data.dob)!;
-  const isMinor = age < ADULT_AGE;
+  const isMinor = !data.isAdult;
   if (isMinor && !data.guardianName.trim()) {
     return {
       error:
@@ -101,11 +88,10 @@ export async function submitCompRegistration(data: {
       raceType: data.raceType,
       bandanaColor: data.bandanaColor,
       participantCount: '1',
-      dob: data.dob,
+      // Date of birth and emergency contact are collected at check-in.
+      adultOnRaceDay: String(!isMinor),
       isMinor: String(isMinor),
       guardianName: isMinor ? data.guardianName.trim() : '',
-      emergencyName: data.emergencyName.trim(),
-      emergencyPhone,
       waiverAgreedBy: isMinor ? data.guardianName.trim() : 'athlete',
       waiverAgreedAt: new Date().toISOString(),
       waiverVersion: WAIVER_VERSION,
@@ -115,12 +101,11 @@ export async function submitCompRegistration(data: {
     };
 
     if (existing) {
-      await stripe.customers.update(existing.id, { name, phone, metadata: details });
+      await stripe.customers.update(existing.id, { name, metadata: details });
     } else {
       await stripe.customers.create({
         email: canonicalEmail(data.email),
         name,
-        phone,
         description: `Covered registration — ${EVENT_NAME}`,
         metadata: details,
       });

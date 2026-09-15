@@ -12,7 +12,7 @@ import {
 } from '@stripe/react-stripe-js';
 import { createPaymentIntent } from './actions';
 import { submitCompRegistration } from './comp-actions';
-import { ADULT_AGE, isMinorOnRaceDay, isPlausibleDob } from '@/lib/utils';
+import { ADULT_AGE } from '@/lib/utils';
 import { captureSource, readSource } from '@/lib/qrSource';
 import {
   DONATION_PRESETS_10K,
@@ -87,13 +87,26 @@ interface FormData {
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
-  dob: string;
-  emergencyName: string;
-  emergencyPhone: string;
+  // Only asked for when the athlete is under 18 on race day.
   guardianName: string;
   referredByName: string;
 }
+
+/**
+ * Whether the athlete will be 18 or older on race day. null until answered.
+ *
+ * This replaces a date of birth field, and it is the waiver that decides the
+ * shape: Section 10 of the Participant Agreement lets a minor take part only
+ * with a parent or guardian's consent, so what registration has to establish
+ * is whether a guardian must accept — a yes/no, not a date. Asking the
+ * question directly gets the same legal answer in one tap instead of a date
+ * picker, which is the worst control on a phone.
+ *
+ * Exact dates of birth are collected at check-in, alongside the emergency
+ * contacts that moved there in the same change. Check-in is an hour before the
+ * start and nobody runs without it, so nothing needed on race day is lost.
+ */
+type AdultAnswer = boolean | null;
 
 // Step progress indicator
 function StepIndicator({ step, labels }: { step: Step; labels: string[] }) {
@@ -178,6 +191,8 @@ const bandanaOptions = [
 function StepAthleteInfo({
   formData,
   setFormData,
+  isAdult,
+  setIsAdult,
   bandanaColor,
   setBandanaColor,
   donationAmount,
@@ -196,6 +211,8 @@ function StepAthleteInfo({
 }: {
   formData: FormData;
   setFormData: (f: FormData) => void;
+  isAdult: AdultAnswer;
+  setIsAdult: (v: AdultAnswer) => void;
   bandanaColor: string;
   setBandanaColor: (c: string) => void;
   donationAmount: number;
@@ -234,14 +251,13 @@ function StepAthleteInfo({
 
   // The waiver requires a parent or legal guardian to accept on behalf of
   // anyone under 18 on race day, so ask for their name once we know the age.
-  const isMinor = !isGroup && isMinorOnRaceDay(formData.dob);
+  const isMinor = !isGroup && isAdult === false;
 
   const fieldError = (field: keyof FormData): string | null => {
     if (!touched[field]) return null;
     const val = formData[field].trim();
     if (!val) return 'This field is required.';
     if (field === 'email' && !isEmailValid(formData.email)) return 'Enter a valid email address.';
-    if (field === 'dob' && !isPlausibleDob(formData.dob)) return 'Enter a valid date of birth.';
     return null;
   };
 
@@ -250,13 +266,9 @@ function StepAthleteInfo({
     formData.lastName.trim() &&
     formData.email.trim() &&
     isEmailValid(formData.email) &&
-    formData.phone.trim() &&
-    // Date of birth and emergency contact belong to an athlete, so they're
-    // only asked for when the registration is for one.
-    (isGroup ||
-      (isPlausibleDob(formData.dob) &&
-        formData.emergencyName.trim() &&
-        formData.emergencyPhone.trim())) &&
+    // The age question describes an athlete, so a group organizer isn't asked
+    // it — each athlete answers for themselves at check-in.
+    (isGroup || isAdult !== null) &&
     (!isMinor || formData.guardianName.trim()) &&
     (isComp || donationAmount >= MIN_DONATION_DOLLARS) &&
     bandanaColor !== '' &&
@@ -354,73 +366,36 @@ function StepAthleteInfo({
         {fieldError('email') && <p id="email-error" className={errorClass}>{fieldError('email')}</p>}
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="phone" className={labelClass}>Phone Number</label>
-        <input
-          id="phone"
-          type="tel"
-          value={formData.phone}
-          onChange={update('phone')}
-          onBlur={touch('phone')}
-          className={inputClass}
-          required
-          aria-required="true"
-          aria-describedby={fieldError('phone') ? 'phone-error' : undefined}
-        />
-        {fieldError('phone') && <p id="phone-error" className={errorClass}>{fieldError('phone')}</p>}
-      </div>
-
       {!isGroup && (
-      <>
-      <div className="mb-4">
-        <label htmlFor="dob" className={labelClass}>Date of Birth</label>
-        <input
-          id="dob"
-          type="date"
-          value={formData.dob}
-          onChange={update('dob')}
-          onBlur={touch('dob')}
-          className={inputClass}
-          required
-          aria-required="true"
-          aria-describedby={fieldError('dob') ? 'dob-error' : undefined}
-        />
-        {fieldError('dob') && <p id="dob-error" className={errorClass}>{fieldError('dob')}</p>}
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 mb-6">
-        <div>
-          <label htmlFor="emergencyName" className={labelClass}>Emergency Contact Name</label>
-          <input
-            id="emergencyName"
-            type="text"
-            value={formData.emergencyName}
-            onChange={update('emergencyName')}
-            onBlur={touch('emergencyName')}
-            className={inputClass}
-            required
-            aria-required="true"
-            aria-describedby={fieldError('emergencyName') ? 'emergencyName-error' : undefined}
-          />
-          {fieldError('emergencyName') && <p id="emergencyName-error" className={errorClass}>{fieldError('emergencyName')}</p>}
-        </div>
-        <div>
-          <label htmlFor="emergencyPhone" className={labelClass}>Emergency Contact Phone</label>
-          <input
-            id="emergencyPhone"
-            type="tel"
-            value={formData.emergencyPhone}
-            onChange={update('emergencyPhone')}
-            onBlur={touch('emergencyPhone')}
-            className={inputClass}
-            required
-            aria-required="true"
-            aria-describedby={fieldError('emergencyPhone') ? 'emergencyPhone-error' : undefined}
-          />
-          {fieldError('emergencyPhone') && <p id="emergencyPhone-error" className={errorClass}>{fieldError('emergencyPhone')}</p>}
-        </div>
-      </div>
-      </>
+        <fieldset className="mb-6">
+          <legend className={labelClass}>Age on race day</legend>
+          {/* Both labels are short enough to sit side by side even at 320px,
+              and two options on one row read as a single question. */}
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { value: true,  label: `${ADULT_AGE} or older` },
+              { value: false, label: `Under ${ADULT_AGE}` },
+            ].map((option) => (
+              <button
+                key={String(option.value)}
+                type="button"
+                onClick={() => setIsAdult(option.value)}
+                aria-pressed={isAdult === option.value}
+                className="rounded-card border-2 px-4 py-3 text-left font-body text-sm font-semibold transition-colors duration-150 focus-visible:outline-none"
+                style={{
+                  borderColor: isAdult === option.value ? '#F0307A' : '#ECE2E6',
+                  backgroundColor: isAdult === option.value ? '#FDE7F0' : '#FFFFFF',
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 font-body text-xs text-ash">
+            We ask because anyone under {ADULT_AGE} needs a parent or guardian to accept the waiver.
+            Date of birth and your emergency contact are collected at check-in.
+          </p>
+        </fieldset>
       )}
 
       {isMinor && (
@@ -987,13 +962,10 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
-    dob: '',
-    emergencyName: '',
-    emergencyPhone: '',
     guardianName: '',
     referredByName: '',
   });
+  const [isAdult, setIsAdult] = useState<AdultAnswer>(null);
   const [waiverAgreed, setWaiverAgreed] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
@@ -1033,10 +1005,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-          phone: formData.phone,
-          dob: formData.dob,
-          emergencyName: formData.emergencyName,
-          emergencyPhone: formData.emergencyPhone,
+          isAdult,
           guardianName: formData.guardianName,
           waiverAgreed,
         });
@@ -1053,10 +1022,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
-        phone: formData.phone,
-        dob: formData.dob,
-        emergencyName: formData.emergencyName,
-        emergencyPhone: formData.emergencyPhone,
+        isAdult,
         guardianName: formData.guardianName,
         waiverAgreed,
         referredByName: formData.referredByName,
@@ -1091,6 +1057,8 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
           <StepAthleteInfo
             formData={formData}
             setFormData={setFormData}
+            isAdult={isAdult}
+            setIsAdult={setIsAdult}
             bandanaColor={bandanaColor}
             setBandanaColor={setBandanaColor}
             donationAmount={donationAmount}

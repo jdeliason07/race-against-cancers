@@ -8,9 +8,8 @@ import {
   REFERRAL_ENABLED,
 } from '@/config/site';
 import { chargeCentsFor } from '@/lib/fees';
-import { normalizePhone } from '@/lib/phone';
 import { normalizeSource } from '@/lib/qrSource';
-import { ADULT_AGE, ageOnRaceDay, isPlausibleDob } from '@/lib/utils';
+import { ADULT_AGE } from '@/lib/utils';
 import {
   canonicalEmail,
   findCustomerByEmail,
@@ -30,10 +29,15 @@ interface RegistrationInput {
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
-  dob: string;
-  emergencyName: string;
-  emergencyPhone: string;
+  // Whether the athlete will be 18 or older on race day. Required for a solo
+  // registration, ignored for a group — the organizer isn't the athlete.
+  //
+  // This carries exactly the weight the date of birth used to: Section 10 of
+  // the Participant Agreement lets a minor take part only with a parent or
+  // guardian's consent, so this is what decides whether a guardian has to
+  // accept. It is a self-report, as a typed date of birth also was — Section
+  // 9 has the participant represent that what they supplied is accurate.
+  isAdult: boolean | null;
   guardianName: string; // required when the athlete is under 18 on race day
   waiverAgreed: boolean;
   referredByName: string; // full name of whoever referred them; '' when nobody
@@ -53,15 +57,17 @@ async function upsertAthleteCustomer(
   stripe: Stripe,
   existing: Stripe.Customer | null,
   data: RegistrationInput,
-  phone: string,
 ): Promise<Stripe.Customer> {
   const name = `${data.firstName.trim()} ${data.lastName.trim()}`;
 
   if (existing) {
+    // Phone is deliberately not in this update. Registration no longer asks
+    // for one, and sending an empty string here would erase the number
+    // someone gave when they joined the waitlist — the only number we have
+    // for them, and the one /admin texts.
     // A partial metadata update merges, so this preserves the waitlist `source`.
     return stripe.customers.update(existing.id, {
       name,
-      phone,
       metadata: { event: EVENT_NAME, startedRegistrationAt: new Date().toISOString() },
     });
   }
@@ -69,7 +75,6 @@ async function upsertAthleteCustomer(
   return stripe.customers.create({
     email: canonicalEmail(data.email),
     name,
-    phone,
     description: `Registration — ${EVENT_NAME}`,
     metadata: {
       source: 'registration-form',
@@ -106,28 +111,16 @@ export async function createPaymentIntent(
   }
   const isGroup = participantCount > 1;
 
-  const phone = normalizePhone(registrationData.phone);
-  if (!phone) {
-    return { error: 'Enter a valid phone number, e.g. (555) 123-4567.' };
-  }
-
-  // Date of birth and emergency contact describe an athlete, so they're only
-  // required when the registration is for exactly one. For a group, those are
-  // collected per athlete at check-in.
-  let emergencyPhone = '';
-  let age: number | null = null;
+  // The age question describes an athlete, so it is only asked of a solo
+  // registration. A group organizer registers a headcount, and each athlete
+  // answers for themselves at check-in.
   let isMinor = false;
 
   if (!isGroup) {
-    emergencyPhone = normalizePhone(registrationData.emergencyPhone) ?? '';
-    if (!emergencyPhone) {
-      return { error: 'Enter a valid emergency contact phone number.' };
+    if (typeof registrationData.isAdult !== 'boolean') {
+      return { error: `Tell us whether the athlete will be ${ADULT_AGE} or older on race day.` };
     }
-    if (!isPlausibleDob(registrationData.dob)) {
-      return { error: 'Enter a valid date of birth.' };
-    }
-    age = ageOnRaceDay(registrationData.dob)!;
-    isMinor = age < ADULT_AGE;
+    isMinor = !registrationData.isAdult;
     if (isMinor && !registrationData.guardianName.trim()) {
       return {
         error:
@@ -163,12 +156,7 @@ export async function createPaymentIntent(
       };
     }
 
-    const customer = await upsertAthleteCustomer(
-      stripe,
-      existingCustomer,
-      registrationData,
-      phone,
-    );
+    const customer = await upsertAthleteCustomer(stripe, existingCustomer, registrationData);
 
     // Just a name — there's nobody to look up and nothing to validate, so the
     // weekly report groups these by name and you decide what counts.
@@ -199,14 +187,13 @@ export async function createPaymentIntent(
         firstName: registrationData.firstName.trim(),
         lastName: registrationData.lastName.trim(),
         email: canonicalEmail(registrationData.email),
-        phone,
         participantCount: String(participantCount),
-        dob: isGroup ? '' : registrationData.dob,
-        ageOnRaceDay: age === null ? '' : String(age),
+        // Date of birth and emergency contact are collected at check-in now,
+        // so they are absent here rather than empty — the webhook defaults
+        // them, and check-in fills them in.
+        adultOnRaceDay: isGroup ? '' : String(!isMinor),
         isMinor: String(isMinor),
         guardianName: isMinor ? registrationData.guardianName.trim() : '',
-        emergencyName: isGroup ? '' : registrationData.emergencyName.trim(),
-        emergencyPhone,
         waiverAgreed: 'true',
         waiverAgreedBy: isGroup
           ? 'group organizer'

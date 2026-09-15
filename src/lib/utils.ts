@@ -1,39 +1,17 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { EVENT_DATE_ISO } from '@/config/site';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/** Age of majority — under this on race day, a guardian must accept the waiver. */
-export const ADULT_AGE = 18;
-
 /**
- * How old the athlete will be on race day, from a `YYYY-MM-DD` date of birth.
- * Compares calendar numbers rather than Date objects so the answer can't shift
- * by a day depending on the viewer's time zone. Returns null if unparseable.
+ * Age of majority — under this on race day, a parent or legal guardian has to
+ * accept the waiver on the athlete's behalf (Participant Agreement, Section 10).
+ *
+ * Registration asks whether the athlete will be this old on race day rather
+ * than for a date of birth, so the date helpers that used to live here are
+ * gone. Exact dates are collected at check-in; anything that needs to compute
+ * an age from one belongs with that tooling.
  */
-export function ageOnRaceDay(dobStr: string): number | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dobStr.trim());
-  if (!match) return null;
-
-  const [birthYear, birthMonth, birthDay] = match.slice(1).map(Number);
-  const [raceYear, raceMonth, raceDay] = EVENT_DATE_ISO.slice(0, 10).split('-').map(Number);
-
-  let age = raceYear - birthYear;
-  if (raceMonth < birthMonth || (raceMonth === birthMonth && raceDay < birthDay)) age--;
-  return age;
-}
-
-/** Rejects dates of birth that are in the future or implausibly old. */
-export function isPlausibleDob(dobStr: string): boolean {
-  const age = ageOnRaceDay(dobStr);
-  return age !== null && age >= 0 && age <= 120;
-}
-
-export function isMinorOnRaceDay(dobStr: string): boolean {
-  const age = ageOnRaceDay(dobStr);
-  return age !== null && age < ADULT_AGE;
-}
-
+export const ADULT_AGE = 18;

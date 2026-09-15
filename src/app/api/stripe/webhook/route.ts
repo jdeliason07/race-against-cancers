@@ -52,11 +52,16 @@ async function recordSuccessfulRegistration(
       cardFeeAmount: String(chargedCents - donatedCents),
       // How many bibs this registration is owed at check-in.
       participantCount: intent.metadata.participantCount ?? '1',
+      // Registration asks whether the athlete is 18+ on race day, not for a
+      // date. These three stay on the record as blanks for check-in to fill
+      // in — that is where the exact date and the emergency contact are now
+      // collected, an hour before anyone runs.
       dob: intent.metadata.dob ?? '',
-      isMinor: intent.metadata.isMinor ?? '',
-      guardianName: intent.metadata.guardianName ?? '',
       emergencyName: intent.metadata.emergencyName ?? '',
       emergencyPhone: intent.metadata.emergencyPhone ?? '',
+      adultOnRaceDay: intent.metadata.adultOnRaceDay ?? '',
+      isMinor: intent.metadata.isMinor ?? '',
+      guardianName: intent.metadata.guardianName ?? '',
       waiverAgreedBy: intent.metadata.waiverAgreedBy ?? '',
       waiverAgreedAt: intent.metadata.waiverAgreedAt ?? '',
       waiverVersion: intent.metadata.waiverVersion ?? '',
