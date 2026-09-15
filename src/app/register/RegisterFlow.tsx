@@ -286,36 +286,6 @@ function StepAthleteInfo({
         {isGroup ? 'Organizer Info' : 'Athlete Info'}
       </h2>
 
-      {/* Headcount — drives the recommended donation below */}
-      {!isComp && (
-      <div className="mb-6 rounded-card border border-line bg-mist p-5">
-        <label htmlFor="participantCount" className={labelClass}>
-          How many athletes are you registering?
-        </label>
-        <input
-          id="participantCount"
-          type="number"
-          inputMode="numeric"
-          min={1}
-          max={MAX_PARTICIPANTS_PER_REGISTRATION}
-          value={participantCount}
-          onChange={(e) => {
-            const parsed = parseInt(e.target.value, 10);
-            const next = Number.isNaN(parsed)
-              ? 1
-              : Math.min(Math.max(parsed, 1), MAX_PARTICIPANTS_PER_REGISTRATION);
-            setParticipantCount(next);
-          }}
-          className={inputClass + ' bg-white'}
-          aria-describedby="participantCount-hint"
-        />
-        <p id="participantCount-hint" className="mt-2 font-body text-sm text-ash">
-          {isGroup
-            ? `Covering ${participantCount} athletes at the recommended $${perAthleteRecommended} each — $${recommendedDonation} in all. We'll collect each athlete's name and waiver at check-in.`
-            : `Registering more than one? Enter the number here and the recommended donation adjusts — $${perAthleteRecommended} per athlete.`}
-        </p>
-      </div>
-      )}
 
       <div className="grid gap-4 sm:grid-cols-2 mb-4">
         <div>
@@ -420,6 +390,37 @@ function StepAthleteInfo({
           />
           {fieldError('guardianName') && <p id="guardianName-error" className={errorClass}>{fieldError('guardianName')}</p>}
         </div>
+      )}
+
+      {/* Headcount — drives the recommended donation below. Styled like every
+          other field rather than as a callout: it is one number, and the
+          donation section already spells out the per-athlete arithmetic. */}
+      {!isComp && (
+      <div className="mb-6">
+        <label htmlFor="participantCount" className={labelClass}>Number of athletes</label>
+        <input
+          id="participantCount"
+          type="number"
+          inputMode="numeric"
+          min={1}
+          max={MAX_PARTICIPANTS_PER_REGISTRATION}
+          value={participantCount}
+          onChange={(e) => {
+            const parsed = parseInt(e.target.value, 10);
+            const next = Number.isNaN(parsed)
+              ? 1
+              : Math.min(Math.max(parsed, 1), MAX_PARTICIPANTS_PER_REGISTRATION);
+            setParticipantCount(next);
+          }}
+          className={inputClass}
+          aria-describedby={isGroup ? 'participantCount-hint' : undefined}
+        />
+        {isGroup && (
+          <p id="participantCount-hint" className="mt-2 font-body text-sm text-ash">
+            We&rsquo;ll collect each athlete&rsquo;s name and waiver at check-in.
+          </p>
+        )}
+      </div>
       )}
 
       {REFERRAL_ENABLED && !isComp && (
