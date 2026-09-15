@@ -21,7 +21,7 @@ export const metadata: Metadata = REGISTRATION_OPEN
 export default function RegisterPage() {
   if (!REGISTRATION_OPEN) {
     return (
-      <div className="bg-paper min-h-screen">
+      <div className="bg-paper">
         <section className="border-b border-line bg-mist py-16">
           <div className="mx-auto max-w-3xl px-6 text-center">
             <p className="section-label mb-4">{opensCopy}</p>
@@ -47,13 +47,13 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="bg-paper min-h-screen">
+    <div className="bg-paper">
       <section className="border-b border-line bg-mist py-10">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="section-label mb-3">November 7, 2026</p>
-          <h1 className="font-display text-4xl uppercase text-ink md:text-6xl">Register</h1>
+          <h1 className="font-display text-4xl uppercase text-ink md:text-6xl">It&rsquo;s Time</h1>
           <p className="mt-3 font-body text-base text-ash">
-            10K ${RECOMMENDED_DONATION_AMOUNT} · Family Fun Run ${RECOMMENDED_DONATION_FUN_RUN} — benefiting {CHARITY_NAME}
+            10K &amp; Family Fun Run — benefiting {CHARITY_NAME}
           </p>
           <p className="mt-2 font-body text-sm text-ash">
             Registering a family, team, or company? Enter how many athletes and the recommended amount adjusts.

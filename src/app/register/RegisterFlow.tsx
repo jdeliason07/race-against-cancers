@@ -19,8 +19,6 @@ import {
   DONATION_PRESETS_FUN_RUN,
   MAX_PARTICIPANTS_PER_REGISTRATION,
   MIN_DONATION_DOLLARS,
-  RECOMMENDED_DONATION_AMOUNT,
-  RECOMMENDED_DONATION_FUN_RUN,
   TEN_K_LABEL,
   FUN_RUN_LABEL,
   REFERRAL_ENABLED,
@@ -137,8 +135,8 @@ function StepRaceSelection({
   onNext: () => void;
 }) {
   const races = [
-    { key: '10k' as const,     label: '10K',     amount: RECOMMENDED_DONATION_AMOUNT },
-    { key: 'fun-run' as const, label: 'Fun Run', amount: RECOMMENDED_DONATION_FUN_RUN },
+    { key: '10k' as const,     label: '10K' },
+    { key: 'fun-run' as const, label: 'Fun Run' },
   ];
 
   return (
@@ -155,15 +153,15 @@ function StepRaceSelection({
               setRaceType(race.key);
               onNext();
             }}
-            className="btn-primary w-full flex-col gap-0 py-3 leading-tight"
+            className="btn-primary w-full"
           >
-            <span>Register for the {race.label}</span>
-            <span className="font-body text-xs font-semibold normal-case tracking-normal text-white/80">
-              ${race.amount} recommended · no minimum
-            </span>
+            It&rsquo;s time for the {race.label}
           </button>
         ))}
       </div>
+      <p className="mt-4 font-body text-sm text-ash">
+        No minimum — give what you&rsquo;re willing.
+      </p>
     </div>
   );
 }

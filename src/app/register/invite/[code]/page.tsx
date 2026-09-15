@@ -22,7 +22,7 @@ export default async function InvitePage({
 
   if (!comp) {
     return (
-      <div className="bg-paper min-h-screen">
+      <div className="bg-paper">
         <div className="mx-auto max-w-2xl px-6 py-24 text-center">
           <h1 className="font-display text-4xl uppercase text-ink md:text-5xl">
             This link isn&rsquo;t valid
@@ -43,7 +43,7 @@ export default async function InvitePage({
   }
 
   return (
-    <div className="bg-paper min-h-screen">
+    <div className="bg-paper">
       <section className="border-b border-line bg-mist py-16">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="section-label mb-4">{EVENT_DATE_DISPLAY}</p>
