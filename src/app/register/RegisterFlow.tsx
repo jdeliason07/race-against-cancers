@@ -530,7 +530,7 @@ function StepAthleteInfo({
                 type="button"
                 onClick={() => setPresetIndex(i)}
                 aria-pressed={selected}
-                className="rounded-card border-2 px-3 py-3 text-center transition-colors duration-150 focus-visible:outline-none"
+                className="overflow-hidden rounded-card border-2 px-1 py-3 text-center transition-colors duration-150 focus-visible:outline-none"
                 style={{
                   borderColor: selected ? '#F0307A' : '#F6C9DB',
                   backgroundColor: selected ? '#F0307A' : '#FFFFFF',
@@ -544,7 +544,7 @@ function StepAthleteInfo({
                 </span>
                 {i === 0 && (
                   <span
-                    className="block font-body text-[10px] font-bold uppercase tracking-widest"
+                    className="block font-body text-[clamp(8px,2.6vw,10px)] font-bold uppercase leading-tight tracking-normal"
                     style={{ color: selected ? '#FFFFFF' : '#6E5C64' }}
                   >
                     Recommended
