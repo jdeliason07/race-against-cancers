@@ -14,6 +14,8 @@ import { createPaymentIntent } from './actions';
 import { submitCompRegistration } from './comp-actions';
 import { ADULT_AGE, isMinorOnRaceDay, isPlausibleDob } from '@/lib/utils';
 import {
+  DONATION_PRESETS_10K,
+  DONATION_PRESETS_FUN_RUN,
   MAX_PARTICIPANTS_PER_REGISTRATION,
   MIN_DONATION_DOLLARS,
   RECOMMENDED_DONATION_AMOUNT,
@@ -165,15 +167,15 @@ const bandanaOptions = [
 
 // Step 2 — Athlete Info + Donation + Waiver
 function StepAthleteInfo({
-  raceType,
   formData,
   setFormData,
   bandanaColor,
   setBandanaColor,
   donationAmount,
-  setDonationAmount,
-  donationEdited,
-  setDonationEdited,
+  donationPresets,
+  presetIndex,
+  setPresetIndex,
+  setCustomDonation,
   participantCount,
   setParticipantCount,
   waiverAgreed,
@@ -183,15 +185,15 @@ function StepAthleteInfo({
   onBack,
   loading,
 }: {
-  raceType: RaceType;
   formData: FormData;
   setFormData: (f: FormData) => void;
   bandanaColor: string;
   setBandanaColor: (c: string) => void;
   donationAmount: number;
-  setDonationAmount: (a: number) => void;
-  donationEdited: boolean;
-  setDonationEdited: (v: boolean) => void;
+  donationPresets: number[];
+  presetIndex: number | null;
+  setPresetIndex: (i: number | null) => void;
+  setCustomDonation: (a: number) => void;
   participantCount: number;
   setParticipantCount: (n: number) => void;
   waiverAgreed: boolean;
@@ -202,8 +204,8 @@ function StepAthleteInfo({
   loading: boolean;
 }) {
   const [touched, setTouched] = useState<Partial<Record<keyof FormData, boolean>>>({});
-  const perAthleteSuggested =
-    raceType === 'fun-run' ? RECOMMENDED_DONATION_FUN_RUN : RECOMMENDED_DONATION_AMOUNT;
+  // The first rung of the ladder is the recommendation, per athlete.
+  const perAthleteSuggested = donationPresets[0];
   const suggestedDonation = perAthleteSuggested * participantCount;
 
   // One person paying for several athletes is registering a group, not
@@ -282,9 +284,6 @@ function StepAthleteInfo({
               ? 1
               : Math.min(Math.max(parsed, 1), MAX_PARTICIPANTS_PER_REGISTRATION);
             setParticipantCount(next);
-            // The field follows the recommendation as the headcount changes —
-            // until someone types their own number, which is theirs to keep.
-            if (!donationEdited) setDonationAmount(perAthleteSuggested * next);
           }}
           className={inputClass + ' bg-white'}
           aria-describedby="participantCount-hint"
@@ -498,17 +497,58 @@ function StepAthleteInfo({
         )}
       </div>
 
-      {/* Donation amount — pre-filled with the recommendation, not a floor */}
+      {/* Donation amount — the buttons pre-fill it; none of them is a floor */}
       {!isComp && (
       <div className="mb-6 rounded-card border border-petal bg-blush p-5">
-        <label htmlFor="donationAmount" className="mb-2 font-body text-xs font-bold uppercase tracking-widest text-ash block">
+        <p className="mb-2 font-body text-xs font-bold uppercase tracking-widest text-ash">
           Donation Amount
-        </label>
+        </p>
         <p className="mb-3 font-body text-sm text-ash">
           {isGroup
             ? `Recommended: $${suggestedDonation} — $${perAthleteSuggested} × ${participantCount} athletes. There's no minimum, so give what you're able.`
             : `Recommended: $${suggestedDonation}. There's no minimum, so give what you're able.`}
         </p>
+
+        {/* One-tap amounts. They're per athlete, so they scale with the
+            headcount and the first one always matches the recommendation. */}
+        <div className="mb-3 grid grid-cols-3 gap-2" role="group" aria-label="Suggested donation amounts">
+          {donationPresets.map((perAthlete, i) => {
+            const total = perAthlete * participantCount;
+            const selected = presetIndex === i;
+            return (
+              <button
+                key={perAthlete}
+                type="button"
+                onClick={() => setPresetIndex(i)}
+                aria-pressed={selected}
+                className="rounded-card border-2 px-3 py-3 text-center transition-colors duration-150 focus-visible:outline-none"
+                style={{
+                  borderColor: selected ? '#F0307A' : '#F6C9DB',
+                  backgroundColor: selected ? '#F0307A' : '#FFFFFF',
+                }}
+              >
+                <span
+                  className="block font-display text-xl uppercase"
+                  style={{ color: selected ? '#FFFFFF' : '#1C1719' }}
+                >
+                  ${total}
+                </span>
+                {i === 0 && (
+                  <span
+                    className="block font-body text-[10px] font-bold uppercase tracking-widest"
+                    style={{ color: selected ? '#FFFFFF' : '#6E5C64' }}
+                  >
+                    Recommended
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        <label htmlFor="donationAmount" className="mb-1 block font-body text-xs text-ash">
+          Or enter another amount
+        </label>
         <input
           id="donationAmount"
           type="number"
@@ -518,9 +558,10 @@ function StepAthleteInfo({
           value={donationAmount === 0 ? '' : donationAmount}
           onChange={(e) => {
             const val = parseInt(e.target.value, 10);
-            // Their number from here on — the recommendation stops overwriting it.
-            setDonationEdited(true);
-            setDonationAmount(isNaN(val) || val < 0 ? 0 : val);
+            // Their number from here on — no button stays lit and the
+            // headcount stops moving the amount.
+            setPresetIndex(null);
+            setCustomDonation(isNaN(val) || val < 0 ? 0 : val);
           }}
           className="border border-petal rounded-card px-4 py-3 font-body text-sm text-ink w-full focus:outline-none focus:border-pink bg-white"
           aria-describedby="donation-amount-hint"
@@ -529,18 +570,6 @@ function StepAthleteInfo({
           Recommended donation: ${suggestedDonation}. No minimum — any amount of $
           {MIN_DONATION_DOLLARS} or more registers you.
         </p>
-        {donationEdited && donationAmount !== suggestedDonation && (
-          <button
-            type="button"
-            onClick={() => {
-              setDonationEdited(false);
-              setDonationAmount(suggestedDonation);
-            }}
-            className="mt-2 font-body text-xs font-bold uppercase tracking-widest text-pink underline"
-          >
-            Use recommended ${suggestedDonation}
-          </button>
-        )}
         {donationAmount < MIN_DONATION_DOLLARS && (
           <p className="mt-1 font-body text-xs text-red-700" role="alert">
             Enter a donation of at least ${MIN_DONATION_DOLLARS}.
@@ -940,10 +969,12 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
   const [step, setStep] = useState<Step>(1);
   const [raceType, setRaceType] = useState<RaceType>(null);
   const [bandanaColor, setBandanaColor] = useState('');
-  const [donationAmount, setDonationAmount] = useState(RECOMMENDED_DONATION_AMOUNT);
-  // Until someone types their own amount, the field tracks the recommendation
-  // for whichever race and headcount they pick.
-  const [donationEdited, setDonationEdited] = useState(false);
+  // Which rung of the donation ladder is selected — 0 is the recommendation the
+  // form opens on, null means they typed their own amount instead. Holding the
+  // rung rather than the dollars is what lets the amount follow the race and
+  // the headcount without any state to keep in sync.
+  const [presetIndex, setPresetIndex] = useState<number | null>(0);
+  const [customDonation, setCustomDonation] = useState(0);
   const [participantCount, setParticipantCount] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
@@ -958,6 +989,18 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
   });
   const [waiverAgreed, setWaiverAgreed] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+
+  // Nothing pre-fills the donation field; the amount is read off the ladder, so
+  // it follows the race and the headcount until someone types over it. The 10K
+  // ladder stands in before a race is picked, which is what makes the form open
+  // on the recommended $99.
+  const donationPresets =
+    raceType === 'fun-run' ? DONATION_PRESETS_FUN_RUN : DONATION_PRESETS_10K;
+  const donationAmount =
+    presetIndex === null
+      ? customDonation
+      : donationPresets[presetIndex] * participantCount;
+
   const [loadingIntent, setLoadingIntent] = useState(false);
   const [intentError, setIntentError] = useState<string | null>(null);
 
@@ -1025,31 +1068,22 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
         <StepRaceSelection
           raceType={raceType}
           setRaceType={setRaceType}
-          onNext={() => {
-            if (!donationEdited) {
-              const perAthlete =
-                raceType === 'fun-run'
-                  ? RECOMMENDED_DONATION_FUN_RUN
-                  : RECOMMENDED_DONATION_AMOUNT;
-              setDonationAmount(perAthlete * participantCount);
-            }
-            setStep(2);
-          }}
+          onNext={() => setStep(2)}
         />
       )}
 
       {step === 2 && (
         <>
           <StepAthleteInfo
-            raceType={raceType}
             formData={formData}
             setFormData={setFormData}
             bandanaColor={bandanaColor}
             setBandanaColor={setBandanaColor}
             donationAmount={donationAmount}
-            setDonationAmount={setDonationAmount}
-            donationEdited={donationEdited}
-            setDonationEdited={setDonationEdited}
+            donationPresets={donationPresets}
+            presetIndex={presetIndex}
+            setPresetIndex={setPresetIndex}
+            setCustomDonation={setCustomDonation}
             participantCount={participantCount}
             setParticipantCount={setParticipantCount}
             waiverAgreed={waiverAgreed}

@@ -58,6 +58,12 @@ export const RECOMMENDED_DONATION_FUN_RUN = 49; // Fun Run, per athlete
 // Stripe rejects a charge under $0.50, so the form and the server both require
 // at least this much.
 export const MIN_DONATION_DOLLARS = 1;
+// One-tap amounts under the donation field, per athlete and in the order shown.
+// The first entry is the recommendation and the amount the field pre-fills
+// with, so it has to stay the recommended constant above. Keep the two ladders
+// the same length — the chosen rung carries over when someone switches race.
+export const DONATION_PRESETS_10K     = [RECOMMENDED_DONATION_AMOUNT, 199, 499];
+export const DONATION_PRESETS_FUN_RUN = [RECOMMENDED_DONATION_FUN_RUN, 99, 199];
 // One person can register and pay for a group (a company, a team, a family).
 // The recommended donation is the per-athlete recommendation times this count.
 export const MAX_PARTICIPANTS_PER_REGISTRATION = 100;
