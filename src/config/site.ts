@@ -134,7 +134,7 @@ export const VOLUNTEER_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScX-
 
 // --- SOCIAL LINKS -------------------------------------------
 // Set to "" to hide that icon in the footer
-export const SOCIAL_INSTAGRAM = "[[https://instagram.com/YOURHANDLE]]";
+export const SOCIAL_INSTAGRAM = "https://www.instagram.com/raceagainstcancers";
 export const SOCIAL_FACEBOOK  = "[[https://facebook.com/YOURPAGE]]";
 export const SOCIAL_TWITTER   = "[[https://twitter.com/YOURHANDLE]]";
 export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";
