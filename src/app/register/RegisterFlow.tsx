@@ -155,13 +155,10 @@ function StepRaceSelection({
             }}
             className="btn-primary w-full"
           >
-            It&rsquo;s time for the {race.label}
+            Register for the {race.label}
           </button>
         ))}
       </div>
-      <p className="mt-4 font-body text-sm text-ash">
-        No minimum — give what you&rsquo;re willing.
-      </p>
     </div>
   );
 }
