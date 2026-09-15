@@ -16,10 +16,7 @@ import {
   getStripe,
   isRegistered,
 } from '@/lib/stripeRegistration';
-
-// A 'use server' module may only export async functions, so anything shared
-// beyond the actions themselves has to live outside this file.
-const WAIVER_VERSION = '2026-v2';
+import { WAIVER_SHORT_TITLE, WAIVER_VERSION } from '@/data/waiver';
 
 interface RegistrationInput {
   raceType: string;
@@ -89,7 +86,7 @@ export async function createPaymentIntent(
   // reachable by direct POST — so the release is only valid if the server
   // both receives the agreement and records what was actually agreed to.
   if (registrationData.waiverAgreed !== true) {
-    return { error: 'You must accept the Release and Waiver of Liability to register.' };
+    return { error: `You must accept the ${WAIVER_SHORT_TITLE} to register.` };
   }
 
   const participantCount = registrationData.participantCount;

@@ -26,6 +26,12 @@ import {
   STRIPE_FEE_LABEL,
 } from '@/config/site';
 import { ReferralRewardCallout } from '@/components/ui/ReferralReward';
+import { WaiverText } from '@/components/legal/WaiverText';
+import {
+  WAIVER_ACCEPTANCE_ADULT,
+  WAIVER_ACCEPTANCE_GUARDIAN,
+  WAIVER_SHORT_TITLE,
+} from '@/data/waiver';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -588,77 +594,29 @@ function StepAthleteInfo({
         </div>
       )}
 
-      {/* Waiver */}
+      {/* Participant Agreement — the text itself lives in src/data/waiver.ts */}
       <div className="mb-6">
-        <p className="font-body text-xs font-bold uppercase tracking-widest text-ash mb-1">Release &amp; Waiver of Liability</p>
+        <div className="mb-1 flex items-baseline justify-between gap-3">
+          <p className="font-body text-xs font-bold uppercase tracking-widest text-ash">
+            {WAIVER_SHORT_TITLE}
+          </p>
+          <Link
+            href="/waiver"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-body text-xs text-pink underline underline-offset-2 hover:text-raspberry"
+          >
+            Open full page
+          </Link>
+        </div>
         <div
           role="region"
-          aria-label="Waiver text — scroll to read"
-          className="border border-line rounded-card p-4 font-body text-xs text-ash leading-relaxed"
-          style={{ maxHeight: '200px', overflowY: 'scroll' }}
+          aria-label="Participant Agreement — scroll to read"
+          className="border border-line rounded-card p-4"
+          style={{ maxHeight: '260px', overflowY: 'scroll' }}
           tabIndex={0}
         >
-          <p className="mb-3 font-bold uppercase">
-            ALL PARTICIPANTS IN THE RACE AGAINST CANCERS 10K &amp; FUN RUN AND RELATED EVENTS ARE
-            REQUIRED TO ASSUME ALL RISKS OF PARTICIPATION BY AGREEING TO THIS RELEASE AND WAIVER
-            OF LIABILITY AGREEMENT AT THE TIME OF ONLINE REGISTRATION.
-          </p>
-          <p className="mb-3">
-            In consideration of being permitted to participate in the Race Against Cancers 10K &amp;
-            Fun Run (the &ldquo;Event&rdquo;), the undersigned athlete (&ldquo;Athlete&rdquo;), on behalf of
-            himself/herself and the Athlete&rsquo;s personal representatives, heirs, executors, and
-            assigns, hereby fully and forever releases, waives, discharges, and covenants not to sue
-            Race Against Cancers Inc., its officers, directors, employees, agents, and volunteers;
-            Intermountain Cancer Center Utah Valley; all sponsors and co-sponsors of the Event; Provo City, Utah
-            County, the State of Utah, and any other municipality or government agency whose property
-            and/or personnel are used in connection with the Event; and all timing, logistics, and
-            other vendors providing services to the Event (collectively, the &ldquo;Releasees&rdquo;)
-            from any and all liability, claims, demands, losses, or damages on account of injury to
-            the Athlete or the Athlete&rsquo;s property, or resulting in the death of the Athlete,
-            whether caused by the active or passive negligence of any of the Releasees or otherwise,
-            arising out of or in connection with the Athlete&rsquo;s participation in the Event.
-          </p>
-          <p className="mb-3">
-            The Athlete represents and warrants that he/she is in good physical condition and is able
-            to safely participate in the Event. The Athlete is fully aware of the risks and hazards
-            inherent in running a road race, including, without limitation: falls; contact with other
-            participants, spectators, or vehicles; the condition of the road and course;
-            transportation to and from the event; and weather conditions such as heat, cold,
-            wind, rain, snow, or ice. The Athlete voluntarily elects to participate knowing these
-            risks and hereby assumes all risk of loss, damage, or injury that may be sustained while
-            participating in the Event. The Athlete authorizes Event personnel to obtain or provide
-            emergency medical treatment on his/her behalf if needed, and agrees to be responsible for
-            the cost of any such treatment.
-          </p>
-          <p className="mb-3">
-            The Athlete grants Race Against Cancers Inc. permission to use his/her name, image,
-            voice, and likeness in photographs, video, broadcasts, and other media for purposes of
-            promoting the Event, without compensation.
-          </p>
-          <p className="mb-3">
-            The Athlete acknowledges that the registration payment is a charitable donation
-            benefiting Intermountain Cancer Center Utah Valley and is non-refundable. A registration may be
-            transferred to another participant until October 1, 2026 by contacting the Event
-            organizers; no transfers will be processed after that date. If the Event is delayed,
-            modified, or canceled by reason of fire, strike, work stoppage, pandemic, insurrection,
-            war, public disaster, flood, unavoidable casualty, extreme weather, acts of God, or any
-            other cause beyond the control of Race Against Cancers Inc., there shall be no refund of
-            the donation or any other costs incurred by the Athlete in connection with the Event.
-          </p>
-          <p className="mb-3">
-            If the Athlete is under 18 years of age, this agreement must be accepted by the
-            Athlete&rsquo;s parent or legal guardian, who agrees to its terms on the minor&rsquo;s
-            behalf. This agreement is governed by the laws of the State of Utah. If any portion of
-            this agreement is held invalid, the remainder shall continue in full force and effect.
-            The Athlete warrants that all statements made during registration are true and correct
-            and understands that the Releasees have relied on them in permitting the Athlete to
-            participate in the Event.
-          </p>
-          <p className="font-bold uppercase">
-            BY COMPLETING THE REGISTRATION PROCESS, THE ATHLETE (OR THE ATHLETE&rsquo;S PARENT OR
-            LEGAL GUARDIAN) HAS READ THE FOREGOING AND INTENTIONALLY AND VOLUNTARILY AGREES TO THIS
-            RELEASE AND WAIVER OF LIABILITY AGREEMENT.
-          </p>
+          <WaiverText variant="compact" />
         </div>
         <label htmlFor="waiverCheckbox" className="mt-3 flex items-start gap-3 cursor-pointer">
           <input
@@ -670,10 +628,10 @@ function StepAthleteInfo({
           />
           <span className="font-body text-sm text-ink">
             {isGroup
-              ? 'I have read and agree to the Release and Waiver of Liability Agreement, and I will make sure every athlete I am registering — or their parent or legal guardian — accepts it before race day'
+              ? `I have read and agree to the ${WAIVER_SHORT_TITLE}, and I will make sure every athlete I am registering — or their parent or legal guardian — accepts it before race day`
               : isMinor
-                ? 'I am the parent or legal guardian of this athlete, and I have read and agree to the Release and Waiver of Liability Agreement on their behalf'
-                : 'I have read and agree to the Release and Waiver of Liability Agreement'}
+                ? WAIVER_ACCEPTANCE_GUARDIAN
+                : WAIVER_ACCEPTANCE_ADULT}
           </span>
         </label>
       </div>

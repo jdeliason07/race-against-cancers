@@ -9,9 +9,7 @@ import {
   isRegistered,
 } from '@/lib/stripeRegistration';
 import { checkCompCode, compMetadata } from '@/lib/compRegistration';
-
-// Kept in step with the paid flow's waiver text.
-const WAIVER_VERSION = '2026-v2';
+import { WAIVER_SHORT_TITLE, WAIVER_VERSION } from '@/data/waiver';
 
 /**
  * Registers one athlete against a sponsor-funded block. No payment is taken,
@@ -51,7 +49,7 @@ export async function submitCompRegistration(data: {
   }
 
   if (data.waiverAgreed !== true) {
-    return { error: 'You must accept the Release and Waiver of Liability to register.' };
+    return { error: `You must accept the ${WAIVER_SHORT_TITLE} to register.` };
   }
   if (!data.firstName.trim() || !data.lastName.trim() || !data.email.trim()) {
     return { error: 'First name, last name, and email are required.' };

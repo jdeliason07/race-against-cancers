@@ -66,6 +66,7 @@ export function Footer() {
             <Link href="/faq" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">FAQ</Link>
             <Link href="/about" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">About</Link>
             <Link href="/privacy" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">Privacy</Link>
+            <Link href="/waiver" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">Waiver</Link>
             <a href={`tel:${CONTACT_PHONE.replace(/-/g, '')}`} className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest flex items-center gap-1">
               <Phone size={13} /> {CONTACT_PHONE}
             </a>
