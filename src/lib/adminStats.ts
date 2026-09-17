@@ -2,7 +2,12 @@
 // two passes: one over customers, one over this event's PaymentIntents.
 import type Stripe from 'stripe';
 import { EVENT_NAME } from '@/config/site';
-import { WAITLIST_SOURCE, donationCentsOf, eachEventIntent } from '@/lib/stripeRegistration';
+import {
+  WAITLIST_SOURCE,
+  donationCentsOf,
+  eachDonationIntent,
+  isRegistrationIntent,
+} from '@/lib/stripeRegistration';
 import { COMP_SOURCE } from '@/lib/compRegistration';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -119,13 +124,16 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
   let thisWeekCents = 0;
   let payingRegistrations = 0;
 
-  const intentPass = eachEventIntent(stripe, (intent) => {
+  const intentPass = eachDonationIntent(stripe, (intent) => {
     if (intent.status !== 'succeeded') return;
     // The donation, not the gross charge — registrants cover the card fee on
     // top of it, and that part never reaches us.
     const amount = donationCentsOf(intent);
     totalCents += amount;
-    payingRegistrations++;
+    // Money raised now includes gifts taken outside the registration form, so
+    // the headcount has to be narrower than the total: only a payment carrying
+    // a race someone signed up for is a registration.
+    if (isRegistrationIntent(intent)) payingRegistrations++;
     const paidMs = intent.created * 1000;
     if (paidMs >= cutoff) thisWeekCents += amount;
     const mIndex = dayIndex(paidMs, windowStart);

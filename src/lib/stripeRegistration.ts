@@ -51,20 +51,35 @@ export function donationCentsOf(intent: Stripe.PaymentIntent): number {
   return Number.isInteger(recorded) && recorded > 0 && recorded <= charged ? recorded : charged;
 }
 
+/** True for a payment raised by the registration form, which always tags the
+ * race someone signed up for. Donations taken any other way carry no raceType,
+ * so they are money raised but not a registration. */
+export function isRegistrationIntent(intent: Stripe.PaymentIntent): boolean {
+  return Boolean(intent.metadata?.raceType);
+}
+
 /**
- * Walks every PaymentIntent belonging to this event.
+ * Walks every PaymentIntent that counts toward this event's total.
  *
- * Uses search rather than listing the whole account so Stripe does the
- * filtering. The search index lags writes by up to a minute, which is within
- * the 60s revalidate window on the pages that call this.
+ * Only the registration form stamps `metadata.event`, so a tag is treated as
+ * grounds for EXCLUSION, never for inclusion: an intent counts unless it is
+ * explicitly tagged to some other event. Requiring the tag instead silently
+ * dropped every donation taken another way — payment links, invoices, payments
+ * raised from the Stripe dashboard, anything predating the tag — and a public
+ * total that quietly omits real gifts is worse than one that overcounts a
+ * stray charge, because nobody can see that it is wrong.
+ *
+ * Lists rather than searches for the same reason: the search index only covers
+ * what has been indexed and lags writes by up to a minute, while list is
+ * immediately consistent and does not depend on metadata existing at all.
  */
-export async function eachEventIntent(
+export async function eachDonationIntent(
   stripe: Stripe,
   visit: (intent: Stripe.PaymentIntent) => void,
 ): Promise<void> {
-  await stripe.paymentIntents
-    .search({ query: `metadata['event']:'${EVENT_NAME}'`, limit: 100 })
-    .autoPagingEach((intent) => {
-      visit(intent);
-    });
+  await stripe.paymentIntents.list({ limit: 100 }).autoPagingEach((intent) => {
+    const tag = intent.metadata?.event;
+    if (tag && tag !== EVENT_NAME) return;
+    visit(intent);
+  });
 }

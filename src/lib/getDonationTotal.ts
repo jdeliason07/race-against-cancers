@@ -1,6 +1,11 @@
-import { donationCentsOf, eachEventIntent, getStripe } from '@/lib/stripeRegistration';
+import { OFFLINE_DONATIONS_TOTAL } from '@/config/site';
+import { donationCentsOf, eachDonationIntent, getStripe } from '@/lib/stripeRegistration';
 
 export async function getDonationTotal(): Promise<number> {
+  return (await stripeDonationDollars()) + OFFLINE_DONATIONS_TOTAL;
+}
+
+async function stripeDonationDollars(): Promise<number> {
   const stripe = getStripe();
   if (!stripe) return 0;
 
@@ -11,7 +16,7 @@ export async function getDonationTotal(): Promise<number> {
     // PaymentIntents behind that shouldn't count. And only the donation part
     // of each charge: the card fee registrants cover on top goes to Stripe,
     // so counting it would overstate what was raised.
-    await eachEventIntent(stripe, (intent) => {
+    await eachDonationIntent(stripe, (intent) => {
       if (intent.status === 'succeeded') total += donationCentsOf(intent);
     });
 

@@ -153,3 +153,15 @@ export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";
 export const SITE_URL         = "https://raceagainstcancers.org";
 export const META_DESCRIPTION =
   `Run for a reason. ${EVENT_NAME} — a 10K & Fun Run on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. 10K recommended donation $${RECOMMENDED_DONATION_AMOUNT}, family-friendly Fun Run $${RECOMMENDED_DONATION_FUN_RUN}.`;
+
+// --- OFFLINE DONATIONS --------------------------------------
+// Whole dollars raised outside Stripe — cash, checks, Venmo, a gift mailed in.
+// That money never reaches the card processor, so no amount of fixing the
+// Stripe query will ever surface it; it has to be recorded by hand.
+//
+// This is ADDED to the live Stripe figure, never substituted for it, so card
+// donations keep accruing on top and the thermometer cannot go stale the way a
+// hardcoded total does. Raise it only against receipts you can actually point
+// to — the number is published to donors, so a guess here is a guess told to
+// everyone who reads the page.
+export const OFFLINE_DONATIONS_TOTAL = 0;
