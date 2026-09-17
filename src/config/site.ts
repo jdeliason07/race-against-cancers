@@ -153,17 +153,3 @@ export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";
 export const SITE_URL         = "https://raceagainstcancers.org";
 export const META_DESCRIPTION =
   `Run for a reason. ${EVENT_NAME} — a 10K & Fun Run on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. 10K recommended donation $${RECOMMENDED_DONATION_AMOUNT}, family-friendly Fun Run $${RECOMMENDED_DONATION_FUN_RUN}.`;
-
-// --- DISPLAYED TOTAL RAISED ---------------------------------
-// Manual override for the number on the home page thermometer, in whole
-// dollars. When set, the home page shows this figure instead of the live
-// Stripe total — use it when the money raised so far did not come through
-// this site's checkout (offline gifts, or donations taken before Stripe was
-// wired up), since those are invisible to getDonationTotal().
-//
-// The figure is published to donors, so it should always be money actually
-// received. Keep it current: it does not move on its own, and Stripe
-// donations do NOT accrue on top of it while it is set.
-// Set it back to null to resume live tracking from Stripe.
-// The admin dashboard always reports the real Stripe numbers, override or not.
-export const DONATION_TOTAL_OVERRIDE: number | null = 8101;

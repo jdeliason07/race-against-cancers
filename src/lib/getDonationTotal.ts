@@ -1,12 +1,6 @@
-import { DONATION_TOTAL_OVERRIDE } from '@/config/site';
 import { donationCentsOf, eachEventIntent, getStripe } from '@/lib/stripeRegistration';
 
 export async function getDonationTotal(): Promise<number> {
-  // A manually maintained figure wins over the live one, for money raised
-  // outside this site's checkout. See DONATION_TOTAL_OVERRIDE in config/site —
-  // null there, and the total goes back to being read from Stripe.
-  if (DONATION_TOTAL_OVERRIDE !== null) return DONATION_TOTAL_OVERRIDE;
-
   const stripe = getStripe();
   if (!stripe) return 0;
 
