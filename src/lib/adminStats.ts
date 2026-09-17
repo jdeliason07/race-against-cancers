@@ -1,8 +1,9 @@
 // Server-only. Everything the admin dashboard shows from Stripe, gathered in
 // two passes: one over customers, one over this event's PaymentIntents.
 import type Stripe from 'stripe';
-import { EVENT_NAME } from '@/config/site';
-import { WAITLIST_SOURCE, donationCentsOf, eachEventIntent } from '@/lib/stripeRegistration';
+import {
+  WAITLIST_SOURCE, athleteCountOf, donationCentsOf, eachEventCustomer, eachEventIntent,
+} from '@/lib/stripeRegistration';
 import { COMP_SOURCE } from '@/lib/compRegistration';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -84,36 +85,33 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
   let funRun = 0;
   let covered = 0;
 
-  const customerPass = stripe.customers
-    .search({ query: `metadata['event']:'${EVENT_NAME}'`, limit: 100 })
-    .autoPagingEach((customer) => {
-      const meta = customer.metadata ?? {};
+  const customerPass = eachEventCustomer(stripe, (customer) => {
+    const meta = customer.metadata ?? {};
 
-      if (meta.registered === 'true') {
-        const row = toRow(customer, meta.registeredAt);
-        registrations.push(row);
-        const registeredMs = parseDate(meta.registeredAt);
-        if ((registeredMs ?? 0) >= cutoff) registrationsNew++;
-        const rIndex = dayIndex(registeredMs, windowStart);
-        if (rIndex >= 0) registrationSeries[rIndex]++;
+    if (meta.registered === 'true') {
+      const row = toRow(customer, meta.registeredAt);
+      registrations.push(row);
+      const registeredMs = parseDate(meta.registeredAt);
+      if ((registeredMs ?? 0) >= cutoff) registrationsNew++;
+      const rIndex = dayIndex(registeredMs, windowStart);
+      if (rIndex >= 0) registrationSeries[rIndex]++;
 
-        const count = Number.parseInt(meta.participantCount ?? '1', 10);
-        athletes += Number.isInteger(count) && count > 0 ? count : 1;
+      athletes += athleteCountOf(customer);
 
-        if (meta.raceType === 'fun-run') funRun++;
-        else if (meta.raceType === '10k') tenK++;
-        if (meta.source === COMP_SOURCE) covered++;
-        return;
-      }
+      if (meta.raceType === 'fun-run') funRun++;
+      else if (meta.raceType === '10k') tenK++;
+      if (meta.source === COMP_SOURCE) covered++;
+      return;
+    }
 
-      if (meta.source === WAITLIST_SOURCE) {
-        waitlist.push(toRow(customer, meta.submittedAt));
-        const joinedMs = parseDate(meta.submittedAt);
-        if ((joinedMs ?? 0) >= cutoff) waitlistNew++;
-        const wIndex = dayIndex(joinedMs, windowStart);
-        if (wIndex >= 0) waitlistSeries[wIndex]++;
-      }
-    });
+    if (meta.source === WAITLIST_SOURCE) {
+      waitlist.push(toRow(customer, meta.submittedAt));
+      const joinedMs = parseDate(meta.submittedAt);
+      if ((joinedMs ?? 0) >= cutoff) waitlistNew++;
+      const wIndex = dayIndex(joinedMs, windowStart);
+      if (wIndex >= 0) waitlistSeries[wIndex]++;
+    }
+  });
 
   let totalCents = 0;
   let thisWeekCents = 0;

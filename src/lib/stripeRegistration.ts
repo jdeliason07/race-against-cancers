@@ -52,6 +52,33 @@ export function donationCentsOf(intent: Stripe.PaymentIntent): number {
 }
 
 /**
+ * How many athletes a registration covers.
+ *
+ * One person can register and pay for a group, so the count of registrations
+ * and the count of runners are different numbers. Metadata is free-form, so a
+ * missing or nonsense value falls back to the single athlete we know about.
+ */
+export function athleteCountOf(customer: Stripe.Customer): number {
+  const count = Number.parseInt(customer.metadata?.participantCount ?? '1', 10);
+  return Number.isInteger(count) && count > 0 ? count : 1;
+}
+
+/**
+ * Walks every Customer belonging to this event — registrants, the waitlist,
+ * and comped entries alike. Callers filter on metadata for the ones they want.
+ */
+export async function eachEventCustomer(
+  stripe: Stripe,
+  visit: (customer: Stripe.Customer) => void,
+): Promise<void> {
+  await stripe.customers
+    .search({ query: `metadata['event']:'${EVENT_NAME}'`, limit: 100 })
+    .autoPagingEach((customer) => {
+      visit(customer);
+    });
+}
+
+/**
  * Walks every PaymentIntent belonging to this event.
  *
  * Uses search rather than listing the whole account so Stripe does the

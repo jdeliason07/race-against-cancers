@@ -90,9 +90,11 @@ export const MAX_PARTICIPANTS_PER_REGISTRATION = 100;
 export const TEN_K_LABEL           = "10K (6.2 mi)";
 export const FUN_RUN_LABEL         = "Fun Run (~2 mi)";
 
-// --- FUNDRAISING GOAL ---------------------------------------
-// The number on the home page thermometer.
-export const FUNDRAISING_GOAL = 500000;
+// --- RUNNER GOAL --------------------------------------------
+// The number on the home page tracker. The goal is people on the start line,
+// not dollars: counted in athletes rather than registrations, because one
+// sign-up can bring a whole family and every one of them runs.
+export const RUNNER_GOAL = 3000;
 
 // --- CARD PROCESSING FEE ------------------------------------
 // Stripe keeps 2.9% + $0.30 of every card charge. Rather than letting that come

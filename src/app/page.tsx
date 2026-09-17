@@ -4,9 +4,9 @@ import {
   CHARITY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_FUN_RUN,
   TEN_K_LABEL, FUN_RUN_LABEL,
   EVENT_LOCATION_NAME, FUN_RUN_LOCATION_NAME,
-  ORG_NAME, SITE_URL, REGISTRATION_OPEN, FUNDRAISING_GOAL,
+  ORG_NAME, SITE_URL, REGISTRATION_OPEN, RUNNER_GOAL,
 } from '@/config/site';
-import { getDonationTotal } from '@/lib/getDonationTotal';
+import { getRunnerTotal } from '@/lib/getRunnerTotal';
 import { RegistrationTeaser } from '@/components/ui/RegistrationTeaser';
 import { ReferralAnnouncement } from '@/components/ui/ReferralReward';
 import type { Metadata } from 'next';
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 300; // refresh every 5 minutes
 
-const GOAL = FUNDRAISING_GOAL;
+const GOAL = RUNNER_GOAL;
 
 const eventJsonLd = {
   '@context': 'https://schema.org',
@@ -72,8 +72,8 @@ const eventJsonLd = {
 };
 
 export default async function HomePage() {
-  const raised = await getDonationTotal();
-  const pct = Math.min(Math.round((raised / GOAL) * 100), 100);
+  const runners = await getRunnerTotal();
+  const pct = Math.min(Math.round((runners / GOAL) * 100), 100);
   return (
     <>
       {/* JSON-LD Event Schema */}
@@ -186,18 +186,18 @@ export default async function HomePage() {
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="section-label mb-6">Our goal</p>
           <p className="font-display text-[clamp(64px,12vw,120px)] uppercase leading-none text-ink">
-            ${GOAL.toLocaleString()}
+            {GOAL.toLocaleString()} Runners
           </p>
           <p className="mt-6 max-w-lg mx-auto font-body text-base text-ash">
-            That&rsquo;s what we&rsquo;re raising for the cause. Every registration gets us closer.
-            Every dollar counts. Every person who shows up matters.
+            That&rsquo;s how many we want on the start line for the cause. Every registration gets
+            us closer. Every person who shows up matters.
           </p>
 
           {/* Progress bar */}
           <div className="mt-10 max-w-xl mx-auto">
             <div className="mb-3 flex items-end justify-between">
               <span className="font-display text-3xl uppercase text-ink">
-                ${raised.toLocaleString()}
+                {runners.toLocaleString()} registered
               </span>
               <span className="font-body text-sm text-ash">{pct}% of goal</span>
             </div>
@@ -207,7 +207,7 @@ export default async function HomePage() {
               aria-valuenow={pct}
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-label={`${pct}% of $${GOAL.toLocaleString()} goal raised`}
+              aria-label={`${pct}% of the ${GOAL.toLocaleString()} runner goal registered`}
             >
               <div
                 className="h-full rounded-pill bg-pink transition-all duration-700"
@@ -215,7 +215,7 @@ export default async function HomePage() {
               />
             </div>
             <div className="mt-2 text-right">
-              <span className="font-body text-xs text-ash">Goal: ${GOAL.toLocaleString()}</span>
+              <span className="font-body text-xs text-ash">Goal: {GOAL.toLocaleString()} runners</span>
             </div>
           </div>
 

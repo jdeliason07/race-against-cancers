@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { CHARITY_NAME, CHARITY_URL, REGISTRATION_OPEN } from '@/config/site';
+import { CHARITY_NAME, CHARITY_URL, REGISTRATION_OPEN, RUNNER_GOAL } from '@/config/site';
 import { RegistrationTeaser } from '@/components/ui/RegistrationTeaser';
 import type { Metadata } from 'next';
 
@@ -88,11 +88,11 @@ export default function AboutPage() {
           <h2 className="mb-6 font-display text-3xl uppercase text-ink">Our goal</h2>
           <div className="rounded-card border-2 border-pink bg-blush p-8 text-center">
             <p className="font-display text-[clamp(56px,10vw,96px)] uppercase leading-none text-ink">
-              $500,000
+              {RUNNER_GOAL.toLocaleString()} Runners
             </p>
             <p className="mt-4 font-body text-base text-ash">
-              That&apos;s what we&apos;re raising for Intermountain Cancer Center Utah Valley. Every
-              registration is a donation, and every one of them gets us closer.
+              That&apos;s how many we want running for Intermountain Cancer Center Utah Valley.
+              Every registration is a donation too, and every one of them gets us closer.
             </p>
           </div>
         </section>
