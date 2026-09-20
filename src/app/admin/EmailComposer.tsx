@@ -13,6 +13,14 @@ import type { SenderGroup } from '@/lib/senderNet';
 
 const CONFIRM_WORD = 'SEND';
 
+/** The sync buttons, and which Stripe audience each one copies into Sender. */
+type SyncKind = 'sync-waitlist' | 'sync-registered' | 'sync-incomplete';
+const SYNC_AUDIENCE: Record<SyncKind, Audience> = {
+  'sync-waitlist': 'waitlist',
+  'sync-registered': 'registered',
+  'sync-incomplete': 'incomplete',
+};
+
 const inputClass =
   'w-full rounded-card border border-line bg-paper px-4 py-3 font-body text-sm text-ink focus:border-pink focus:outline-none';
 const labelClass = 'mb-1 block font-body text-xs font-bold uppercase tracking-widest text-ash';
@@ -58,7 +66,7 @@ export function EmailComposer({ defaultEmail }: { defaultEmail: string }) {
   const [testEmail, setTestEmail] = useState(defaultEmail);
   const [confirmText, setConfirmText] = useState('');
 
-  const [busy, setBusy] = useState<'' | 'sync-waitlist' | 'sync-registered' | 'test' | 'send'>('');
+  const [busy, setBusy] = useState<'' | SyncKind | 'test' | 'send'>('');
   const [syncResult, setSyncResult] = useState<ActionResult | null>(null);
   const [testResult, setTestResult] = useState<ActionResult | null>(null);
   const [sendResult, setSendResult] = useState<ActionResult | null>(null);
@@ -94,14 +102,13 @@ export function EmailComposer({ defaultEmail }: { defaultEmail: string }) {
           ? `Type ${CONFIRM_WORD} above to unlock this.`
           : '';
 
-  async function run(kind: 'sync-waitlist' | 'sync-registered' | 'test' | 'send') {
+  async function run(kind: SyncKind | 'test' | 'send') {
     const report =
       kind === 'test' ? setTestResult : kind === 'send' ? setSendResult : setSyncResult;
     setBusy(kind);
     try {
-      if (kind === 'sync-waitlist' || kind === 'sync-registered') {
-        const audience: Audience = kind === 'sync-registered' ? 'registered' : 'waitlist';
-        setSyncResult(await syncAudienceToGroup(audience, groupId));
+      if (kind !== 'test' && kind !== 'send') {
+        setSyncResult(await syncAudienceToGroup(SYNC_AUDIENCE[kind], groupId));
       }
       if (kind === 'test') setTestResult(await sendTestEmail({ toEmail: testEmail, subject, body }));
       if (kind === 'send') {
@@ -166,7 +173,21 @@ export function EmailComposer({ defaultEmail }: { defaultEmail: string }) {
               >
                 {busy === 'sync-registered' ? 'Syncing…' : 'Sync registrations'}
               </button>
+              <button
+                type="button"
+                onClick={() => run('sync-incomplete')}
+                disabled={!groupId || busy !== ''}
+                className="btn-ghost disabled:opacity-40"
+              >
+                {busy === 'sync-incomplete' ? 'Syncing…' : 'Sync unfinished'}
+              </button>
             </div>
+            <p className="mt-2 font-body text-xs text-ash">
+              <span className="font-bold">Unfinished</span> is everyone who filled in the
+              registration form and never completed the payment — the dashboard counts them.
+              Anyone whose payment did go through is left out, so syncing this can&rsquo;t email a
+              paid registrant.
+            </p>
             <Notice result={syncResult} />
           </>
         )}

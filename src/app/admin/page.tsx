@@ -135,6 +135,12 @@ async function StripePanels() {
 
   const window = `Last ${SERIES_DAYS} days`;
 
+  // Everyone who ever reached the card step: the ones who paid, plus the ones
+  // who didn't. Covered entries are excluded because they never had a payment
+  // to abandon, and counting them would flatter the drop-off rate.
+  const startedPaying =
+    stats.registrations.total - stats.registrations.covered + stats.incomplete.total;
+
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -177,6 +183,25 @@ async function StripePanels() {
           />
         </Stat>
 
+        {/* The only leak in the funnel you can act on directly: they gave you
+            their name and email and stopped at the card. Shown only when there
+            are any — a permanent zero is just another number to scroll past. */}
+        {stats.incomplete.total > 0 && (
+          <Stat
+            label="Didn't finish"
+            value={stats.incomplete.total.toLocaleString()}
+            sub={`${stats.incomplete.newThisWeek} this week · ${pct(
+              stats.incomplete.total,
+              startedPaying,
+            )} of everyone who started`}
+          >
+            <Sparkline
+              series={stats.incomplete.series}
+              caption={`${window}, drop-offs per day`}
+            />
+          </Stat>
+        )}
+
         {/* Sits with the other headline numbers because it is one: what the
             referral program has cost us so far. Hidden rather than shown as a
             zero when the referral load failed — the panel below says why. */}
@@ -210,6 +235,18 @@ async function StripePanels() {
       {stats.registrations.total > 0 && (
         <Panel title="Newest registrations">
           <PeopleList rows={stats.registrations.recent} empty="No registrations yet." />
+        </Panel>
+      )}
+
+      {stats.incomplete.total > 0 && (
+        <Panel title="Started but didn't pay">
+          <PeopleList rows={stats.incomplete.recent} empty="Nobody has abandoned a registration." />
+          <p className="mt-2 font-body text-xs text-ash">
+            The newest {Math.min(stats.incomplete.recent.length, stats.incomplete.total)} of{' '}
+            {stats.incomplete.total}, dated when they started. Swipe to Email and hit{' '}
+            <span className="font-bold">Sync unfinished</span> to put all {stats.incomplete.total}{' '}
+            in a Sender group and write to them.
+          </p>
         </Panel>
       )}
 

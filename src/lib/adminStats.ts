@@ -3,6 +3,7 @@
 import type Stripe from 'stripe';
 import {
   WAITLIST_SOURCE, athleteCountOf, donationCentsOf, eachEventCustomer, eachEventIntent,
+  isIncompleteRegistration,
 } from '@/lib/stripeRegistration';
 import { COMP_SOURCE } from '@/lib/compRegistration';
 
@@ -22,6 +23,8 @@ export type DailySeries = number[];
 
 export interface AdminStats {
   waitlist: { total: number; newThisWeek: number; recent: PersonRow[]; series: DailySeries };
+  /** Started the registration form, never completed the payment. */
+  incomplete: { total: number; newThisWeek: number; recent: PersonRow[]; series: DailySeries };
   registrations: {
     total: number;
     athletes: number;
@@ -78,6 +81,9 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
 
   const waitlist: PersonRow[] = [];
   const registrations: PersonRow[] = [];
+  // Held with their customer id rather than counted on the spot: whether one of
+  // these is really a drop-off depends on the intent pass running alongside it.
+  const abandoned: Array<{ id: string; row: PersonRow }> = [];
   let waitlistNew = 0;
   let registrationsNew = 0;
   let athletes = 0;
@@ -104,6 +110,15 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       return;
     }
 
+    // Checked before the waitlist, so someone who joined the waitlist and then
+    // abandoned a registration is counted here and not there. They are the same
+    // person, and the later, stronger signal is the one worth acting on — and
+    // the one that decides which of the two emails they get.
+    if (isIncompleteRegistration(customer, now)) {
+      abandoned.push({ id: customer.id, row: toRow(customer, meta.startedRegistrationAt) });
+      return;
+    }
+
     if (meta.source === WAITLIST_SOURCE) {
       waitlist.push(toRow(customer, meta.submittedAt));
       const joinedMs = parseDate(meta.submittedAt);
@@ -116,9 +131,12 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
   let totalCents = 0;
   let thisWeekCents = 0;
   let payingRegistrations = 0;
+  const paidCustomers = new Set<string>();
 
   const intentPass = eachEventIntent(stripe, (intent) => {
     if (intent.status !== 'succeeded') return;
+    const payer = typeof intent.customer === 'string' ? intent.customer : intent.customer?.id;
+    if (payer) paidCustomers.add(payer);
     // The donation, not the gross charge — registrants cover the card fee on
     // top of it, and that part never reaches us.
     const amount = donationCentsOf(intent);
@@ -132,8 +150,26 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
 
   await Promise.all([customerPass, intentPass]);
 
+  // Now that both passes are in, drop anyone whose money did arrive. Their
+  // customer record can still be missing the `registered` flag — a webhook that
+  // was down, or one still in flight — and a paid registrant must never end up
+  // in a "you didn't finish" email.
+  const incomplete: PersonRow[] = [];
+  const incompleteSeries: number[] = Array(SERIES_DAYS).fill(0);
+  let incompleteNew = 0;
+
+  for (const candidate of abandoned) {
+    if (paidCustomers.has(candidate.id)) continue;
+    incomplete.push(candidate.row);
+    const startedMs = parseDate(candidate.row.at ?? undefined);
+    if ((startedMs ?? 0) >= cutoff) incompleteNew++;
+    const iIndex = dayIndex(startedMs, windowStart);
+    if (iIndex >= 0) incompleteSeries[iIndex]++;
+  }
+
   waitlist.sort(byNewest);
   registrations.sort(byNewest);
+  incomplete.sort(byNewest);
 
   return {
     waitlist: {
@@ -141,6 +177,12 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       newThisWeek: waitlistNew,
       recent: waitlist.slice(0, 4),
       series: waitlistSeries,
+    },
+    incomplete: {
+      total: incomplete.length,
+      newThisWeek: incompleteNew,
+      recent: incomplete.slice(0, 4),
+      series: incompleteSeries,
     },
     registrations: {
       total: registrations.length,
