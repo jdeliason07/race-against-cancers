@@ -46,6 +46,29 @@ function Stat({
   );
 }
 
+/**
+ * The standing "go buy gift cards" reminder, at the top of the dashboard where
+ * it can't be scrolled past. One card per referral, all time, with the
+ * organizers already filtered out in buildReferralReport. Nothing records what
+ * has actually been handed out, so the number only ever goes up — it's the
+ * total earned, not a balance.
+ */
+function RewardBanner({ count }: { count: number }) {
+  return (
+    <div className="mb-8 flex items-center justify-between gap-6 rounded-card border border-petal bg-blush px-5 py-4">
+      <div className="min-w-0">
+        <p className="section-label mb-1">Gift cards owed</p>
+        <p className="font-body text-xs text-ash">
+          {count === 0
+            ? `No referrals to reward yet. Each one earns a ${REFERRAL_REWARD}.`
+            : `One ${REFERRAL_REWARD} each. Already handed some out? They're still counted here.`}
+        </p>
+      </div>
+      <p className="shrink-0 font-display text-5xl uppercase leading-none text-pink">{count}</p>
+    </div>
+  );
+}
+
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-10">
@@ -104,6 +127,8 @@ async function StripePanels() {
 
   return (
     <>
+      {REFERRAL_ENABLED && referral.report && <RewardBanner count={referral.report.allTimeTotal} />}
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {/* The waitlist only exists until registration opens; once it does, it
             stops being a number worth watching. */}

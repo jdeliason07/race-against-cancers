@@ -1,5 +1,6 @@
 // Server-only. Builds the referral tally that gets emailed each week.
 import type Stripe from 'stripe';
+import { REFERRAL_PAYOUT_EXEMPT_FIRST_NAMES } from '@/config/site';
 
 export interface ReferralRow {
   /** Name as the first referred friend spelled it. */
@@ -15,6 +16,11 @@ export interface ReferralRow {
 export interface ReferralReport {
   rows: ReferralRow[];
   newTotal: number;
+  /**
+   * Every referral ever recorded, and so the number of rewards owed: one per
+   * referral, organizers excluded. Nothing here tracks what has already been
+   * handed out, so this only shrinks if a registration is deleted in Stripe.
+   */
   allTimeTotal: number;
   sinceISO: string;
 }
@@ -22,6 +28,19 @@ export interface ReferralReport {
 /** Groups "john  SMITH" and "John Smith" together without losing the spelling. */
 function groupingKey(name: string): string {
   return name.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+const EXEMPT_FIRST_NAMES = new Set(
+  REFERRAL_PAYOUT_EXEMPT_FIRST_NAMES.map((name) => name.trim().toLowerCase()).filter(Boolean),
+);
+
+/**
+ * True for the organizers, who refer people but are not owed a reward. Compares
+ * the first word only — registrants usually type a bare first name — so this is
+ * deliberately blunt; see the note on the constant in site.ts.
+ */
+function isExemptFromReward(name: string): boolean {
+  return EXEMPT_FIRST_NAMES.has(name.trim().split(/\s+/)[0].toLowerCase());
 }
 
 /**
@@ -44,6 +63,9 @@ export async function buildReferralReport(
     .autoPagingEach((customer) => {
       const referrer = customer.metadata?.referredByName?.trim();
       if (!referrer) return;
+      // Dropped here rather than at render time so every consumer — the
+      // dashboard banner, the list, the weekly email — agrees on the totals.
+      if (isExemptFromReward(referrer)) return;
 
       const key = groupingKey(referrer);
       const row = groups.get(key) ?? {

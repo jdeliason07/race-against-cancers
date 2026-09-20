@@ -115,6 +115,14 @@ export const STRIPE_FEE_LABEL       = "2.9% + $0.30";
 // Set REFERRAL_REWARD to "" to switch the whole program off site-wide.
 export const REFERRAL_REWARD: string = "$10 In-N-Out gift card";
 export const REFERRAL_ENABLED = REFERRAL_REWARD !== "";
+// The two of us refer people too, and we aren't buying ourselves gift cards.
+// Anyone whose first name is listed here is left out of the referral tally
+// entirely — the dashboard banner, the list under it, and the weekly email.
+// Matched on the FIRST NAME only, case-insensitively, against whatever the
+// registrant typed in the "Who referred you?" box, because they rarely type a
+// surname. That bluntness cuts both ways: an unrelated Braden who refers a
+// friend is silently dropped too. Empty the array to count everyone again.
+export const REFERRAL_PAYOUT_EXEMPT_FIRST_NAMES: string[] = ["Jack", "Braden"];
 // Optional logo on the referral callout at checkout and in the homepage
 // announcement. Empty, and both render without one.
 //
