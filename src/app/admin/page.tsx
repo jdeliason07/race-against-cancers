@@ -20,6 +20,19 @@ function money(cents: number): string {
   return `$${Math.round(cents / 100).toLocaleString()}`;
 }
 
+/**
+ * Dollars with the cents kept when there are any. money() above rounds, which
+ * is right for a fundraising total and wrong for a donation being measured
+ * against the referral minimum: it would print $94.99 as "$95" and make a
+ * registration that missed the bar look like one that cleared it.
+ */
+function exactMoney(cents: number): string {
+  return `$${(cents / 100).toLocaleString('en-US', {
+    minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
 function when(value: string | null): string {
   if (!value) return '';
   const ms = Date.parse(value);
@@ -210,19 +223,34 @@ async function StripePanels() {
             <>
               <ul className="divide-y divide-line rounded-card border border-line">
                 {referral.report.rows.slice(0, 8).map((row) => (
-                  <li
-                    key={row.name}
-                    className="flex items-baseline justify-between gap-4 px-4 py-3"
-                  >
-                    <span className="font-body text-sm font-bold text-ink">{row.name}</span>
-                    <span className="shrink-0 text-right font-body text-xs text-ash">
-                      {row.newCount} this week · {row.totalCount} owed
-                      {row.belowMinimumCount > 0 && (
-                        <span className="block">
-                          {row.belowMinimumCount} under ${REFERRAL_MIN_DONATION_DOLLARS}
-                        </span>
-                      )}
-                    </span>
+                  <li key={row.name} className="px-4 py-3">
+                    <div className="flex items-baseline justify-between gap-4">
+                      <span className="font-body text-sm font-bold text-ink">{row.name}</span>
+                      <span className="shrink-0 font-body text-xs text-ash">
+                        {row.newCount} this week · {row.totalCount} owed
+                      </span>
+                    </div>
+                    {/* Every miss, with what they actually gave and the gap —
+                        nearest first, because whether to honour a referral that
+                        came up a dollar short is a call worth making by hand. */}
+                    {row.belowMinimum.length > 0 && (
+                      <ul className="mt-2 space-y-1 border-l-2 border-line pl-3">
+                        {row.belowMinimum.map((miss) => (
+                          <li
+                            key={`${miss.name}-${miss.donatedCents}`}
+                            className="flex items-baseline justify-between gap-3 font-body text-xs text-ash"
+                          >
+                            <span className="min-w-0 truncate">{miss.name}</span>
+                            <span className="shrink-0">
+                              {exactMoney(miss.donatedCents)} ·{' '}
+                              <span className="text-pink">
+                                {exactMoney(miss.shortCents)} short
+                              </span>
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </li>
                 ))}
               </ul>

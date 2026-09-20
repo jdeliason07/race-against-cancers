@@ -18,8 +18,27 @@ import {
   REFERRAL_REWARD,
 } from '@/config/site';
 import { getStripe } from '@/lib/stripeRegistration';
-import { buildReferralReport, type ReferralReport } from '@/lib/referralReport';
+import {
+  buildReferralReport,
+  type ReferralReport,
+  type ReferralRow,
+} from '@/lib/referralReport';
 import { isSenderConfigured, sendTransactional } from '@/lib/senderNet';
+
+/** Dollars, keeping the cents when there are any — see the note in admin/page.tsx. */
+function exactMoney(cents: number): string {
+  return `$${(cents / 100).toLocaleString('en-US', {
+    minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+/** "Ana $90 ($5 short)", nearest miss first, for the shortfall column. */
+function shortfallText(row: ReferralRow): string {
+  return row.belowMinimum
+    .map((miss) => `${miss.name} ${exactMoney(miss.donatedCents)} (${exactMoney(miss.shortCents)} short)`)
+    .join('; ');
+}
 
 function escapeHtml(value: string): string {
   return value
@@ -41,7 +60,7 @@ function renderHtml(report: ReferralReport): string {
         <td style="padding:8px 12px;border-bottom:1px solid #ECE2E6;">${escapeHtml(row.name)}</td>
         <td style="padding:8px 12px;border-bottom:1px solid #ECE2E6;text-align:right;font-weight:bold;">${row.newCount}</td>
         <td style="padding:8px 12px;border-bottom:1px solid #ECE2E6;text-align:right;">${row.totalCount}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #ECE2E6;text-align:right;color:#6E5C64;">${row.belowMinimumCount || ''}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #ECE2E6;color:#6E5C64;font-size:12px;">${escapeHtml(shortfallText(row))}</td>
         <td style="padding:8px 12px;border-bottom:1px solid #ECE2E6;color:#6E5C64;font-size:12px;">${escapeHtml(row.newlyReferred.join(', '))}</td>
       </tr>`,
     )
@@ -60,7 +79,7 @@ function renderHtml(report: ReferralReport): string {
           <th style="padding:8px 12px;border-bottom:2px solid #F0307A;">Referrer</th>
           <th style="padding:8px 12px;border-bottom:2px solid #F0307A;text-align:right;">This week</th>
           <th style="padding:8px 12px;border-bottom:2px solid #F0307A;text-align:right;">Owed</th>
-          <th style="padding:8px 12px;border-bottom:2px solid #F0307A;text-align:right;">Under $${REFERRAL_MIN_DONATION_DOLLARS}</th>
+          <th style="padding:8px 12px;border-bottom:2px solid #F0307A;">Missed the minimum</th>
           <th style="padding:8px 12px;border-bottom:2px solid #F0307A;">Newly referred</th>
         </tr>
       </thead>
@@ -74,7 +93,7 @@ function renderText(report: ReferralReport): string {
   const lines = report.rows.map(
     (row) =>
       `${row.newCount} new (${row.totalCount} owed)  ${row.name}` +
-      (row.belowMinimumCount ? `  [${row.belowMinimumCount} under $${REFERRAL_MIN_DONATION_DOLLARS}]` : ''),
+      (row.belowMinimum.length ? `\n    missed: ${shortfallText(row)}` : ''),
   );
   return `${report.newTotal} new reward(s) owed this week, ${report.allTimeTotal} all time.\n\n${lines.join('\n')}`;
 }

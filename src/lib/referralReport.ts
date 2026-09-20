@@ -5,6 +5,16 @@ import {
   REFERRAL_PAYOUT_EXEMPT_FIRST_NAMES,
 } from '@/config/site';
 
+/** A referral that arrived, but whose registration donated too little to earn a reward. */
+export interface Shortfall {
+  /** The referred registrant, as Stripe has them. */
+  name: string;
+  /** What they actually gave, in cents, net of the card fee. */
+  donatedCents: number;
+  /** How far under the minimum that left them, in cents. Always positive. */
+  shortCents: number;
+}
+
 export interface ReferralRow {
   /** Name as the first referred friend spelled it. */
   name: string;
@@ -13,11 +23,13 @@ export interface ReferralRow {
   /** Rewarded registrations naming this person, all time. */
   totalCount: number;
   /**
-   * Registrations naming this person whose donation fell under the minimum, all
-   * time. Counted rather than discarded so a referrer who looks empty can be
-   * told why, instead of the referral just vanishing.
+   * Registrations naming this person that missed the donation minimum, all
+   * time, nearest miss first. Kept with their amounts rather than discarded or
+   * merely counted: a referral that came $1 short and one that came $90 short
+   * are the same row otherwise, and only one of them is worth honouring
+   * anyway.
    */
-  belowMinimumCount: number;
+  belowMinimum: Shortfall[];
   /** Who they referred in the window, for spot-checking. */
   newlyReferred: string[];
 }
@@ -32,7 +44,7 @@ export interface ReferralReport {
    * in Stripe.
    */
   allTimeTotal: number;
-  /** Referrals that were real but whose registration donated too little. */
+  /** How many referrals were real but whose registration donated too little. */
   belowMinimumTotal: number;
   sinceISO: string;
 }
@@ -71,6 +83,11 @@ function donatedCentsOf(customer: Stripe.Customer): number {
   return Number.isInteger(cents) && cents > 0 ? cents : 0;
 }
 
+/** How a referred registrant is identified back to the organizer. */
+function referredName(customer: Stripe.Customer): string {
+  return customer.name ?? customer.email ?? '(unnamed)';
+}
+
 /**
  * Counts completed registrations that named a referrer. Derived from the
  * records every time, so re-running never double-counts and a repeated webhook
@@ -101,14 +118,19 @@ export async function buildReferralReport(
         name: referrer.replace(/\s+/g, ' '),
         newCount: 0,
         totalCount: 0,
-        belowMinimumCount: 0,
+        belowMinimum: [],
         newlyReferred: [],
       };
 
       // A referral is real either way — it just doesn't earn a card unless the
       // registration it brought in cleared the minimum.
-      if (donatedCentsOf(customer) < MINIMUM_DONATION_CENTS) {
-        row.belowMinimumCount++;
+      const donatedCents = donatedCentsOf(customer);
+      if (donatedCents < MINIMUM_DONATION_CENTS) {
+        row.belowMinimum.push({
+          name: referredName(customer),
+          donatedCents,
+          shortCents: MINIMUM_DONATION_CENTS - donatedCents,
+        });
         belowMinimumTotal++;
         groups.set(key, row);
         return;
@@ -121,11 +143,17 @@ export async function buildReferralReport(
       if (registeredAt && new Date(registeredAt) >= since) {
         row.newCount++;
         newTotal++;
-        row.newlyReferred.push(customer.name ?? customer.email ?? '(unnamed)');
+        row.newlyReferred.push(referredName(customer));
       }
 
       groups.set(key, row);
     });
+
+  // Nearest miss first within a row: the near-misses are the only ones there is
+  // a decision to make about.
+  for (const row of groups.values()) {
+    row.belowMinimum.sort((a, b) => a.shortCents - b.shortCents);
+  }
 
   // Whoever is owed the most comes first; the rows that earned nothing sink to
   // the bottom rather than being dropped, so a referrer is never invisible.
@@ -133,7 +161,7 @@ export async function buildReferralReport(
     (a, b) =>
       b.newCount - a.newCount ||
       b.totalCount - a.totalCount ||
-      b.belowMinimumCount - a.belowMinimumCount,
+      b.belowMinimum.length - a.belowMinimum.length,
   );
 
   return { rows, newTotal, allTimeTotal, belowMinimumTotal, sinceISO: since.toISOString() };
