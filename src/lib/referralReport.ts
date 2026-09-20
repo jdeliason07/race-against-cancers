@@ -1,14 +1,23 @@
 // Server-only. Builds the referral tally that gets emailed each week.
 import type Stripe from 'stripe';
-import { REFERRAL_PAYOUT_EXEMPT_FIRST_NAMES } from '@/config/site';
+import {
+  REFERRAL_MIN_DONATION_DOLLARS,
+  REFERRAL_PAYOUT_EXEMPT_FIRST_NAMES,
+} from '@/config/site';
 
 export interface ReferralRow {
   /** Name as the first referred friend spelled it. */
   name: string;
-  /** Registrations naming this person in the reporting window. */
+  /** Rewarded registrations naming this person in the reporting window. */
   newCount: number;
-  /** Registrations naming this person, all time. */
+  /** Rewarded registrations naming this person, all time. */
   totalCount: number;
+  /**
+   * Registrations naming this person whose donation fell under the minimum, all
+   * time. Counted rather than discarded so a referrer who looks empty can be
+   * told why, instead of the referral just vanishing.
+   */
+  belowMinimumCount: number;
   /** Who they referred in the window, for spot-checking. */
   newlyReferred: string[];
 }
@@ -17,11 +26,14 @@ export interface ReferralReport {
   rows: ReferralRow[];
   newTotal: number;
   /**
-   * Every referral ever recorded, and so the number of rewards owed: one per
-   * referral, organizers excluded. Nothing here tracks what has already been
-   * handed out, so this only shrinks if a registration is deleted in Stripe.
+   * Every referral that earned a reward, and so the number owed: one per
+   * qualifying referral, organizers excluded. Nothing here tracks what has
+   * already been handed out, so this only shrinks if a registration is deleted
+   * in Stripe.
    */
   allTimeTotal: number;
+  /** Referrals that were real but whose registration donated too little. */
+  belowMinimumTotal: number;
   sinceISO: string;
 }
 
@@ -43,6 +55,22 @@ function isExemptFromReward(name: string): boolean {
   return EXEMPT_FIRST_NAMES.has(name.trim().split(/\s+/)[0].toLowerCase());
 }
 
+const MINIMUM_DONATION_CENTS = REFERRAL_MIN_DONATION_DOLLARS * 100;
+
+/**
+ * What the referred person actually gave, in cents.
+ *
+ * The webhook copies this off the succeeded PaymentIntent as `donationAmount`,
+ * already net of the card fee the registrant covered. A record without it is
+ * read as zero: an unproven donation is not evidence of a qualifying one, and
+ * an unearned card is the more expensive mistake to make by default. Comped
+ * entries carry a literal '0' and fall out here for the same reason.
+ */
+function donatedCentsOf(customer: Stripe.Customer): number {
+  const cents = Number.parseInt(customer.metadata?.donationAmount ?? '', 10);
+  return Number.isInteger(cents) && cents > 0 ? cents : 0;
+}
+
 /**
  * Counts completed registrations that named a referrer. Derived from the
  * records every time, so re-running never double-counts and a repeated webhook
@@ -57,6 +85,7 @@ export async function buildReferralReport(
   const groups = new Map<string, ReferralRow>();
   let newTotal = 0;
   let allTimeTotal = 0;
+  let belowMinimumTotal = 0;
 
   await stripe.customers
     .search({ query: "metadata['registered']:'true'", limit: 100 })
@@ -72,8 +101,18 @@ export async function buildReferralReport(
         name: referrer.replace(/\s+/g, ' '),
         newCount: 0,
         totalCount: 0,
+        belowMinimumCount: 0,
         newlyReferred: [],
       };
+
+      // A referral is real either way — it just doesn't earn a card unless the
+      // registration it brought in cleared the minimum.
+      if (donatedCentsOf(customer) < MINIMUM_DONATION_CENTS) {
+        row.belowMinimumCount++;
+        belowMinimumTotal++;
+        groups.set(key, row);
+        return;
+      }
 
       row.totalCount++;
       allTimeTotal++;
@@ -88,9 +127,14 @@ export async function buildReferralReport(
       groups.set(key, row);
     });
 
+  // Whoever is owed the most comes first; the rows that earned nothing sink to
+  // the bottom rather than being dropped, so a referrer is never invisible.
   const rows = [...groups.values()].sort(
-    (a, b) => b.newCount - a.newCount || b.totalCount - a.totalCount,
+    (a, b) =>
+      b.newCount - a.newCount ||
+      b.totalCount - a.totalCount ||
+      b.belowMinimumCount - a.belowMinimumCount,
   );
 
-  return { rows, newTotal, allTimeTotal, sinceISO: since.toISOString() };
+  return { rows, newTotal, allTimeTotal, belowMinimumTotal, sinceISO: since.toISOString() };
 }

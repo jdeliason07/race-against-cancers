@@ -1,5 +1,12 @@
 import { Suspense } from 'react';
-import { CONTACT_EMAIL, REFERRAL_ENABLED, REFERRAL_REWARD, REGISTRATION_OPEN } from '@/config/site';
+import {
+  CONTACT_EMAIL,
+  REFERRAL_ENABLED,
+  REFERRAL_MIN_DONATION_DOLLARS,
+  REFERRAL_REWARD,
+  REFERRAL_REWARD_VALUE_CENTS,
+  REGISTRATION_OPEN,
+} from '@/config/site';
 import { getStripe } from '@/lib/stripeRegistration';
 import { buildAdminStats, SERIES_DAYS, type PersonRow } from '@/lib/adminStats';
 import { buildReferralReport } from '@/lib/referralReport';
@@ -25,6 +32,19 @@ function pct(part: number, whole: number): string {
   return `${Math.round((part / whole) * 100)}%`;
 }
 
+/**
+ * The line under the cards-owed number: what the pile costs, and how many
+ * referrals missed the donation minimum. The near-misses are named here rather
+ * than left out, because "why is this lower than I expected" is the first
+ * question the number raises.
+ */
+function cardsOwedSub(owed: number, belowMinimum: number): string {
+  const cost = `${money(owed * REFERRAL_REWARD_VALUE_CENTS)} in ${REFERRAL_REWARD}s`;
+  if (belowMinimum === 0) return cost;
+  const missed = `${belowMinimum} under $${REFERRAL_MIN_DONATION_DOLLARS} didn't qualify`;
+  return `${cost} · ${missed}`;
+}
+
 function Stat({
   label,
   value,
@@ -42,29 +62,6 @@ function Stat({
       <p className="font-display text-3xl uppercase leading-none text-ink">{value}</p>
       {sub && <p className="mt-2 font-body text-xs text-ash">{sub}</p>}
       {children}
-    </div>
-  );
-}
-
-/**
- * The standing "go buy gift cards" reminder, at the top of the dashboard where
- * it can't be scrolled past. One card per referral, all time, with the
- * organizers already filtered out in buildReferralReport. Nothing records what
- * has actually been handed out, so the number only ever goes up — it's the
- * total earned, not a balance.
- */
-function RewardBanner({ count }: { count: number }) {
-  return (
-    <div className="mb-8 flex items-center justify-between gap-6 rounded-card border border-petal bg-blush px-5 py-4">
-      <div className="min-w-0">
-        <p className="section-label mb-1">Gift cards owed</p>
-        <p className="font-body text-xs text-ash">
-          {count === 0
-            ? `No referrals to reward yet. Each one earns a ${REFERRAL_REWARD}.`
-            : `One ${REFERRAL_REWARD} each. Already handed some out? They're still counted here.`}
-        </p>
-      </div>
-      <p className="shrink-0 font-display text-5xl uppercase leading-none text-pink">{count}</p>
     </div>
   );
 }
@@ -127,8 +124,6 @@ async function StripePanels() {
 
   return (
     <>
-      {REFERRAL_ENABLED && referral.report && <RewardBanner count={referral.report.allTimeTotal} />}
-
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {/* The waitlist only exists until registration opens; once it does, it
             stops being a number worth watching. */}
@@ -168,6 +163,17 @@ async function StripePanels() {
             caption={`${window}, raised per day`}
           />
         </Stat>
+
+        {/* Sits with the other headline numbers because it is one: what the
+            referral program has cost us so far. Hidden rather than shown as a
+            zero when the referral load failed — the panel below says why. */}
+        {REFERRAL_ENABLED && referral.report && (
+          <Stat
+            label="Cards owed"
+            value={referral.report.allTimeTotal.toLocaleString()}
+            sub={cardsOwedSub(referral.report.allTimeTotal, referral.report.belowMinimumTotal)}
+          />
+        )}
       </div>
 
       {stats.registrations.total > 0 && (
@@ -209,15 +215,21 @@ async function StripePanels() {
                     className="flex items-baseline justify-between gap-4 px-4 py-3"
                   >
                     <span className="font-body text-sm font-bold text-ink">{row.name}</span>
-                    <span className="font-body text-xs text-ash">
-                      {row.newCount} this week · {row.totalCount} total
+                    <span className="shrink-0 text-right font-body text-xs text-ash">
+                      {row.newCount} this week · {row.totalCount} owed
+                      {row.belowMinimumCount > 0 && (
+                        <span className="block">
+                          {row.belowMinimumCount} under ${REFERRAL_MIN_DONATION_DOLLARS}
+                        </span>
+                      )}
                     </span>
                   </li>
                 ))}
               </ul>
               <p className="mt-2 font-body text-xs text-ash">
-                Names are typed by registrants and aren&rsquo;t verified. Each one is worth a{' '}
-                {REFERRAL_REWARD}.
+                Names are typed by registrants and aren&rsquo;t verified. A referral earns a{' '}
+                {REFERRAL_REWARD} only if that registration donated $
+                {REFERRAL_MIN_DONATION_DOLLARS} or more.
               </p>
             </>
           ) : (

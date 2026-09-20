@@ -123,6 +123,18 @@ export const REFERRAL_ENABLED = REFERRAL_REWARD !== "";
 // surname. That bluntness cuts both ways: an unrelated Braden who refers a
 // friend is silently dropped too. Empty the array to count everyone again.
 export const REFERRAL_PAYOUT_EXEMPT_FIRST_NAMES: string[] = ["Jack", "Braden"];
+// What one reward costs us, in cents. Only used to price the tally on the
+// admin dashboard — keep it in step with the dollar figure inside
+// REFERRAL_REWARD above, which is the string everyone actually reads.
+export const REFERRAL_REWARD_VALUE_CENTS = 1000;
+// The referred registration has to be worth having. A referral only earns a
+// reward if the person who named their referrer donated at least this much —
+// otherwise a $5 sign-up costs us a $10 card, and the incentive pays to lose
+// money. Measured on the donation, not the total charge: the card fee the
+// registrant covers on top never reaches us, so it can't count toward this.
+// A group registration is judged on its one donation, not per athlete.
+// Set to 0 to reward every referral regardless of amount.
+export const REFERRAL_MIN_DONATION_DOLLARS = 95;
 // Optional logo on the referral callout at checkout and in the homepage
 // announcement. Empty, and both render without one.
 //
