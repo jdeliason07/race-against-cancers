@@ -133,8 +133,14 @@ export const REFERRAL_REWARD_VALUE_CENTS = 1000;
 // money. Measured on the donation, not the total charge: the card fee the
 // registrant covers on top never reaches us, so it can't count toward this.
 // A group registration is judged on its one donation, not per athlete.
-// Set to 0 to reward every referral regardless of amount.
-export const REFERRAL_MIN_DONATION_DOLLARS = 95;
+//
+// Set at the full recommended 10K donation deliberately, and kept as its own
+// number rather than pointed at RECOMMENDED_DONATION_AMOUNT so that changing
+// what we ask for doesn't silently move what we pay out for. It is a bar, not
+// a rule: the dashboard lists every near-miss with the exact gap, so a
+// registration that came a dollar short is a card you can still choose to
+// send. Set to 0 to reward every referral regardless of amount.
+export const REFERRAL_MIN_DONATION_DOLLARS = 99;
 // Optional logo on the referral callout at checkout and in the homepage
 // announcement. Empty, and both render without one.
 //
