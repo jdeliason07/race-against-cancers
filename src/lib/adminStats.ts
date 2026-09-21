@@ -9,8 +9,38 @@ import { COMP_SOURCE } from '@/lib/compRegistration';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
-/** Sparkline window. 14 reads as "the last fortnight" at a glance. */
-export const SERIES_DAYS = 14;
+
+/**
+ * Where daily and weekly bars stop being readable.
+ *
+ * The sparkline is 240px wide however long the event has been running, so the
+ * bars can't keep getting thinner — past each limit the buckets widen a step
+ * instead. Daily bars cover the first six weeks, weekly bars the first nine
+ * months, and anything older is drawn by month.
+ */
+const MAX_DAY_BUCKETS = 45;
+const MAX_WEEK_BUCKETS = 40;
+
+export type SeriesUnit = 'day' | 'week' | 'month';
+
+/**
+ * A sparkline's data: one value per calendar bucket, oldest first, running
+ * from the first thing that ever happened to today. All three series share a
+ * unit and the same bucket starts, so the charts stack up as one timeline
+ * instead of three unrelated ones.
+ */
+export interface Series {
+  values: number[];
+  /** Start of each bucket, in ms. Parallel to `values`. */
+  startsMs: number[];
+  unit: SeriesUnit;
+}
+
+export interface SeriesEvent {
+  ms: number;
+  /** 1 for a headcount, an amount in cents for money. */
+  value: number;
+}
 
 export interface PersonRow {
   name: string;
@@ -26,12 +56,9 @@ export interface PersonRow {
   covered?: boolean;
 }
 
-/** One value per day, oldest first, length SERIES_DAYS. */
-export type DailySeries = number[];
-
 export interface AdminStats {
   /** `people` is every row, newest first — the UI decides how many to show. */
-  waitlist: { total: number; newThisWeek: number; people: PersonRow[]; series: DailySeries };
+  waitlist: { total: number; newThisWeek: number; people: PersonRow[]; series: Series };
   registrations: {
     total: number;
     athletes: number;
@@ -40,21 +67,94 @@ export interface AdminStats {
     funRun: number;
     covered: number;
     people: PersonRow[];
-    series: DailySeries;
+    series: Series;
   };
   money: {
     totalCents: number;
     thisWeekCents: number;
     payingRegistrations: number;
-    series: DailySeries;
+    series: Series;
   };
 }
 
-/** Index into the sparkline for a timestamp, or -1 if outside the window. */
-function dayIndex(ms: number | null, startOfWindow: number): number {
-  if (ms === null || ms < startOfWindow) return -1;
-  const index = Math.floor((ms - startOfWindow) / DAY_MS);
-  return index >= 0 && index < SERIES_DAYS ? index : -1;
+function startOfDay(ms: number): Date {
+  const d = new Date(ms);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+/** Daily bars while the event is young, then weekly, then monthly. */
+function chooseUnit(earliest: number, now: number): SeriesUnit {
+  const days = Math.floor((now - earliest) / DAY_MS) + 1;
+  if (days <= MAX_DAY_BUCKETS) return 'day';
+  if (days <= MAX_WEEK_BUCKETS * 7) return 'week';
+  return 'month';
+}
+
+/**
+ * Every bucket start from the earliest event to today.
+ *
+ * Stepping with setDate/setMonth rather than adding a fixed number of
+ * milliseconds keeps the buckets on calendar boundaries: 24h steps drift an
+ * hour across a daylight-saving change and start filing events into the
+ * neighbouring bar.
+ */
+function bucketStarts(earliest: number, now: number, unit: SeriesUnit): number[] {
+  const cursor = startOfDay(earliest);
+  if (unit === 'week') cursor.setDate(cursor.getDate() - cursor.getDay());
+  if (unit === 'month') cursor.setDate(1);
+
+  const starts: number[] = [];
+  while (cursor.getTime() <= now) {
+    starts.push(cursor.getTime());
+    if (unit === 'month') cursor.setMonth(cursor.getMonth() + 1);
+    else cursor.setDate(cursor.getDate() + (unit === 'week' ? 7 : 1));
+  }
+  return starts;
+}
+
+/**
+ * One Series per group of events, all sharing a single set of buckets.
+ *
+ * Shared on purpose: the three sparklines sit in a row, and bars that line up
+ * only mean something if they cover the same stretch of time. The buckets run
+ * from the earliest event in any group — with nothing at all, from today, so
+ * the charts draw an honest zero instead of an empty box.
+ */
+export function buildSeriesSet(groups: SeriesEvent[][], now: number): Series[] {
+  let earliest = now;
+  for (const group of groups) {
+    for (const event of group) if (event.ms < earliest) earliest = event.ms;
+  }
+
+  const unit = chooseUnit(earliest, now);
+  const startsMs = bucketStarts(earliest, now, unit);
+
+  return groups.map((group) => {
+    const values = new Array<number>(startsMs.length).fill(0);
+    for (const event of group) {
+      const index = bucketIndex(startsMs, event.ms);
+      if (index >= 0) values[index] += event.value;
+    }
+    return { values, startsMs, unit };
+  });
+}
+
+/** The bucket a timestamp belongs to, or -1 if it predates the first one. */
+function bucketIndex(starts: number[], ms: number): number {
+  let lo = 0;
+  let hi = starts.length - 1;
+  let found = -1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (starts[mid] <= ms) {
+      found = mid;
+      lo = mid + 1;
+    } else {
+      hi = mid - 1;
+    }
+  }
+  return found;
 }
 
 function parseDate(value: string | undefined): number | null {
@@ -78,13 +178,13 @@ function byNewest(a: PersonRow, b: PersonRow): number {
 export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
   const now = Date.now();
   const cutoff = now - WEEK_MS;
-  // Start at midnight so each bucket is a calendar day, not a rolling 24h slice.
-  const todayStart = new Date(new Date(now).toDateString()).getTime();
-  const windowStart = todayStart - (SERIES_DAYS - 1) * DAY_MS;
 
-  const waitlistSeries: number[] = Array(SERIES_DAYS).fill(0);
-  const registrationSeries: number[] = Array(SERIES_DAYS).fill(0);
-  const moneySeries: number[] = Array(SERIES_DAYS).fill(0);
+  // Events are collected first and bucketed afterwards: the chart starts at
+  // the first thing that ever happened, and that isn't known until the last
+  // customer and the last payment have been read.
+  const waitlistEvents: SeriesEvent[] = [];
+  const registrationEvents: SeriesEvent[] = [];
+  const paymentEvents: SeriesEvent[] = [];
 
   const waitlist: PersonRow[] = [];
   const registrations: PersonRow[] = [];
@@ -107,8 +207,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       });
       const registeredMs = parseDate(meta.registeredAt);
       if ((registeredMs ?? 0) >= cutoff) registrationsNew++;
-      const rIndex = dayIndex(registeredMs, windowStart);
-      if (rIndex >= 0) registrationSeries[rIndex]++;
+      if (registeredMs !== null) registrationEvents.push({ ms: registeredMs, value: 1 });
 
       athletes += athleteCountOf(customer);
 
@@ -122,8 +221,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       waitlist.push(toRow(customer, meta.submittedAt));
       const joinedMs = parseDate(meta.submittedAt);
       if ((joinedMs ?? 0) >= cutoff) waitlistNew++;
-      const wIndex = dayIndex(joinedMs, windowStart);
-      if (wIndex >= 0) waitlistSeries[wIndex]++;
+      if (joinedMs !== null) waitlistEvents.push({ ms: joinedMs, value: 1 });
     }
   });
 
@@ -140,14 +238,18 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
     payingRegistrations++;
     const paidMs = intent.created * 1000;
     if (paidMs >= cutoff) thisWeekCents += amount;
-    const mIndex = dayIndex(paidMs, windowStart);
-    if (mIndex >= 0) moneySeries[mIndex] += amount;
+    paymentEvents.push({ ms: paidMs, value: amount });
   });
 
   await Promise.all([customerPass, intentPass]);
 
   waitlist.sort(byNewest);
   registrations.sort(byNewest);
+
+  const [waitlistSeries, registrationSeries, moneySeries] = buildSeriesSet(
+    [waitlistEvents, registrationEvents, paymentEvents],
+    now,
+  );
 
   return {
     waitlist: {

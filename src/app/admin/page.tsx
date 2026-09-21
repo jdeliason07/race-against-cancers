@@ -8,7 +8,7 @@ import {
   REGISTRATION_OPEN,
 } from '@/config/site';
 import { getStripe } from '@/lib/stripeRegistration';
-import { buildAdminStats, SERIES_DAYS } from '@/lib/adminStats';
+import { buildAdminStats } from '@/lib/adminStats';
 import { buildReferralReport } from '@/lib/referralReport';
 import { isSenderConfigured, listCampaigns } from '@/lib/senderNet';
 import { SwipeDeck } from './SwipeDeck';
@@ -94,8 +94,6 @@ async function StripePanels() {
     );
   }
 
-  const window = `Last ${SERIES_DAYS} days`;
-
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -107,7 +105,7 @@ async function StripePanels() {
             value={stats.waitlist.total.toLocaleString()}
             sub={`${stats.waitlist.newThisWeek} joined this week`}
           >
-            <Sparkline series={stats.waitlist.series} caption={`${window}, signups per day`} />
+            <Sparkline series={stats.waitlist.series} label="signups" />
           </Stat>
         )}
 
@@ -120,10 +118,7 @@ async function StripePanels() {
               : `${stats.registrations.newThisWeek} this week`
           }
         >
-          <Sparkline
-            series={stats.registrations.series}
-            caption={`${window}, registrations per day`}
-          />
+          <Sparkline series={stats.registrations.series} label="registrations" />
         </Stat>
 
         <Stat
@@ -131,11 +126,7 @@ async function StripePanels() {
           value={money(stats.money.totalCents)}
           sub={`${money(stats.money.thisWeekCents)} this week`}
         >
-          <Sparkline
-            series={stats.money.series}
-            format={(cents) => money(cents)}
-            caption={`${window}, raised per day`}
-          />
+          <Sparkline series={stats.money.series} format={money} label="raised" />
         </Stat>
 
         {/* Sits with the other headline numbers because it is one: what the
