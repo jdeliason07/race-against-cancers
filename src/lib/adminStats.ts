@@ -2,10 +2,11 @@
 // two passes: one over customers, one over this event's PaymentIntents.
 import type Stripe from 'stripe';
 import {
-  WAITLIST_SOURCE, athleteCountOf, donationCentsOf, eachEventCustomer, eachEventIntent,
-  recordedDonationCentsOf,
+  WAITLIST_SOURCE, athleteCountOf, donationCentsOf, eachAccountCharge, eachEventCustomer,
+  eventTagOf, intentOf, recordedDonationCentsOf,
 } from '@/lib/stripeRegistration';
 import { COMP_SOURCE } from '@/lib/compRegistration';
+import { EVENT_NAME } from '@/config/site';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -70,7 +71,13 @@ export interface AdminStats {
     series: Series;
   };
   money: {
+    /** Everything raised: registrations plus direct gifts, less refunds. */
     totalCents: number;
+    /** The part that came through the registration form. */
+    registrationCents: number;
+    /** The part that did not — a sponsor's invoice, a Payment Link. */
+    otherCents: number;
+    refundedCents: number;
     thisWeekCents: number;
     payingRegistrations: number;
     series: Series;
@@ -225,23 +232,47 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
     }
   });
 
-  let totalCents = 0;
+  let registrationCents = 0;
+  let otherCents = 0;
+  let refundedCents = 0;
   let thisWeekCents = 0;
   let payingRegistrations = 0;
 
-  const intentPass = eachEventIntent(stripe, (intent) => {
-    if (intent.status !== 'succeeded') return;
-    // The donation, not the gross charge — registrants cover the card fee on
-    // top of it, and that part never reaches us.
-    const amount = donationCentsOf(intent);
-    totalCents += amount;
-    payingRegistrations++;
-    const paidMs = intent.created * 1000;
-    if (paidMs >= cutoff) thisWeekCents += amount;
-    paymentEvents.push({ ms: paidMs, value: amount });
+  const chargePass = eachAccountCharge(stripe, (charge) => {
+    if (charge.status !== 'succeeded') return;
+
+    // Tagged for some other event: somebody else's money, not this race's.
+    // Untagged is the common case and counts — only the registration form
+    // writes a tag at all.
+    const tag = eventTagOf(charge);
+    if (tag !== null && tag !== EVENT_NAME) return;
+
+    const intent = intentOf(charge);
+    const isRegistration = tag === EVENT_NAME && intent !== null;
+
+    // A registration's donation excludes the card fee the registrant covered
+    // on top of it — that part never reaches us. A direct gift has no such
+    // split: what the donor chose to send is the gift.
+    const gift = isRegistration ? donationCentsOf(intent) : charge.amount;
+    // A refund comes off the gift first, so a fee-covered registration that
+    // was refunded in full nets to zero rather than to minus the fee.
+    const refunded = Math.min(charge.amount_refunded, gift);
+    const net = gift - refunded;
+
+    refundedCents += refunded;
+    if (isRegistration) {
+      registrationCents += net;
+      if (net > 0) payingRegistrations++;
+    } else {
+      otherCents += net;
+    }
+
+    const paidMs = charge.created * 1000;
+    if (paidMs >= cutoff) thisWeekCents += net;
+    if (net > 0) paymentEvents.push({ ms: paidMs, value: net });
   });
 
-  await Promise.all([customerPass, intentPass]);
+  await Promise.all([customerPass, chargePass]);
 
   waitlist.sort(byNewest);
   registrations.sort(byNewest);
@@ -268,6 +299,14 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       people: registrations,
       series: registrationSeries,
     },
-    money: { totalCents, thisWeekCents, payingRegistrations, series: moneySeries },
+    money: {
+      totalCents: registrationCents + otherCents,
+      registrationCents,
+      otherCents,
+      refundedCents,
+      thisWeekCents,
+      payingRegistrations,
+      series: moneySeries,
+    },
   };
 }

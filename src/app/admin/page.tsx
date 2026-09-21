@@ -8,7 +8,7 @@ import {
   REGISTRATION_OPEN,
 } from '@/config/site';
 import { getStripe } from '@/lib/stripeRegistration';
-import { buildAdminStats } from '@/lib/adminStats';
+import { buildAdminStats, type AdminStats } from '@/lib/adminStats';
 import { buildReferralReport } from '@/lib/referralReport';
 import { isSenderConfigured, listCampaigns } from '@/lib/senderNet';
 import { SwipeDeck } from './SwipeDeck';
@@ -34,6 +34,22 @@ function cardsOwedSub(owed: number, belowMinimum: number): string {
   if (belowMinimum === 0) return cost;
   const missed = `${belowMinimum} under $${REFERRAL_MIN_DONATION_DOLLARS} didn't qualify`;
   return `${cost} · ${missed}`;
+}
+
+/**
+ * Where the total came from.
+ *
+ * A gift that arrives outside the registration form — a sponsor's invoice, a
+ * Payment Link — used to be missing from this number altogether. It is named
+ * here rather than folded in silently, so the next one is visible as itself.
+ */
+function raisedSub(money_: AdminStats['money']): string {
+  const parts: string[] = [];
+  if (money_.otherCents > 0) parts.push(`${money(money_.otherCents)} direct`);
+  parts.push(`${money(money_.registrationCents)} registrations`);
+  if (money_.refundedCents > 0) parts.push(`${money(money_.refundedCents)} refunded`);
+  parts.push(`${money(money_.thisWeekCents)} this week`);
+  return parts.join(' · ');
 }
 
 function Stat({
@@ -124,7 +140,7 @@ async function StripePanels() {
         <Stat
           label="Raised"
           value={money(stats.money.totalCents)}
-          sub={`${money(stats.money.thisWeekCents)} this week`}
+          sub={raisedSub(stats.money)}
         >
           <Sparkline series={stats.money.series} format={money} label="raised" />
         </Stat>

@@ -93,19 +93,42 @@ export async function eachEventCustomer(
 }
 
 /**
- * Walks every PaymentIntent belonging to this event.
+ * Walks every charge in the account, with its PaymentIntent expanded.
  *
- * Uses search rather than listing the whole account so Stripe does the
- * filtering. The search index lags writes by up to a minute, which is within
- * the 60s revalidate window on the pages that call this.
+ * Charges rather than PaymentIntents, and a list rather than a search on the
+ * event tag: money arrives here that this app never created — a sponsor's
+ * invoice, a Payment Link, a charge entered by hand — and none of it carries
+ * that tag, because only the registration form writes one. It is all still
+ * money raised for the race, and a tag search silently left it out.
+ *
+ * Listing also sidesteps the search index, which lags writes by up to a
+ * minute.
  */
-export async function eachEventIntent(
+export async function eachAccountCharge(
   stripe: Stripe,
-  visit: (intent: Stripe.PaymentIntent) => void,
+  visit: (charge: Stripe.Charge) => void,
 ): Promise<void> {
-  await stripe.paymentIntents
-    .search({ query: `metadata['event']:'${EVENT_NAME}'`, limit: 100 })
-    .autoPagingEach((intent) => {
-      visit(intent);
+  await stripe.charges
+    .list({ limit: 100, expand: ['data.payment_intent'] })
+    .autoPagingEach((charge) => {
+      visit(charge);
     });
+}
+
+/** The PaymentIntent behind a charge, when one was expanded onto it. */
+export function intentOf(charge: Stripe.Charge): Stripe.PaymentIntent | null {
+  return typeof charge.payment_intent === 'object' && charge.payment_intent !== null
+    ? charge.payment_intent
+    : null;
+}
+
+/**
+ * Which event a charge belongs to, or null when nothing says.
+ *
+ * A registration is tagged on its PaymentIntent. An invoice or a link is
+ * tagged only if someone typed it into the Dashboard, which is why "null"
+ * here means "untagged", never "not ours".
+ */
+export function eventTagOf(charge: Stripe.Charge): string | null {
+  return intentOf(charge)?.metadata?.event ?? charge.metadata?.event ?? null;
 }
