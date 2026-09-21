@@ -52,6 +52,20 @@ export function donationCentsOf(intent: Stripe.PaymentIntent): number {
 }
 
 /**
+ * What a registration donated, in cents, as recorded on the customer by the
+ * webhook — or null when the record predates that field.
+ *
+ * Null rather than 0 on purpose: a covered entry really did give nothing, and
+ * a record from before `donationAmount` was written is simply unknown. Printing
+ * both as "$0" would invent a fact about the second one. The dashboard's raised
+ * total still comes from the PaymentIntents, never from a sum of these.
+ */
+export function recordedDonationCentsOf(customer: Stripe.Customer): number | null {
+  const parsed = Number.parseInt(customer.metadata?.donationAmount ?? '', 10);
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
+}
+
+/**
  * How many athletes a registration covers.
  *
  * One person can register and pay for a group, so the count of registrations

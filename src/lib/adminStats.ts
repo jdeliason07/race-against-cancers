@@ -3,6 +3,7 @@
 import type Stripe from 'stripe';
 import {
   WAITLIST_SOURCE, athleteCountOf, donationCentsOf, eachEventCustomer, eachEventIntent,
+  recordedDonationCentsOf,
 } from '@/lib/stripeRegistration';
 import { COMP_SOURCE } from '@/lib/compRegistration';
 
@@ -15,13 +16,22 @@ export interface PersonRow {
   name: string;
   email: string;
   at: string | null;
+  /**
+   * What this registration donated, in cents. Null when the record predates
+   * the field, and absent entirely on a waitlist row — nobody on the waitlist
+   * has paid anything yet.
+   */
+  amountCents?: number | null;
+  /** A sponsor-covered entry: it paid nothing by design, not by accident. */
+  covered?: boolean;
 }
 
 /** One value per day, oldest first, length SERIES_DAYS. */
 export type DailySeries = number[];
 
 export interface AdminStats {
-  waitlist: { total: number; newThisWeek: number; recent: PersonRow[]; series: DailySeries };
+  /** `people` is every row, newest first — the UI decides how many to show. */
+  waitlist: { total: number; newThisWeek: number; people: PersonRow[]; series: DailySeries };
   registrations: {
     total: number;
     athletes: number;
@@ -29,7 +39,7 @@ export interface AdminStats {
     tenK: number;
     funRun: number;
     covered: number;
-    recent: PersonRow[];
+    people: PersonRow[];
     series: DailySeries;
   };
   money: {
@@ -89,8 +99,12 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
     const meta = customer.metadata ?? {};
 
     if (meta.registered === 'true') {
-      const row = toRow(customer, meta.registeredAt);
-      registrations.push(row);
+      const isCovered = meta.source === COMP_SOURCE;
+      registrations.push({
+        ...toRow(customer, meta.registeredAt),
+        amountCents: recordedDonationCentsOf(customer),
+        covered: isCovered,
+      });
       const registeredMs = parseDate(meta.registeredAt);
       if ((registeredMs ?? 0) >= cutoff) registrationsNew++;
       const rIndex = dayIndex(registeredMs, windowStart);
@@ -100,7 +114,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
 
       if (meta.raceType === 'fun-run') funRun++;
       else if (meta.raceType === '10k') tenK++;
-      if (meta.source === COMP_SOURCE) covered++;
+      if (isCovered) covered++;
       return;
     }
 
@@ -139,7 +153,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
     waitlist: {
       total: waitlist.length,
       newThisWeek: waitlistNew,
-      recent: waitlist.slice(0, 4),
+      people: waitlist,
       series: waitlistSeries,
     },
     registrations: {
@@ -149,7 +163,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       tenK,
       funRun,
       covered,
-      recent: registrations.slice(0, 4),
+      people: registrations,
       series: registrationSeries,
     },
     money: { totalCents, thisWeekCents, payingRegistrations, series: moneySeries },

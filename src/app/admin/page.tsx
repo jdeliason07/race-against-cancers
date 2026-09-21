@@ -8,37 +8,15 @@ import {
   REGISTRATION_OPEN,
 } from '@/config/site';
 import { getStripe } from '@/lib/stripeRegistration';
-import { buildAdminStats, SERIES_DAYS, type PersonRow } from '@/lib/adminStats';
+import { buildAdminStats, SERIES_DAYS } from '@/lib/adminStats';
 import { buildReferralReport } from '@/lib/referralReport';
 import { isSenderConfigured, listCampaigns } from '@/lib/senderNet';
 import { SwipeDeck } from './SwipeDeck';
+import { PeopleList } from './PeopleList';
+import { money, exactMoney, when } from './format';
 import { PaneHeader } from './PaneHeader';
 import { Sparkline } from './Sparkline';
 import { EmailComposer } from './EmailComposer';
-
-function money(cents: number): string {
-  return `$${Math.round(cents / 100).toLocaleString()}`;
-}
-
-/**
- * Dollars with the cents kept when there are any. money() above rounds, which
- * is right for a fundraising total and wrong for a donation being measured
- * against the referral minimum: it would print $94.99 as "$95" and make a
- * registration that missed the bar look like one that cleared it.
- */
-function exactMoney(cents: number): string {
-  return `$${(cents / 100).toLocaleString('en-US', {
-    minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
-    maximumFractionDigits: 2,
-  })}`;
-}
-
-function when(value: string | null): string {
-  if (!value) return '';
-  const ms = Date.parse(value);
-  if (!Number.isFinite(ms)) return '';
-  return new Date(ms).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
 
 function pct(part: number, whole: number): string {
   if (!whole) return '—';
@@ -85,23 +63,6 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
       <h2 className="mb-4 font-display text-2xl uppercase text-ink">{title}</h2>
       {children}
     </section>
-  );
-}
-
-function PeopleList({ rows, empty }: { rows: PersonRow[]; empty: string }) {
-  if (rows.length === 0) return <p className="font-body text-sm text-ash">{empty}</p>;
-  return (
-    <ul className="divide-y divide-line rounded-card border border-line">
-      {rows.map((row) => (
-        <li key={row.email} className="flex items-baseline justify-between gap-4 px-4 py-3">
-          <span className="min-w-0 font-body text-sm text-ink">
-            <span className="font-bold">{row.name}</span>
-            <span className="ml-2 break-all text-ash">{row.email}</span>
-          </span>
-          <span className="shrink-0 font-body text-xs text-ash">{when(row.at)}</span>
-        </li>
-      ))}
-    </ul>
   );
 }
 
@@ -202,14 +163,14 @@ async function StripePanels() {
       )}
 
       {!REGISTRATION_OPEN && (
-        <Panel title="Newest waitlist signups">
-          <PeopleList rows={stats.waitlist.recent} empty="Nobody on the waitlist yet." />
+        <Panel title="Waitlist signups">
+          <PeopleList rows={stats.waitlist.people} empty="Nobody on the waitlist yet." />
         </Panel>
       )}
 
       {stats.registrations.total > 0 && (
-        <Panel title="Newest registrations">
-          <PeopleList rows={stats.registrations.recent} empty="No registrations yet." />
+        <Panel title="Registrations">
+          <PeopleList rows={stats.registrations.people} empty="No registrations yet." />
         </Panel>
       )}
 
