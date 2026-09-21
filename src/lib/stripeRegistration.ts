@@ -52,6 +52,18 @@ export function donationCentsOf(intent: Stripe.PaymentIntent): number {
 }
 
 /**
+ * Started registering and never paid.
+ *
+ * `startedRegistrationAt` is stamped when the PaymentIntent is created and
+ * `registered` only when the webhook sees the payment succeed, so the gap
+ * between the two is exactly the abandoned cart: they filled the form in, got
+ * as far as the card, and stopped.
+ */
+export function isIncompleteRegistration(customer: Stripe.Customer): boolean {
+  return Boolean(customer.metadata?.startedRegistrationAt) && !isRegistered(customer);
+}
+
+/**
  * What a registration donated, in cents, as recorded on the customer by the
  * webhook — or null when the record predates that field.
  *

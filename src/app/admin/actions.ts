@@ -1,7 +1,7 @@
 'use server';
 import { CONTACT_EMAIL, EVENT_NAME, ORG_NAME } from '@/config/site';
 import { checkPassword, denyUnlessAdmin, endSession, startSession } from '@/lib/adminAuth';
-import { getStripe, WAITLIST_SOURCE } from '@/lib/stripeRegistration';
+import { getStripe, isIncompleteRegistration, WAITLIST_SOURCE } from '@/lib/stripeRegistration';
 import {
   createCampaign,
   deleteCampaign,
@@ -40,11 +40,18 @@ export async function fetchGroups(): Promise<{ groups: SenderGroup[] } | { error
   }
 }
 
-export type Audience = 'waitlist' | 'registered';
+export type Audience = 'waitlist' | 'registered' | 'incomplete';
+
+// Not exported: a 'use server' module may only export async functions.
+const AUDIENCE_LABEL: Record<Audience, string> = {
+  waitlist: 'waitlist signups',
+  registered: 'completed registrations',
+  incomplete: 'incomplete registrations',
+};
 
 /**
- * Copies people from Stripe into a Sender group — either waitlist signups or
- * completed registrations.
+ * Copies people from Stripe into a Sender group — waitlist signups, completed
+ * registrations, or the ones who started registering and never paid.
  *
  * Sender is the list of record for sending: it owns unsubscribes, and bulk
  * email has to honour those. Stripe stays the list of record for who signed up.
@@ -65,17 +72,23 @@ export async function syncAudienceToGroup(
     const people: Array<{ email: string; firstname: string; lastname: string; phone: string }> = [];
 
     // Registrations are flagged on the customer by the webhook; waitlist
-    // signups carry the pre-signup source and haven't converted.
+    // signups carry the pre-signup source and haven't converted. Nothing marks
+    // an abandoned cart — it is the absence of a completed registration on
+    // someone who started one — so that audience walks the whole event and is
+    // filtered below.
     const query =
       audience === 'registered'
         ? `metadata['registered']:'true' AND metadata['event']:'${EVENT_NAME}'`
-        : `metadata['source']:'${WAITLIST_SOURCE}' AND metadata['event']:'${EVENT_NAME}'`;
+        : audience === 'waitlist'
+          ? `metadata['source']:'${WAITLIST_SOURCE}' AND metadata['event']:'${EVENT_NAME}'`
+          : `metadata['event']:'${EVENT_NAME}'`;
 
     await stripe.customers
       .search({ query, limit: 100 })
       .autoPagingEach((customer) => {
         if (!customer.email) return;
         if (audience === 'waitlist' && customer.metadata?.registered === 'true') return;
+        if (audience === 'incomplete' && !isIncompleteRegistration(customer)) return;
         const [firstname = '', ...rest] = (customer.name ?? '').trim().split(/\s+/);
         people.push({
           email: customer.email,
@@ -86,12 +99,7 @@ export async function syncAudienceToGroup(
       });
 
     if (people.length === 0) {
-      return {
-        error:
-          audience === 'registered'
-            ? 'No completed registrations found in Stripe yet.'
-            : 'No waitlist signups found in Stripe.',
-      };
+      return { error: `No ${AUDIENCE_LABEL[audience]} found in Stripe.` };
     }
 
     // Two paths, because Sender separates them: creating a subscriber it has
@@ -154,7 +162,7 @@ export async function syncAudienceToGroup(
       };
     }
 
-    const parts = [`${total} of ${people.length} ${audience === 'registered' ? 'registrations' : 'waitlist signups'} are now in this group`];
+    const parts = [`${total} of ${people.length} ${AUDIENCE_LABEL[audience]} are now in this group`];
     if (created) parts.push(`${created} newly created`);
     if (addedToGroup) parts.push(`${addedToGroup} already existed and were added`);
     if (phonesDropped) parts.push(`${phonesDropped} without a phone number Sender would accept`);

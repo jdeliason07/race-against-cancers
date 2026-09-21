@@ -13,6 +13,15 @@ import type { SenderGroup } from '@/lib/senderNet';
 
 const CONFIRM_WORD = 'SEND';
 
+/** The sync buttons, in the order an organizer reaches for them. */
+const SYNCS: ReadonlyArray<{ audience: Audience; label: string }> = [
+  { audience: 'waitlist', label: 'Sync waitlist' },
+  { audience: 'registered', label: 'Sync registrations' },
+  { audience: 'incomplete', label: 'Sync incomplete' },
+];
+
+type SyncKind = `sync-${Audience}`;
+
 const inputClass =
   'w-full rounded-card border border-line bg-paper px-4 py-3 font-body text-sm text-ink focus:border-pink focus:outline-none';
 const labelClass = 'mb-1 block font-body text-xs font-bold uppercase tracking-widest text-ash';
@@ -58,7 +67,7 @@ export function EmailComposer({ defaultEmail }: { defaultEmail: string }) {
   const [testEmail, setTestEmail] = useState(defaultEmail);
   const [confirmText, setConfirmText] = useState('');
 
-  const [busy, setBusy] = useState<'' | 'sync-waitlist' | 'sync-registered' | 'test' | 'send'>('');
+  const [busy, setBusy] = useState<'' | SyncKind | 'test' | 'send'>('');
   const [syncResult, setSyncResult] = useState<ActionResult | null>(null);
   const [testResult, setTestResult] = useState<ActionResult | null>(null);
   const [sendResult, setSendResult] = useState<ActionResult | null>(null);
@@ -94,15 +103,12 @@ export function EmailComposer({ defaultEmail }: { defaultEmail: string }) {
           ? `Type ${CONFIRM_WORD} above to unlock this.`
           : '';
 
-  async function run(kind: 'sync-waitlist' | 'sync-registered' | 'test' | 'send') {
+  async function run(kind: SyncKind | 'test' | 'send', audience?: Audience) {
     const report =
       kind === 'test' ? setTestResult : kind === 'send' ? setSendResult : setSyncResult;
     setBusy(kind);
     try {
-      if (kind === 'sync-waitlist' || kind === 'sync-registered') {
-        const audience: Audience = kind === 'sync-registered' ? 'registered' : 'waitlist';
-        setSyncResult(await syncAudienceToGroup(audience, groupId));
-      }
+      if (audience) setSyncResult(await syncAudienceToGroup(audience, groupId));
       if (kind === 'test') setTestResult(await sendTestEmail({ toEmail: testEmail, subject, body }));
       if (kind === 'send') {
         const result = await sendCampaignToGroup({ groupId, subject, body, preheader });
@@ -150,23 +156,25 @@ export function EmailComposer({ defaultEmail }: { defaultEmail: string }) {
             </select>
 
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-              <button
-                type="button"
-                onClick={() => run('sync-waitlist')}
-                disabled={!groupId || busy !== ''}
-                className="btn-ghost disabled:opacity-40"
-              >
-                {busy === 'sync-waitlist' ? 'Syncing…' : 'Sync waitlist'}
-              </button>
-              <button
-                type="button"
-                onClick={() => run('sync-registered')}
-                disabled={!groupId || busy !== ''}
-                className="btn-ghost disabled:opacity-40"
-              >
-                {busy === 'sync-registered' ? 'Syncing…' : 'Sync registrations'}
-              </button>
+              {SYNCS.map(({ audience, label }) => (
+                <button
+                  key={audience}
+                  type="button"
+                  onClick={() => run(`sync-${audience}`, audience)}
+                  disabled={!groupId || busy !== ''}
+                  className="btn-ghost disabled:opacity-40"
+                >
+                  {busy === `sync-${audience}` ? 'Syncing…' : label}
+                </button>
+              ))}
             </div>
+            {/* Said plainly because the groups overlap: somebody who joined the
+                waitlist and then abandoned the card form is in both, and an
+                email written for one of them reads wrong to the other. */}
+            <p className="mt-2 font-body text-xs text-ash">
+              Incomplete: started the registration form and never paid. Someone can be on the
+              waitlist and incomplete at the same time.
+            </p>
             <Notice result={syncResult} />
           </>
         )}
