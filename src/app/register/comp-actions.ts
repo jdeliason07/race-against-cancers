@@ -1,6 +1,8 @@
 'use server';
 import { CONTACT_EMAIL, EVENT_NAME } from '@/config/site';
 import { ADULT_AGE } from '@/lib/utils';
+import { normalizePhone } from '@/lib/phone';
+import { isRaceKey } from '@/lib/races';
 import {
   canonicalEmail,
   findCustomerByEmail,
@@ -26,6 +28,8 @@ export async function submitCompRegistration(data: {
   firstName: string;
   lastName: string;
   email: string;
+  // Optional; see the same field on RegistrationInput in ./actions.ts.
+  phone?: string;
   // Whether the athlete will be 18 or older on race day — what decides
   // whether a guardian has to accept the waiver. See the same field on
   // RegistrationInput in ./actions.ts.
@@ -56,8 +60,14 @@ export async function submitCompRegistration(data: {
   if (!data.bandanaColor) {
     return { error: 'Choose a bandana color to continue.' };
   }
-  if (data.raceType !== '10k' && data.raceType !== 'fun-run') {
+  if (!isRaceKey(data.raceType)) {
     return { error: 'Choose which race you want to run.' };
+  }
+
+  const rawPhone = data.phone?.trim() ?? '';
+  const phone = rawPhone ? normalizePhone(rawPhone) : null;
+  if (rawPhone && !phone) {
+    return { error: 'Enter a valid phone number, e.g. (555) 123-4567 — or leave it blank.' };
   }
 
   if (typeof data.isAdult !== 'boolean') {
@@ -100,12 +110,18 @@ export async function submitCompRegistration(data: {
       referredByName: '',
     };
 
+    // Blank never overwrites: a waitlist number stays unless they gave a new one.
     if (existing) {
-      await stripe.customers.update(existing.id, { name, metadata: details });
+      await stripe.customers.update(existing.id, {
+        name,
+        ...(phone ? { phone } : {}),
+        metadata: details,
+      });
     } else {
       await stripe.customers.create({
         email: canonicalEmail(data.email),
         name,
+        ...(phone ? { phone } : {}),
         description: `Covered registration — ${EVENT_NAME}`,
         metadata: details,
       });

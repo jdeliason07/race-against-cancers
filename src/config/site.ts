@@ -28,22 +28,24 @@ export const ORG_NAME            = "Race Against Cancers";
 // ever lapses, drop the 501(c)(3) wording in Footer.tsx before the number.
 export const ORG_EIN             = "42-3071442";
 export const EVENT_NAME          = "Race Against Cancers 2026";
-export const EVENT_DATE_ISO      = "2026-11-07T08:00:00-07:00"; // 10K & Fun Run start 8:00 AM MST
+export const EVENT_DATE_ISO      = "2026-11-07T08:00:00-07:00"; // all three races start 8:00 AM MST
 export const EVENT_DATE_DISPLAY  = "Saturday, November 7, 2026";
 export const TEN_K_START_TIME    = "8:00 AM";
+export const FIVE_K_START_TIME   = "8:00 AM";
 export const FUN_RUN_START_TIME  = "8:00 AM";
 export const EVENT_YEAR          = "2026";
 
 // --- LOCATION -----------------------------------------------
-// Both races start at LaVell Edwards Stadium and finish at the courthouse.
+// All three races start at LaVell Edwards Stadium and finish at the courthouse.
 // 10K, 6.2 mi: two miles north on University Ave, turn around, then roughly
-// four miles south to the finish. Fun Run, ~2 mi: the last leg of that, the
-// stadium straight down to the same finish.
+// four miles south to the finish. 5K, 3.1 mi: the same shape with the
+// turnaround half a mile up instead of two. Fun Run, ~2 mi: the last leg of
+// both, the stadium straight down to the same finish.
 export const EVENT_LOCATION_NAME     = "LaVell Edwards Stadium";   // shared start
 export const EVENT_LOCATION_ADDRESS  = "LaVell Edwards Stadium, Provo, UT 84602";
 export const FINISH_LOCATION_NAME    = "Utah County Courthouse";   // shared finish
 export const FINISH_LOCATION_ADDRESS = "University Ave & Center St, Provo, UT 84601";
-// The Fun Run shares the 10K's start. Kept as its own pair of constants because
+// The Fun Run shares the 10K and 5K's start. Kept as its own pair of constants because
 // the two have been separate venues before and may be again — point them back
 // at the shared start rather than retyping the address.
 export const FUN_RUN_LOCATION_NAME    = EVENT_LOCATION_NAME;
@@ -73,6 +75,7 @@ export const REGISTRATION_OPENS_LABEL = REGISTRATION_OPENS_DATE || 'soon';
 // recommended amounts — the number quoted across the site and the value the
 // donation field is pre-filled with. Registrants can give less, or more.
 export const RECOMMENDED_DONATION_AMOUNT  = 99; // 10K, per athlete
+export const RECOMMENDED_DONATION_5K      = 69; // 5K, per athlete
 export const RECOMMENDED_DONATION_FUN_RUN = 49; // Fun Run, per athlete
 // The one hard floor, and it is a payments constraint rather than a policy:
 // Stripe rejects a charge under $0.50, so the form and the server both require
@@ -80,14 +83,16 @@ export const RECOMMENDED_DONATION_FUN_RUN = 49; // Fun Run, per athlete
 export const MIN_DONATION_DOLLARS = 1;
 // One-tap amounts under the donation field, per athlete and in the order shown.
 // The first entry is the recommendation and the amount the field pre-fills
-// with, so it has to stay the recommended constant above. Keep the two ladders
-// the same length — the chosen rung carries over when someone switches race.
+// with, so it has to stay the recommended constant above. Keep the ladders the
+// same length — the chosen rung carries over when someone switches race.
 export const DONATION_PRESETS_10K     = [RECOMMENDED_DONATION_AMOUNT, 199, 499];
+export const DONATION_PRESETS_5K      = [RECOMMENDED_DONATION_5K, 149, 299];
 export const DONATION_PRESETS_FUN_RUN = [RECOMMENDED_DONATION_FUN_RUN, 99, 199];
 // One person can register and pay for a group (a company, a team, a family).
 // The recommended donation is the per-athlete recommendation times this count.
 export const MAX_PARTICIPANTS_PER_REGISTRATION = 100;
 export const TEN_K_LABEL           = "10K (6.2 mi)";
+export const FIVE_K_LABEL          = "5K (3.1 mi)";
 export const FUN_RUN_LABEL         = "Fun Run (~2 mi)";
 
 // --- RUNNER GOAL --------------------------------------------
@@ -162,7 +167,7 @@ export const REFERRAL_REWARD_LOGO_HEIGHT = 512;
 // --- CHECK-IN -----------------------------------------------
 export const CHECK_IN_DATE     = "Saturday, November 7, 2026";
 export const CHECK_IN_TIME     = "7:00 AM (1 hour before race start)";
-export const CHECK_IN_LOCATION = "LaVell Edwards Stadium, Provo — both races";
+export const CHECK_IN_LOCATION = "LaVell Edwards Stadium, Provo — all races";
 
 // --- CONTACT ------------------------------------------------
 export const CONTACT_EMAIL = "events@raceagainstcancers.org";
@@ -180,4 +185,4 @@ export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";
 // Used by sitemap, robots.txt, metadataBase, and JSON-LD schema.
 export const SITE_URL         = "https://raceagainstcancers.org";
 export const META_DESCRIPTION =
-  `Run for a reason. ${EVENT_NAME} — a 10K & Fun Run on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. 10K recommended donation $${RECOMMENDED_DONATION_AMOUNT}, family-friendly Fun Run $${RECOMMENDED_DONATION_FUN_RUN}.`;
+  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & Fun Run on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. Recommended donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, family-friendly Fun Run $${RECOMMENDED_DONATION_FUN_RUN}.`;

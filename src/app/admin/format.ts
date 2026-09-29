@@ -22,6 +22,16 @@ export function exactMoney(cents: number): string {
   })}`;
 }
 
+/**
+ * `(801) 555-0123` for a US/Canada number, which is nearly all of them.
+ * Anything else stays in the E.164 form it was stored in — still dialable,
+ * and reformatting a foreign number by guesswork would only make it wrong.
+ */
+export function phoneDisplay(e164: string): string {
+  const us = /^\+1(\d{3})(\d{3})(\d{4})$/.exec(e164);
+  return us ? `(${us[1]}) ${us[2]}-${us[3]}` : e164;
+}
+
 /** `Sep 14`, or '' for a missing or unparseable timestamp. */
 export function when(value: string | null): string {
   if (!value) return '';

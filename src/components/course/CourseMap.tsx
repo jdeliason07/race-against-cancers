@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useRef } from 'react';
 
-// Both races start at LaVell Edwards Stadium and finish at the Utah County
+// All three races start at LaVell Edwards Stadium and finish at the Utah County
 // Courthouse, University Ave & Center St. Geometry traced from OpenStreetMap
 // road centerlines; distances measured along these polylines.
 
 // The 10K's north spur — out and back up University Ave, 2.03 mi each way.
-// The Fun Run never runs this.
+// The 5K runs the first half mile of it; the Fun Run never runs it at all.
 const northSpur: [number, number][] = [
   [40.2649, -111.6582], // Start: LaVell Edwards Stadium
   [40.2685, -111.6572],
@@ -19,7 +19,8 @@ const northSpur: [number, number][] = [
   [40.2941, -111.6577], // Turnaround — 2.03 mi north of the stadium
 ];
 
-// Stadium south to the finish: the Fun Run in full, and the 10K's last 2.15 mi.
+// Stadium south to the finish: the Fun Run in full, and the last 2.15 mi of
+// the 10K and 5K.
 const toFinish: [number, number][] = [
   [40.2649, -111.6582], // LaVell Edwards Stadium
   [40.2611, -111.6586],
@@ -41,8 +42,24 @@ const route: [number, number][] = [
   ...toFinish.slice(1),
 ];
 
+// The 5K's turnaround: 0.475 mi up the spur, between its second and third
+// points, which puts the whole 5K at 3.10 mi.
+const fiveKTurnaround: [number, number] = [40.2717, -111.6571];
+const fiveKSpur: [number, number][] = [...northSpur.slice(0, 2), fiveKTurnaround];
+
+// Full 5K, 3.10 mi: the 10K's shape with the turnaround moved in.
+const fiveKRoute: [number, number][] = [
+  ...fiveKSpur,
+  ...fiveKSpur.slice(0, -1).reverse(),
+  ...toFinish.slice(1),
+];
+
 // Fun Run, 2.15 mi: the stadium-to-finish leg on its own.
 const funRunRoute: [number, number][] = toFinish;
+
+// Shorter races are drawn over longer ones, so where they share road the
+// shorter race's color shows — the legend under the map says as much.
+const COLORS = { tenK: '#F0307A', fiveK: '#9333EA', funRun: '#2563EB' };
 
 export function CourseMap() {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -66,13 +83,14 @@ export function CourseMap() {
         maxZoom: 19,
       }).addTo(map);
 
-      // 10K route — pink
-      L.polyline(route, { color: '#F0307A', weight: 4, opacity: 0.9 }).addTo(map);
+      // Longest first, so each shorter race lands on top of the one it shares
+      // road with: the 5K's half mile shows purple over the 10K's spur, and
+      // the shared run to the finish shows the Fun Run's blue.
+      L.polyline(route, { color: COLORS.tenK, weight: 4, opacity: 0.9 }).addTo(map);
+      L.polyline(fiveKRoute, { color: COLORS.fiveK, weight: 4, opacity: 0.9 }).addTo(map);
+      L.polyline(funRunRoute, { color: COLORS.funRun, weight: 4, opacity: 0.9 }).addTo(map);
 
-      // Fun Run route — blue, drawn on top so the overlap is visible as blue
-      L.polyline(funRunRoute, { color: '#2563EB', weight: 4, opacity: 0.9 }).addTo(map);
-
-      // One start point for both races, one turnaround, one finish. Each is a
+      // One start point for every race, two turnarounds, one finish. Each is a
       // dot on the exact coordinate plus a permanent tooltip beside it —
       // Leaflet places tooltips relative to the point, so the labels don't
       // have to be nudged by hand and can't land on top of their own marker.
@@ -92,10 +110,10 @@ export function CourseMap() {
           .addTo(map)
           .bindTooltip(label, {
             permanent: true,
-            // All three sit to the right of the line. Leaflet's 'left'
+            // All of them sit to the right of the line. Leaflet's 'left'
             // direction mispositions these once the label is restyled, and
-            // the three points are far enough apart vertically that one side
-            // is enough. Labels stay short so they clear the map's right edge
+            // the points are far enough apart vertically that one side is
+            // enough. Labels stay short so they clear the map's right edge
             // at phone width.
             direction: 'right',
             offset: [10, 0],
@@ -105,12 +123,19 @@ export function CourseMap() {
           .bindPopup(popup);
       };
 
-      // Both races leave from the same line, so this is one marker, not two.
+      // Every race leaves from the same line, so this is one marker, not three.
       point(
         route[0],
         '#16A34A',
-        'START · BOTH RACES',
-        '<b>START — 10K &amp; FUN RUN</b><br>LaVell Edwards Stadium, BYU<br>8:00 AM',
+        'START · ALL RACES',
+        '<b>START — 10K, 5K &amp; FUN RUN</b><br>LaVell Edwards Stadium, BYU<br>8:00 AM',
+      );
+
+      point(
+        fiveKTurnaround,
+        COLORS.fiveK,
+        '5K TURNAROUND',
+        '<b>5K TURNAROUND</b><br>Half a mile up University Ave<br><em>5K only — the 10K keeps climbing</em>',
       );
 
       point(
@@ -124,16 +149,31 @@ export function CourseMap() {
         route[route.length - 1],
         '#F0307A',
         'FINISH',
-        '<b>FINISH</b><br>Utah County Courthouse<br>University Ave &amp; Center St, downtown Provo<br><em>Shared finish — 10K &amp; Fun Run</em>',
+        '<b>FINISH</b><br>Utah County Courthouse<br>University Ave &amp; Center St, downtown Provo<br><em>Shared finish — all three races</em>',
       );
     });
   }, []);
 
   return (
-    <div
-      ref={mapRef}
-      className="h-96 w-full rounded-card border border-line"
-      aria-label="Course map: both races start at LaVell Edwards Stadium. The pink line shows the 10K, which runs two miles north on University Avenue, turns around, and heads south to the finish at the Utah County Courthouse in downtown Provo. The blue line shows the Fun Run, the final two miles from the stadium to the same finish."
-    />
+    <div>
+      <div
+        ref={mapRef}
+        className="h-96 w-full rounded-card border border-line"
+        aria-label="Course map: all three races start at LaVell Edwards Stadium. The pink line shows the 10K, which runs two miles north on University Avenue, turns around, and heads south to the finish at the Utah County Courthouse in downtown Provo. The purple line shows the 5K, which turns around half a mile north of the stadium and then follows the same road to the finish. The blue line shows the Fun Run, the final two miles from the stadium to the same finish."
+      />
+      <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1 font-body text-xs text-ash" aria-hidden="true">
+        {[
+          { label: '10K', color: COLORS.tenK },
+          { label: '5K', color: COLORS.fiveK },
+          { label: 'Fun Run', color: COLORS.funRun },
+        ].map((item) => (
+          <li key={item.label} className="flex items-center gap-2">
+            <span className="h-1 w-5 rounded-pill" style={{ backgroundColor: item.color }} />
+            {item.label}
+          </li>
+        ))}
+        <li>Where routes share road, the shorter race&rsquo;s color is on top.</li>
+      </ul>
+    </div>
   );
 }

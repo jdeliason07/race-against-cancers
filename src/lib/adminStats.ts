@@ -46,6 +46,12 @@ export interface SeriesEvent {
 export interface PersonRow {
   name: string;
   email: string;
+  /**
+   * E.164, or null when the record has none. The waitlist asked for one;
+   * registration only asks optionally, so a registrant who never joined the
+   * waitlist and skipped the field has no number on file.
+   */
+  phone: string | null;
   at: string | null;
   /**
    * What this registration donated, in cents. Null when the record predates
@@ -65,6 +71,7 @@ export interface AdminStats {
     athletes: number;
     newThisWeek: number;
     tenK: number;
+    fiveK: number;
     funRun: number;
     covered: number;
     people: PersonRow[];
@@ -174,6 +181,7 @@ function toRow(customer: Stripe.Customer, at: string | undefined): PersonRow {
   return {
     name: customer.name ?? '(no name)',
     email: customer.email ?? '',
+    phone: customer.phone || null,
     at: at ?? null,
   };
 }
@@ -199,6 +207,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
   let registrationsNew = 0;
   let athletes = 0;
   let tenK = 0;
+  let fiveK = 0;
   let funRun = 0;
   let covered = 0;
 
@@ -219,6 +228,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       athletes += athleteCountOf(customer);
 
       if (meta.raceType === 'fun-run') funRun++;
+      else if (meta.raceType === '5k') fiveK++;
       else if (meta.raceType === '10k') tenK++;
       if (isCovered) covered++;
       return;
@@ -294,6 +304,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       athletes,
       newThisWeek: registrationsNew,
       tenK,
+      fiveK,
       funRun,
       covered,
       people: registrations,

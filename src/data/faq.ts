@@ -3,6 +3,7 @@ import {
   CONTACT_EMAIL,
   MAX_PARTICIPANTS_PER_REGISTRATION,
   RECOMMENDED_DONATION_AMOUNT,
+  RECOMMENDED_DONATION_5K,
   RECOMMENDED_DONATION_FUN_RUN,
   REFERRAL_ENABLED,
   REFERRAL_REWARD,
@@ -30,27 +31,27 @@ export const faqs: FAQItem[] = [
     : []),
   {
     question: "What is the registration fee?",
-    answer: `There is no flat entry fee — your registration is simply a donation to ${CHARITY_NAME}. We recommend $${RECOMMENDED_DONATION_AMOUNT} for the 10K and $${RECOMMENDED_DONATION_FUN_RUN} for the family-friendly Fun Run. The recommendation is per athlete, so a family of four doing the Fun Run is pointed at $${RECOMMENDED_DONATION_FUN_RUN * 4} — and you can register all four in one go rather than filling in the form four times. We warmly encourage you to give as much as you're willing.`,
+    answer: `There is no flat entry fee — your registration is simply a donation to ${CHARITY_NAME}. We recommend $${RECOMMENDED_DONATION_AMOUNT} for the 10K, $${RECOMMENDED_DONATION_5K} for the 5K, and $${RECOMMENDED_DONATION_FUN_RUN} for the family-friendly Fun Run. The recommendation is per athlete, so a family of four doing the Fun Run is pointed at $${RECOMMENDED_DONATION_FUN_RUN * 4} — and you can register all four in one go rather than filling in the form four times. We warmly encourage you to give as much as you're willing.`,
   },
   {
     question: "Can I register a group, or pay for other people?",
-    answer: `Yes. On the registration form, enter how many athletes you're registering and the recommended donation adjusts automatically — $${RECOMMENDED_DONATION_AMOUNT} per athlete for the 10K, $${RECOMMENDED_DONATION_FUN_RUN} per athlete for the Fun Run. This works for a family, a team, a company, or anyone who wants to cover entries for others. You give us your contact details once; each athlete's name and waiver are collected at check-in on race morning. For groups larger than ${MAX_PARTICIPANTS_PER_REGISTRATION}, email ${CONTACT_EMAIL} and we'll sort it out with you.`,
+    answer: `Yes. On the registration form, enter how many athletes you're registering and the recommended donation adjusts automatically — $${RECOMMENDED_DONATION_AMOUNT} per athlete for the 10K, $${RECOMMENDED_DONATION_5K} for the 5K, $${RECOMMENDED_DONATION_FUN_RUN} for the Fun Run. This works for a family, a team, a company, or anyone who wants to cover entries for others. You give us your contact details once; each athlete's name and waiver are collected at check-in on race morning. For groups larger than ${MAX_PARTICIPANTS_PER_REGISTRATION}, email ${CONTACT_EMAIL} and we'll sort it out with you.`,
   },
   {
     question: "Can I register without fundraising?",
     answer: "Yes. There is no peer-to-peer fundraising requirement. Your donation at registration is all that's needed. You won't be asked to recruit other donors or hit a fundraising goal.",
   },
   {
-    question: "What's the difference between the 10K and the Fun Run?",
-    answer: `Both races start at LaVell Edwards Stadium on the BYU campus and finish at University Avenue and Center Street, in front of the Utah County Courthouse in downtown Provo. The 10K is 6.2 miles: north on University Avenue for two miles, a turnaround, then roughly four miles south to the finish. The recommended donation is $${RECOMMENDED_DONATION_AMOUNT}. The Fun Run is approximately 2 miles — the last leg of the 10K, straight from the stadium down to the same finish line — with a $${RECOMMENDED_DONATION_FUN_RUN} recommended donation. It's the one most families choose — short enough for kids to finish, easy to walk the whole way, and strollers are welcome. Both events take place on November 7, 2026.`,
+    question: "What's the difference between the 10K, the 5K, and the Fun Run?",
+    answer: `All three start at LaVell Edwards Stadium on the BYU campus and finish at University Avenue and Center Street, in front of the Utah County Courthouse in downtown Provo. The 10K is 6.2 miles: north on University Avenue for two miles, a turnaround, then roughly four miles south to the finish. The recommended donation is $${RECOMMENDED_DONATION_AMOUNT}. The 5K is 3.1 miles on the same road: a half mile north to its own turnaround, back past the stadium, then south to the finish, with a $${RECOMMENDED_DONATION_5K} recommended donation. The Fun Run is approximately 2 miles — the last leg of the other two, straight from the stadium down to the same finish line — with a $${RECOMMENDED_DONATION_FUN_RUN} recommended donation. It's the one most families choose — short enough for kids to finish, easy to walk the whole way, and strollers are welcome. All three take place on November 7, 2026.`,
   },
   {
-    question: "How do I get to the 10K start line?",
-    answer: "Both races start at LaVell Edwards Stadium on the BYU campus, and both finish downtown rather than back at the start, so runners are responsible for their own transportation to the stadium. Plan to arrive at check-in by 7:00 AM — the race starts promptly at 8:00 AM.",
+    question: "How do I get to the 10K or 5K start line?",
+    answer: "All three races start at LaVell Edwards Stadium on the BYU campus, and all three finish downtown rather than back at the start, so runners are responsible for their own transportation to the stadium. Plan to arrive at check-in by 7:00 AM — the race starts promptly at 8:00 AM.",
   },
   {
     question: "How do I get to the Fun Run start?",
-    answer: "The Fun Run starts at LaVell Edwards Stadium on the BYU campus in Provo, the same start as the 10K. Participants are responsible for their own transportation to the stadium. Check-in is at the stadium — plan to arrive by 7:00 AM. The race starts promptly at 8:00 AM.",
+    answer: "The Fun Run starts at LaVell Edwards Stadium on the BYU campus in Provo, the same start as the 10K and 5K. Participants are responsible for their own transportation to the stadium. Check-in is at the stadium — plan to arrive by 7:00 AM. The race starts promptly at 8:00 AM.",
   },
   {
     question: "What's included with registration?",
@@ -62,7 +63,7 @@ export const faqs: FAQItem[] = [
   },
   {
     question: "When and where is check-in?",
-    answer: "Check-in is on race morning — Saturday, November 7, 2026, at 7:00 AM at LaVell Edwards Stadium for both races. Your bib and bandana will be there.",
+    answer: "Check-in is on race morning — Saturday, November 7, 2026, at 7:00 AM at LaVell Edwards Stadium for all three races. Your bib and bandana will be there.",
   },
   {
     question: "Where does my donation go?",

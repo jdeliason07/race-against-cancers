@@ -8,7 +8,9 @@ import {
   REFERRAL_ENABLED,
 } from '@/config/site';
 import { chargeCentsFor } from '@/lib/fees';
+import { normalizePhone } from '@/lib/phone';
 import { normalizeSource } from '@/lib/qrSource';
+import { isRaceKey } from '@/lib/races';
 import { ADULT_AGE } from '@/lib/utils';
 import {
   canonicalEmail,
@@ -29,6 +31,9 @@ interface RegistrationInput {
   firstName: string;
   lastName: string;
   email: string;
+  // Optional. Blank, or missing from a form loaded before the field existed,
+  // leaves whatever number the customer record already holds.
+  phone?: string;
   // Whether the athlete will be 18 or older on race day. Required for a solo
   // registration, ignored for a group — the organizer isn't the athlete.
   //
@@ -52,22 +57,26 @@ interface RegistrationInput {
  * Customers page — with a real phone number on the record — instead of living
  * only inside PaymentIntent metadata. Reuses the customer created when they
  * joined the waitlist, if there is one.
+ *
+ * `phone` is already normalized, or null when they left the field blank.
  */
 async function upsertAthleteCustomer(
   stripe: Stripe,
   existing: Stripe.Customer | null,
   data: RegistrationInput,
+  phone: string | null,
 ): Promise<Stripe.Customer> {
   const name = `${data.firstName.trim()} ${data.lastName.trim()}`;
 
   if (existing) {
-    // Phone is deliberately not in this update. Registration no longer asks
-    // for one, and sending an empty string here would erase the number
-    // someone gave when they joined the waitlist — the only number we have
-    // for them, and the one /admin texts.
+    // Phone goes in only when they gave one. The field is optional, and
+    // sending an empty string here would erase the number someone gave when
+    // they joined the waitlist — possibly the only number we have for them,
+    // and the one /admin lists.
     // A partial metadata update merges, so this preserves the waitlist `source`.
     return stripe.customers.update(existing.id, {
       name,
+      ...(phone ? { phone } : {}),
       metadata: { event: EVENT_NAME, startedRegistrationAt: new Date().toISOString() },
     });
   }
@@ -75,6 +84,7 @@ async function upsertAthleteCustomer(
   return stripe.customers.create({
     email: canonicalEmail(data.email),
     name,
+    ...(phone ? { phone } : {}),
     description: `Registration — ${EVENT_NAME}`,
     metadata: {
       source: 'registration-form',
@@ -97,6 +107,15 @@ export async function createPaymentIntent(
   // both receives the agreement and records what was actually agreed to.
   if (registrationData.waiverAgreed !== true) {
     return { error: `You must accept the ${WAIVER_SHORT_TITLE} to register.` };
+  }
+  if (!isRaceKey(registrationData.raceType)) {
+    return { error: 'Choose which race you want to run.' };
+  }
+
+  const rawPhone = registrationData.phone?.trim() ?? '';
+  const phone = rawPhone ? normalizePhone(rawPhone) : null;
+  if (rawPhone && !phone) {
+    return { error: 'Enter a valid phone number, e.g. (555) 123-4567 — or leave it blank.' };
   }
 
   const participantCount = registrationData.participantCount;
@@ -156,7 +175,7 @@ export async function createPaymentIntent(
       };
     }
 
-    const customer = await upsertAthleteCustomer(stripe, existingCustomer, registrationData);
+    const customer = await upsertAthleteCustomer(stripe, existingCustomer, registrationData, phone);
 
     // Just a name — there's nobody to look up and nothing to validate, so the
     // weekly report groups these by name and you decide what counts.

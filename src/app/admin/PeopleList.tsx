@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import type { PersonRow } from '@/lib/adminStats';
 import { cn } from '@/lib/utils';
-import { exactMoney, when } from './format';
+import { exactMoney, phoneDisplay, when } from './format';
 
 /** Rows shown before "Show all" — enough to see the last few at a glance. */
 const COLLAPSED_ROWS = 4;
@@ -53,6 +53,15 @@ export function PeopleList({ rows, empty }: { rows: PersonRow[]; empty: string }
                 <span className="min-w-0 font-body text-sm text-ink">
                   <span className="font-bold">{row.name}</span>
                   <span className="ml-2 break-all text-ash">{row.email}</span>
+                  {/* A link, so on a phone it's one tap to call or text. */}
+                  {row.phone && (
+                    <a
+                      href={`tel:${row.phone}`}
+                      className="ml-2 whitespace-nowrap text-ash underline decoration-line underline-offset-2 hover:text-pink"
+                    >
+                      {phoneDisplay(row.phone)}
+                    </a>
+                  )}
                 </span>
                 <span className="shrink-0 font-body text-xs text-ash">
                   {amount && <span className="mr-2 font-bold text-ink">{amount}</span>}

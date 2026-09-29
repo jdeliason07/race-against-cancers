@@ -13,15 +13,13 @@ import {
 import { createPaymentIntent } from './actions';
 import { submitCompRegistration } from './comp-actions';
 import { ADULT_AGE } from '@/lib/utils';
+import { normalizePhone } from '@/lib/phone';
 import { captureSource, readSource } from '@/lib/qrSource';
+import { RACES, RACE_KEYS, type RaceKey } from '@/lib/races';
 import {
   CHARITY_NAME,
-  DONATION_PRESETS_10K,
-  DONATION_PRESETS_FUN_RUN,
   MAX_PARTICIPANTS_PER_REGISTRATION,
   MIN_DONATION_DOLLARS,
-  TEN_K_LABEL,
-  FUN_RUN_LABEL,
   REFERRAL_ENABLED,
   STRIPE_FEE_LABEL,
 } from '@/config/site';
@@ -82,12 +80,14 @@ const stripeAppearance = {
 };
 
 type Step = 1 | 2 | 3 | 4;
-type RaceType = '10k' | 'fun-run' | null;
+type RaceType = RaceKey | null;
 
 interface FormData {
   firstName: string;
   lastName: string;
   email: string;
+  // Optional — blank is fine, but anything typed has to be a real number.
+  phone: string;
   // Only asked for when the athlete is under 18 on race day.
   guardianName: string;
   referredByName: string;
@@ -148,28 +148,23 @@ function StepRaceSelection({
   setRaceType: (r: RaceType) => void;
   onNext: () => void;
 }) {
-  const races = [
-    { key: '10k' as const,     label: '10K' },
-    { key: 'fun-run' as const, label: 'Fun Run' },
-  ];
-
   return (
     <div className="rounded-card border-2 border-pink bg-blush p-6 text-center">
       <h2 className="font-display text-2xl uppercase leading-tight text-ink">
         Ready when you are
       </h2>
       <div className="mt-4 flex flex-col gap-3">
-        {races.map((race) => (
+        {RACE_KEYS.map((key) => (
           <button
-            key={race.key}
+            key={key}
             type="button"
             onClick={() => {
-              setRaceType(race.key);
+              setRaceType(key);
               onNext();
             }}
             className="btn-primary w-full"
           >
-            Register for the {race.label}
+            Register for the {RACES[key].short}
           </button>
         ))}
       </div>
@@ -254,9 +249,14 @@ function StepAthleteInfo({
   // anyone under 18 on race day, so ask for their name once we know the age.
   const isMinor = !isGroup && isAdult === false;
 
+  const isPhoneValid = (phone: string) => !phone.trim() || normalizePhone(phone) !== null;
+
   const fieldError = (field: keyof FormData): string | null => {
     if (!touched[field]) return null;
     const val = formData[field].trim();
+    if (field === 'phone') {
+      return isPhoneValid(val) ? null : 'Enter a valid phone number, e.g. (555) 123-4567 — or leave it blank.';
+    }
     if (!val) return 'This field is required.';
     if (field === 'email' && !isEmailValid(formData.email)) return 'Enter a valid email address.';
     return null;
@@ -267,6 +267,7 @@ function StepAthleteInfo({
     formData.lastName.trim() &&
     formData.email.trim() &&
     isEmailValid(formData.email) &&
+    isPhoneValid(formData.phone) &&
     // The age question describes an athlete, so a group organizer isn't asked
     // it — each athlete answers for themselves at check-in.
     (isGroup || isAdult !== null) &&
@@ -335,6 +336,26 @@ function StepAthleteInfo({
           aria-describedby={fieldError('email') ? 'email-error' : undefined}
         />
         {fieldError('email') && <p id="email-error" className={errorClass}>{fieldError('email')}</p>}
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="phone" className={labelClass}>
+          Phone Number <span className="font-normal normal-case tracking-normal">(optional)</span>
+        </label>
+        <input
+          id="phone"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          value={formData.phone}
+          onChange={update('phone')}
+          onBlur={touch('phone')}
+          className={inputClass}
+          placeholder="(555) 123-4567"
+          aria-invalid={fieldError('phone') ? true : undefined}
+          aria-describedby={fieldError('phone') ? 'phone-error' : undefined}
+        />
+        {fieldError('phone') && <p id="phone-error" className={errorClass}>{fieldError('phone')}</p>}
       </div>
 
       {!isGroup && (
@@ -692,7 +713,7 @@ function PaymentForm({
     }
   };
 
-  const raceLabel = raceType === '10k' ? TEN_K_LABEL : FUN_RUN_LABEL;
+  const raceLabel = raceType ? RACES[raceType].label : '';
   return (
     <div>
       {/* Summary bar */}
@@ -887,7 +908,7 @@ function StepConfirmation({
   isComp: boolean;
 }) {
   const isGroup = participantCount > 1;
-  const raceLabel = raceType === '10k' ? TEN_K_LABEL : FUN_RUN_LABEL;
+  const raceLabel = raceType ? RACES[raceType].label : '';
 
   return (
     <div className="text-center">
@@ -986,6 +1007,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     guardianName: '',
     referredByName: '',
   });
@@ -997,8 +1019,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
   // it follows the race and the headcount until someone types over it. The 10K
   // ladder stands in before a race is picked, which is what makes the form open
   // on the recommended $99.
-  const donationPresets =
-    raceType === 'fun-run' ? DONATION_PRESETS_FUN_RUN : DONATION_PRESETS_10K;
+  const donationPresets = RACES[raceType ?? '10k'].presets;
   const donationAmount =
     presetIndex === null
       ? customDonation
@@ -1029,6 +1050,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
+          phone: formData.phone,
           isAdult,
           guardianName: formData.guardianName,
           waiverAgreed,
@@ -1046,6 +1068,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
+        phone: formData.phone,
         isAdult,
         guardianName: formData.guardianName,
         waiverAgreed,

@@ -1,10 +1,10 @@
 import {
-  EVENT_NAME, EVENT_DATE_DISPLAY, TEN_K_START_TIME, FUN_RUN_START_TIME,
+  EVENT_NAME, EVENT_DATE_DISPLAY, TEN_K_START_TIME, FIVE_K_START_TIME, FUN_RUN_START_TIME,
   EVENT_LOCATION_NAME, EVENT_LOCATION_ADDRESS, EVENT_DATE_ISO,
   FINISH_LOCATION_NAME, FINISH_LOCATION_ADDRESS,
   CHECK_IN_DATE, CHECK_IN_TIME, CHECK_IN_LOCATION,
   COURSE_GPX_URL, SITE_URL, ORG_NAME, REGISTRATION_OPEN,
-  RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_FUN_RUN,
+  RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K, RECOMMENDED_DONATION_FUN_RUN,
 } from '@/config/site';
 import { MapPin, Clock, Package, Download, Flag, Heart } from 'lucide-react';
 import Link from 'next/link';
@@ -76,15 +76,16 @@ export default function RaceDetailsPage() {
               </div>
               <dd className="font-body text-sm text-ink leading-relaxed">
                 10K: {TEN_K_START_TIME}<br />
+                5K: {FIVE_K_START_TIME}<br />
                 Fun Run: {FUN_RUN_START_TIME}
               </dd>
             </div>
 
-            {/* Both races start in the same place, so this card covers both. */}
+            {/* All three races start in the same place, so this card covers them all. */}
             <div className="rounded-card border border-line p-6">
               <div className="mb-2 flex items-center gap-2">
                 <MapPin size={16} className="text-pink shrink-0" aria-hidden="true" />
-                <dt className="section-label">Start — 10K &amp; Fun Run</dt>
+                <dt className="section-label">Start — All Races</dt>
               </div>
               <dd className="font-body text-sm text-ink leading-relaxed">
                 {EVENT_LOCATION_NAME}<br />
@@ -110,6 +111,7 @@ export default function RaceDetailsPage() {
               </div>
               <dd className="font-body text-sm text-ink leading-relaxed">
                 10K: ${RECOMMENDED_DONATION_AMOUNT} recommended<br />
+                5K: ${RECOMMENDED_DONATION_5K} recommended<br />
                 Fun Run: ${RECOMMENDED_DONATION_FUN_RUN} recommended<br />
                 <span className="text-ash text-xs">Give more if you&rsquo;re able</span>
               </dd>
@@ -121,7 +123,7 @@ export default function RaceDetailsPage() {
                 <dt className="section-label">Check-In</dt>
               </div>
               <dd className="font-body text-sm text-ink leading-relaxed whitespace-pre-line">
-                <span className="font-semibold">10K:</span> {CHECK_IN_DATE}{CHECK_IN_TIME ? `\n${CHECK_IN_TIME}` : ''}{CHECK_IN_LOCATION ? `\n${CHECK_IN_LOCATION}` : ''}
+                <span className="font-semibold">10K &amp; 5K:</span> {CHECK_IN_DATE}{CHECK_IN_TIME ? `\n${CHECK_IN_TIME}` : ''}{CHECK_IN_LOCATION ? `\n${CHECK_IN_LOCATION}` : ''}
                 {'\n\n'}<span className="font-semibold">Fun Run:</span> {CHECK_IN_DATE}{'\n'}7:00 AM · LaVell Edwards Stadium
                 {'\n\n'}Includes: race bib + bandana
               </dd>
@@ -154,10 +156,39 @@ export default function RaceDetailsPage() {
             <div className="rounded-card border border-petal bg-blush p-5 mt-4">
               <p className="font-body text-sm font-bold uppercase tracking-widest text-pink mb-2">Getting to the start</p>
               <p className="font-body text-sm text-ash">
-                Both races start at LaVell Edwards Stadium, and check-in for both is there —
+                All three races start at LaVell Edwards Stadium, and check-in for all three is there —
                 plan to arrive by 7:00 AM. Runners are responsible for their own transportation
                 to the stadium, and the course finishes downtown rather than back at the start.
                 Race starts promptly at 8:00 AM.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* 5K Route */}
+        <section>
+          <h2 className="mb-6 font-display text-3xl uppercase text-ink">The 5K Course</h2>
+          <div className="space-y-4 font-body text-base leading-relaxed text-ash">
+            <p>
+              The 5K is the 10K&rsquo;s course with a shorter turnaround: 3.1 miles on the same
+              straight road. Runners start at LaVell Edwards Stadium, head half a mile north on
+              University Avenue, turn around, and run back past the stadium just before mile one.
+            </p>
+            <p>
+              That half mile out is the only uphill, and it&rsquo;s gentle. From the turnaround on,
+              the course drops the whole way — the same fast final two miles the 10K finishes on,
+              south through Provo to University Avenue and Center Street, in front of the Utah
+              County Courthouse. It&rsquo;s a real race distance without the 10K&rsquo;s two-mile
+              climb: a good first race, or a fast one. The recommended donation is
+              ${RECOMMENDED_DONATION_5K}.
+            </p>
+            <div className="rounded-card border border-petal bg-blush p-5 mt-4">
+              <p className="font-body text-sm font-bold uppercase tracking-widest text-pink mb-2">Getting to the start</p>
+              <p className="font-body text-sm text-ash">
+                The 5K starts at LaVell Edwards Stadium with the 10K and Fun Run, and check-in
+                is there — plan to arrive by 7:00 AM. The race starts promptly at{' '}
+                {FIVE_K_START_TIME}. Participants are responsible for their own transportation to
+                the stadium, and the course finishes downtown rather than back at the start.
               </p>
             </div>
           </div>
@@ -168,24 +199,25 @@ export default function RaceDetailsPage() {
           <h2 className="mb-6 font-display text-3xl uppercase text-ink">The Fun Run Course</h2>
           <div className="space-y-4 font-body text-base leading-relaxed text-ash">
             <p>
-              The Fun Run is the last two miles of the 10K. It starts at LaVell Edwards Stadium
-              alongside the 10K, follows University Avenue south through Provo, and crosses the
+              The Fun Run is the last two miles of the 10K and 5K. It starts at LaVell Edwards
+              Stadium alongside them, follows University Avenue south through Provo, and crosses the
               same finish line at University Avenue and Center Street, in front of the Utah
               County Courthouse.
             </p>
             <p>
-              It skips the 10K&rsquo;s climb entirely — this is the downhill half, on a straight,
+              It skips the climb entirely — this is the downhill stretch, on a straight,
               wide road, accessible for all paces and fitness levels. It&rsquo;s the option most
               families pick: short enough
               for kids to finish, easy to walk the whole way, and strollers are welcome. Whether
               you&rsquo;re a casual walker or a first-time runner, this is your chance to cross a
               finish line for a great cause. The recommended donation is ${RECOMMENDED_DONATION_FUN_RUN},
-              compared with ${RECOMMENDED_DONATION_AMOUNT} for the 10K.
+              compared with ${RECOMMENDED_DONATION_5K} for the 5K and ${RECOMMENDED_DONATION_AMOUNT} for
+              the 10K.
             </p>
             <div className="rounded-card border border-petal bg-blush p-5 mt-4">
               <p className="font-body text-sm font-bold uppercase tracking-widest text-pink mb-2">Getting to the start</p>
               <p className="font-body text-sm text-ash">
-                The Fun Run starts at LaVell Edwards Stadium, the same place as the 10K, and
+                The Fun Run starts at LaVell Edwards Stadium, the same place as the 10K and 5K, and
                 check-in is there — plan to arrive by 7:00 AM. The race starts promptly at
                 8:00 AM. Participants are responsible for their own transportation to the
                 stadium, and the course finishes downtown rather than back at the start.
@@ -202,7 +234,7 @@ export default function RaceDetailsPage() {
 
         {/* Map */}
         <section>
-          <h2 className="mb-6 font-display text-3xl uppercase text-ink">10K Course Map</h2>
+          <h2 className="mb-6 font-display text-3xl uppercase text-ink">Course Map</h2>
           <CourseMapSection />
           <div className="mt-4 flex flex-wrap gap-3">
             {COURSE_GPX_URL ? (
@@ -218,7 +250,7 @@ export default function RaceDetailsPage() {
                 <Download size={14} /> GPX Coming Soon
               </span>
             )}
-            {/* One start for both races now, so one directions button. */}
+            {/* One start for every race, so one directions button. */}
             <a
               href="https://maps.google.com/?q=LaVell+Edwards+Stadium,+Provo,+UT+84602"
               target="_blank"

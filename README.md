@@ -152,11 +152,16 @@ Password-protected, two tabs.
 | From Stripe | From Sender |
 |---|---|
 | Waitlist total and new this week | Campaigns sent, with delivered counts |
-| Registrations, athletes, 10K vs Fun Run split | Opens and clicks, with rates |
+| Registrations, athletes, 10K / 5K / Fun Run split | Opens and clicks, with rates |
 | Covered entries claimed via invite link | Bounces |
 | Total raised, raised this week, average gift | |
-| Newest signups and registrations | |
+| Newest signups and registrations, with phone numbers | |
 | Referral leaderboard | |
+
+Phone numbers are tap-to-call links. Not every registrant has one: the waitlist required a
+number, but checkout only asks optionally, so someone who registered directly and skipped the
+field shows without one. A number given at checkout replaces the waitlist one; a blank never
+erases it.
 
 Each panel loads independently and fails independently — a Stripe outage costs the Stripe panel,
 not the page. Numbers are computed per request; nothing is cached or stored.
