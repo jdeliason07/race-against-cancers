@@ -4,40 +4,43 @@ import {
   CHARITY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K,
   RECOMMENDED_DONATION_FUN_RUN,
   TEN_K_LABEL, FIVE_K_LABEL, FUN_RUN_LABEL,
-  EVENT_LOCATION_NAME, FUN_RUN_LOCATION_NAME,
-  ORG_NAME, SITE_URL, REGISTRATION_OPEN, RUNNER_GOAL,
+  EVENT_LOCATION_NAME, EVENT_CITY, EVENT_STREET_ADDRESS, EVENT_ZIP,
+  TEN_K_START_TIME, FIVE_K_START_TIME, FUN_RUN_START_TIME,
+  ORG_NAME, ORG_EIN, SITE_URL, REGISTRATION_OPEN,
+  RUNNER_MILESTONES, SHOW_RUNNER_COUNT_FROM, IMPACT_HEADLINE, IMPACT_FAMILIES,
 } from '@/config/site';
+import Image from 'next/image';
+import { Countdown } from '@/components/ui/Countdown';
 import { getRunnerTotal } from '@/lib/getRunnerTotal';
 import { RegistrationTeaser } from '@/components/ui/RegistrationTeaser';
 import { ReferralAnnouncement } from '@/components/ui/ReferralReward';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Race Against Cancers 2026 — 10K, 5K & Fun Run',
+  title: 'Race Against Cancers 2026 — 10K, 5K & 1-Mile Walk',
 };
 
 export const revalidate = 300; // refresh every 5 minutes
 
-const GOAL = RUNNER_GOAL;
 
 const eventJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SportsEvent',
   name: EVENT_NAME,
-  description: `A 10K, 5K & Fun Run charity race benefiting ${CHARITY_NAME}. Run through Provo, Utah on ${EVENT_DATE_DISPLAY}.`,
+  description: `A 10K, 5K & 1-Mile Walk charity race benefiting ${CHARITY_NAME}, run as loops of ${EVENT_LOCATION_NAME} in ${EVENT_CITY} on ${EVENT_DATE_DISPLAY}.`,
   startDate: EVENT_DATE_ISO,
   endDate: '2026-11-07T12:00:00-07:00',
   eventStatus: 'https://schema.org/EventScheduled',
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
   location: {
     '@type': 'Place',
-    name: 'Utah County Courthouse — University Ave & Center St',
+    name: `${EVENT_LOCATION_NAME}, ${EVENT_CITY}`,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'University Ave & Center St',
-      addressLocality: 'Provo',
+      ...(EVENT_STREET_ADDRESS ? { streetAddress: EVENT_STREET_ADDRESS } : {}),
+      addressLocality: 'Alpine',
       addressRegion: 'UT',
-      postalCode: '84601',
+      postalCode: EVENT_ZIP,
       addressCountry: 'US',
     },
   },
@@ -83,7 +86,12 @@ const eventJsonLd = {
 
 export default async function HomePage() {
   const runners = await getRunnerTotal();
-  const pct = Math.min(Math.round((runners / GOAL) * 100), 100);
+  const milestone =
+    RUNNER_MILESTONES.find((m) => m > runners) ?? RUNNER_MILESTONES[RUNNER_MILESTONES.length - 1];
+  const showCount = runners >= SHOW_RUNNER_COUNT_FROM;
+  const pct = Math.min(Math.round((runners / milestone) * 100), 100);
+  const cta = REGISTRATION_OPEN ? 'Register' : 'Join the Waitlist';
+
   return (
     <>
       {/* JSON-LD Event Schema */}
@@ -97,7 +105,7 @@ export default async function HomePage() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="rule-line mb-8">
             <div className="h-px flex-1 bg-petal" aria-hidden="true" />
-            <span className="section-label">{EVENT_DATE_DISPLAY}</span>
+            <span className="section-label">{EVENT_DATE_DISPLAY} · {EVENT_LOCATION_NAME}, {EVENT_CITY}</span>
             <div className="h-px flex-1 bg-petal" aria-hidden="true" />
           </div>
 
@@ -106,19 +114,50 @@ export default async function HomePage() {
             <em className="not-italic text-pink">MORE HERE</em>
           </h1>
 
-          <p className="mt-8 max-w-xl font-body text-lg text-ash">
-            A 10K, 5K & Fun Run benefiting {CHARITY_NAME}. Your registration
-            is a donation to the cause — we recommend ${RECOMMENDED_DONATION_AMOUNT} for the 10K,
-            ${RECOMMENDED_DONATION_5K} for the 5K, and ${RECOMMENDED_DONATION_FUN_RUN} for the
-            family Fun Run.
-          </p>
+          <div className="mt-10 grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)]">
+            <div>
+              <p className="max-w-xl font-body text-lg text-ash">
+                A 10K, 5K &amp; 1-Mile Walk at {EVENT_LOCATION_NAME} in {EVENT_CITY}.{' '}
+                <span className="font-semibold text-ink">
+                  {IMPACT_HEADLINE} for local patients at {CHARITY_NAME}.
+                </span>{' '}
+                Your registration is a tax-deductible donation — we recommend $
+                {RECOMMENDED_DONATION_AMOUNT} for the 10K, ${RECOMMENDED_DONATION_5K} for the 5K, and $
+                {RECOMMENDED_DONATION_FUN_RUN} for the walk.
+              </p>
 
-          <div className="mt-10">
-            <Link href="/register" className="btn-primary px-10 py-5 text-base">
-              {REGISTRATION_OPEN ? 'Register' : 'Join the Waitlist'}
-            </Link>
-            <RegistrationTeaser className="mt-4 max-w-md" />
+              <div className="mt-10">
+                <Link href="/register" className="btn-primary px-10 py-5 text-base">{cta}</Link>
+                <RegistrationTeaser className="mt-4 max-w-md" />
+              </div>
+            </div>
+
+            <div className="rounded-card bg-blush p-6">
+              <p className="section-label mb-4 text-center">Race starts in</p>
+              <Countdown target={EVENT_DATE_ISO} />
+              <p className="mt-4 text-center font-body text-xs text-ash">
+                10K {TEN_K_START_TIME} · 5K {FIVE_K_START_TIME} · 1-Mile Walk {FUN_RUN_START_TIME}
+              </p>
+            </div>
           </div>
+        </div>
+      </section>
+
+      {/* BENEFITING */}
+      <section className="border-y border-line bg-paper py-10">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 text-center sm:flex-row sm:justify-center sm:gap-8 sm:text-left">
+          <span className="section-label">Benefiting</span>
+          <a href="/about" aria-label={`About ${CHARITY_NAME}`}>
+            <Image
+              src="/images/intermountain-health-logo.svg"
+              alt="Intermountain Health"
+              width={220}
+              height={67}
+              className="object-contain"
+              unoptimized
+            />
+          </a>
+          <span className="font-body text-sm text-ash">{CHARITY_NAME}</span>
         </div>
       </section>
 
@@ -135,17 +174,17 @@ export default async function HomePage() {
               {
                 step: '01',
                 heading: 'Choose your distance',
-                body: `Run the ${TEN_K_LABEL} through Provo ($${RECOMMENDED_DONATION_AMOUNT} recommended) or the ${FIVE_K_LABEL} ($${RECOMMENDED_DONATION_5K}) — or bring the family for the ${FUN_RUN_LABEL} from LaVell Edwards Stadium to downtown, $${RECOMMENDED_DONATION_FUN_RUN} recommended and short enough for kids to finish.`,
+                body: `Run the ${TEN_K_LABEL} ($${RECOMMENDED_DONATION_AMOUNT} recommended) or the ${FIVE_K_LABEL} ($${RECOMMENDED_DONATION_5K}) — or bring the family for the ${FUN_RUN_LABEL} ($${RECOMMENDED_DONATION_FUN_RUN}). Every race is loops of ${EVENT_LOCATION_NAME}, so family and friends can cheer you on every lap.`,
               },
               {
                 step: '02',
-                heading: 'Register to give',
-                body: `Your registration fee is a donation to ${CHARITY_NAME}. Give as much as you're willing.`,
+                heading: 'Pick your color',
+                body: `Every entry comes with a race bib and a bandana in the color of the cancer you're running for — breast cancer pink, childhood cancer gold, and more. Run for someone you love.`,
               },
               {
                 step: '03',
                 heading: 'Show up November 7',
-                body: `Race day is ${EVENT_DATE_DISPLAY}. Lace up, show up, and run for something real.`,
+                body: `10K at ${TEN_K_START_TIME}, 5K at ${FIVE_K_START_TIME}, 1-Mile Walk at ${FUN_RUN_START_TIME}. Check in 30 minutes before your race at ${EVENT_LOCATION_NAME}.`,
               },
             ].map((item) => (
               <div key={item.step} className="rounded-card border border-petal bg-paper p-8">
@@ -156,7 +195,7 @@ export default async function HomePage() {
             ))}
           </div>
           <div className="mt-10 text-center">
-            <Link href="/register" className="btn-primary">{REGISTRATION_OPEN ? 'Register' : 'Join the Waitlist'}</Link>
+            <Link href="/register" className="btn-primary">{cta}</Link>
           </div>
         </div>
       </section>
@@ -168,6 +207,26 @@ export default async function HomePage() {
         </div>
       </div>
 
+      {/* WHERE THE MONEY GOES */}
+      <section className="bg-mist py-24">
+        <div className="mx-auto max-w-4xl px-6 text-center">
+          <p className="section-label mb-6">Where your donation goes</p>
+          <p className="font-display text-[clamp(72px,16vw,160px)] uppercase leading-none text-pink">100%</p>
+          <p className="mt-4 font-display text-[clamp(28px,4vw,44px)] uppercase leading-tight text-ink">
+            of every donation funds cancer treatment
+          </p>
+          <p className="mx-auto mt-6 max-w-2xl font-body text-base leading-relaxed text-ash">
+            Not overhead. Not race costs. Every dollar raised goes to paying for treatment for
+            cancer patients at {CHARITY_NAME} — this year, {IMPACT_FAMILIES === 3 ? 'three' : IMPACT_FAMILIES} local
+            families fighting cancer right now.
+          </p>
+          <p className="mx-auto mt-6 max-w-2xl font-body text-sm text-ash">
+            {ORG_NAME} is a 501(c)(3) nonprofit (EIN {ORG_EIN}). Your registration donation is
+            tax-deductible to the extent allowed by law.
+          </p>
+        </div>
+      </section>
+
       {/* EVENT FACTS */}
       <section className="bg-paper py-20">
         <div className="mx-auto max-w-7xl px-6">
@@ -178,17 +237,10 @@ export default async function HomePage() {
           </div>
           <dl className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { dt: 'Events',   dd: `${TEN_K_LABEL} + ${FIVE_K_LABEL} + ${FUN_RUN_LABEL}` },
+              { dt: 'Events',   dd: `${TEN_K_LABEL} · ${FIVE_K_LABEL} · ${FUN_RUN_LABEL}` },
               { dt: 'Date',     dd: EVENT_DATE_DISPLAY },
-              {
-                dt: 'Start',
-                // One name while every race shares the start; split again if
-                // the Fun Run ever moves back to a venue of its own.
-                dd: FUN_RUN_LOCATION_NAME === EVENT_LOCATION_NAME
-                  ? `All races: ${EVENT_LOCATION_NAME}`
-                  : `10K & 5K: ${EVENT_LOCATION_NAME} · Fun Run: ${FUN_RUN_LOCATION_NAME}`,
-              },
-              { dt: 'Entry',    dd: `10K $${RECOMMENDED_DONATION_AMOUNT} · 5K $${RECOMMENDED_DONATION_5K} · Fun Run $${RECOMMENDED_DONATION_FUN_RUN}` },
+              { dt: 'Start times', dd: `10K ${TEN_K_START_TIME} · 5K ${FIVE_K_START_TIME} · Walk ${FUN_RUN_START_TIME}` },
+              { dt: 'Where',    dd: `${EVENT_LOCATION_NAME}, ${EVENT_CITY}` },
             ].map((fact) => (
               <div key={fact.dt} className="rounded-card border border-line p-6">
                 <dt className="section-label mb-2">{fact.dt}</dt>
@@ -196,51 +248,48 @@ export default async function HomePage() {
               </div>
             ))}
           </dl>
+          <div className="mt-8 text-center">
+            <Link href="/race-details" className="btn-ghost">Full race details</Link>
+          </div>
         </div>
       </section>
 
-      {/* GOAL + PROGRESS */}
+      {/* NEXT MILESTONE */}
       <section className="bg-blush py-24">
         <div className="mx-auto max-w-3xl px-6 text-center">
-          <p className="section-label mb-6">Our goal</p>
+          <p className="section-label mb-6">Our next milestone</p>
           <p className="font-display text-[clamp(64px,12vw,120px)] uppercase leading-none text-ink">
-            {GOAL.toLocaleString()} Runners
+            {milestone.toLocaleString()} Runners
           </p>
-          <p className="mt-6 max-w-lg mx-auto font-body text-base text-ash">
-            That&rsquo;s how many we want on the start line for the cause. Every registration gets
-            us closer. Every person who shows up matters.
+          <p className="mx-auto mt-6 max-w-lg font-body text-base text-ash">
+            {showCount
+              ? 'Every registration gets us closer. Every person who shows up matters.'
+              : `Be one of the first ${milestone.toLocaleString()} on the start line — and bring someone with you.`}
           </p>
 
-          {/* Progress bar */}
-          <div className="mt-10 max-w-xl mx-auto">
-            <div className="mb-3 flex items-end justify-between">
-              <span className="font-display text-3xl uppercase text-ink">
-                {runners.toLocaleString()} registered
-              </span>
-              <span className="font-body text-sm text-ash">{pct}% of goal</span>
-            </div>
-            <div
-              className="h-4 w-full rounded-pill bg-petal overflow-hidden"
-              role="progressbar"
-              aria-valuenow={pct}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label={`${pct}% of the ${GOAL.toLocaleString()} runner goal registered`}
-            >
+          {showCount && (
+            <div className="mx-auto mt-10 max-w-xl">
+              <div className="mb-3 flex items-end justify-between">
+                <span className="font-display text-3xl uppercase text-ink">
+                  {runners.toLocaleString()} registered
+                </span>
+                <span className="font-body text-sm text-ash">{milestone - runners} to go</span>
+              </div>
               <div
-                className="h-full rounded-pill bg-pink transition-all duration-700"
-                style={{ width: `${pct === 0 ? 1 : pct}%` }}
-              />
+                className="h-4 w-full overflow-hidden rounded-pill bg-petal"
+                role="progressbar"
+                aria-valuenow={pct}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={`${pct}% of the way to ${milestone.toLocaleString()} runners`}
+              >
+                <div className="h-full rounded-pill bg-pink transition-all duration-700" style={{ width: `${pct}%` }} />
+              </div>
             </div>
-            <div className="mt-2 text-right">
-              <span className="font-body text-xs text-ash">Goal: {GOAL.toLocaleString()} runners</span>
-            </div>
-          </div>
+          )}
 
           <div className="mt-10">
-            <Link href="/register" className="btn-primary px-10 py-5 text-base">
-              {REGISTRATION_OPEN ? 'Register' : 'Join the Waitlist'}
-            </Link>
+            <Link href="/register" className="btn-primary px-10 py-5 text-base">{cta}</Link>
             <RegistrationTeaser className="mt-4" />
           </div>
         </div>

@@ -20,17 +20,17 @@ export function FooterLinks({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col items-center gap-6 border-t border-white/10 pt-10 md:flex-row md:justify-between">
-      <p className="font-body text-xs text-white/40 tracking-widest uppercase">{children}</p>
+      <p className="font-body text-xs text-ash tracking-widest uppercase">{children}</p>
       <nav className="flex flex-wrap items-center justify-center gap-5" aria-label="Footer navigation">
-        <Link href="/register" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">{REGISTRATION_OPEN ? 'Register' : 'Join the Waitlist'}</Link>
-        <Link href="/race-details" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">Race Details</Link>
-        <Link href="/volunteer" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">Volunteer</Link>
-        <Link href="/sponsor" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">Sponsor</Link>
-        <Link href="/faq" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">FAQ</Link>
-        <Link href="/about" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">About</Link>
-        <Link href="/privacy" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">Privacy</Link>
-        <Link href="/waiver" className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest">Waiver</Link>
-        <a href={`tel:${CONTACT_PHONE.replace(/-/g, '')}`} className="font-body text-xs text-white/55 hover:text-pink transition-colors uppercase tracking-widest flex items-center gap-1">
+        <Link href="/register" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">{REGISTRATION_OPEN ? 'Register' : 'Join the Waitlist'}</Link>
+        <Link href="/race-details" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">Race Details</Link>
+        <Link href="/volunteer" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">Volunteer</Link>
+        <Link href="/sponsor" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">Sponsor</Link>
+        <Link href="/faq" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">FAQ</Link>
+        <Link href="/about" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">About</Link>
+        <Link href="/privacy" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">Privacy</Link>
+        <Link href="/waiver" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">Waiver</Link>
+        <a href={`tel:${CONTACT_PHONE.replace(/-/g, '')}`} className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest flex items-center gap-1">
           <Phone size={13} /> {CONTACT_PHONE}
         </a>
       </nav>
@@ -94,7 +94,7 @@ function FooterSocial() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={label}
-          className="text-white/40 hover:text-pink transition-colors"
+          className="text-ash hover:text-pink transition-colors"
         >
           <Icon size={18} />
         </a>

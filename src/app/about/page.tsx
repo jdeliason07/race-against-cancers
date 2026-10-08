@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { CHARITY_NAME, CHARITY_URL, REGISTRATION_OPEN, RUNNER_GOAL } from '@/config/site';
+import { CHARITY_NAME, CHARITY_URL, REGISTRATION_OPEN, RUNNER_MILESTONES, ORG_NAME, ORG_EIN, TEAM } from '@/config/site';
 import { RegistrationTeaser } from '@/components/ui/RegistrationTeaser';
 import type { Metadata } from 'next';
 
@@ -15,19 +15,53 @@ export default function AboutPage() {
       <section className="border-b border-line bg-mist py-20">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="section-label mb-4">Our mission</p>
-          <h1 className="font-display text-5xl uppercase text-ink md:text-7xl">About</h1>
+          <h1 className="font-display text-5xl uppercase text-ink md:text-7xl">About Us</h1>
         </div>
       </section>
 
       <div className="mx-auto max-w-3xl space-y-16 px-6 py-20">
         <section>
-          <h2 className="mb-6 font-display text-3xl uppercase text-ink">Why this exists</h2>
-          <p className="font-body text-base leading-relaxed text-ash">
-            One late night, a group of friends realized how grateful we were for our blessings.
-            Inspired to give back, we created this race to help others—motivated by the kindness
-            shown to us. Our excitement grew as we shared the idea, leading us to commit fully.
-            Thank you for joining us in our mission to give back.
-          </p>
+          <h2 className="mb-6 font-display text-3xl uppercase text-ink">Who we are</h2>
+          <div className="space-y-4 font-body text-base leading-relaxed text-ash">
+            <p>
+              One late night, a group of friends realized how grateful we were for our blessings.
+              Inspired to give back, we created this race to help others — motivated by the
+              kindness shown to us. Our excitement grew as we shared the idea, leading us to
+              commit fully.
+            </p>
+            <p>
+              We wanted to do more than wear a ribbon. So we built a race: one morning where a
+              whole community shows up, runs for someone they love, and puts every dollar toward
+              real treatment for real people. Thank you for joining us.
+            </p>
+          </div>
+
+          <ul className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3">
+            {TEAM.map((person) => {
+              const initials = person.name.split(' ').map((n) => n[0]).join('');
+              return (
+                <li key={person.name} className="text-center">
+                  {person.photo ? (
+                    <Image
+                      src={person.photo}
+                      alt={person.name}
+                      width={160}
+                      height={160}
+                      className="mx-auto aspect-square h-32 w-32 rounded-full border-4 border-blush object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="mx-auto flex h-32 w-32 items-center justify-center rounded-full border-4 border-petal bg-blush font-display text-4xl text-pink"
+                      aria-hidden="true"
+                    >
+                      {initials}
+                    </div>
+                  )}
+                  <p className="mt-4 font-display text-xl uppercase text-ink">{person.name}</p>
+                </li>
+              );
+            })}
+          </ul>
         </section>
 
         <section>
@@ -74,24 +108,27 @@ export default function AboutPage() {
           <h2 className="mb-6 font-display text-3xl uppercase text-ink">Where the money goes</h2>
           <div className="rounded-card border-2 border-pink bg-blush p-8">
             <p className="mb-4 font-display text-2xl uppercase text-ink">
-              Donations benefit {CHARITY_NAME}
+              100% funds cancer treatment
             </p>
             <p className="font-body text-sm leading-relaxed text-ash">
-              Registration donations support Intermountain Cancer Center Utah Valley. We are
-              actively seeking sponsors to cover the cost of putting on the race, so that as much
-              of what runners give as possible reaches the cause.
+              Every dollar donated goes to paying for treatment for cancer patients at{' '}
+              {CHARITY_NAME} — this year, three local families. None of it goes to race expenses.
+            </p>
+            <p className="mt-4 font-body text-xs text-ash">
+              {ORG_NAME} is a 501(c)(3) nonprofit (EIN {ORG_EIN}). Donations are tax-deductible to
+              the extent allowed by law.
             </p>
           </div>
         </section>
 
         <section>
-          <h2 className="mb-6 font-display text-3xl uppercase text-ink">Our goal</h2>
+          <h2 className="mb-6 font-display text-3xl uppercase text-ink">Our first milestone</h2>
           <div className="rounded-card border-2 border-pink bg-blush p-8 text-center">
             <p className="font-display text-[clamp(56px,10vw,96px)] uppercase leading-none text-ink">
-              {RUNNER_GOAL.toLocaleString()} Runners
+              {RUNNER_MILESTONES[0].toLocaleString()} Runners
             </p>
             <p className="mt-4 font-body text-base text-ash">
-              That&apos;s how many we want running for Intermountain Cancer Center Utah Valley.
+              That&apos;s our first target on the start line for Intermountain Cancer Center Utah Valley.
               Every registration is a donation too, and every one of them gets us closer.
             </p>
           </div>

@@ -6,7 +6,7 @@ import {
   RECOMMENDED_DONATION_FUN_RUN,
 } from '@/config/site';
 
-export const alt = `Race Against Cancers 2026 — 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K} & Family Fun Run $${RECOMMENDED_DONATION_FUN_RUN} · Benefiting Intermountain Cancer Center Utah Valley`;
+export const alt = `Race Against Cancers 2026 — 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K} & 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} · Creekside Park, Alpine · Benefiting Intermountain Cancer Center Utah Valley`;
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -39,12 +39,12 @@ export default async function Image() {
 
         {/* Date & distance */}
         <div style={{ display: 'flex', marginTop: '28px', fontFamily: 'sans-serif', fontSize: '26px', color: '#6E5C64', letterSpacing: '0.18em', textTransform: 'uppercase' }}>
-          10K, 5K &amp; Fun Run · {EVENT_DATE_DISPLAY}
+          10K, 5K &amp; 1-Mile Walk · {EVENT_DATE_DISPLAY}
         </div>
 
         {/* Entry donations — the shorter races' numbers get missed, so they go on the share card */}
         <div style={{ display: 'flex', marginTop: '18px', fontFamily: 'sans-serif', fontSize: '22px', color: '#1C1719' }}>
-          10K ${RECOMMENDED_DONATION_AMOUNT} · 5K ${RECOMMENDED_DONATION_5K} · Family Fun Run ${RECOMMENDED_DONATION_FUN_RUN}
+          10K ${RECOMMENDED_DONATION_AMOUNT} · 5K ${RECOMMENDED_DONATION_5K} · 1-Mile Walk ${RECOMMENDED_DONATION_FUN_RUN}
         </div>
 
         {/* Charity */}

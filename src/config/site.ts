@@ -28,30 +28,34 @@ export const ORG_NAME            = "Race Against Cancers";
 // ever lapses, drop the 501(c)(3) wording in Footer.tsx before the number.
 export const ORG_EIN             = "42-3071442";
 export const EVENT_NAME          = "Race Against Cancers 2026";
-export const EVENT_DATE_ISO      = "2026-11-07T08:00:00-07:00"; // all three races start 8:00 AM MST
+export const EVENT_DATE_ISO      = "2026-11-07T08:00:00-07:00"; // first start (10K), 8:00 AM MST
 export const EVENT_DATE_DISPLAY  = "Saturday, November 7, 2026";
+// Staggered starts, one race at a time on the same loop.
 export const TEN_K_START_TIME    = "8:00 AM";
-export const FIVE_K_START_TIME   = "8:00 AM";
-export const FUN_RUN_START_TIME  = "8:00 AM";
+export const FIVE_K_START_TIME   = "8:30 AM";
+export const FUN_RUN_START_TIME  = "9:00 AM";
+// Check-in opens 30 minutes before each race.
+export const TEN_K_CHECK_IN_TIME   = "7:30 AM";
+export const FIVE_K_CHECK_IN_TIME  = "8:00 AM";
+export const FUN_RUN_CHECK_IN_TIME = "8:30 AM";
 export const EVENT_YEAR          = "2026";
 
 // --- LOCATION -----------------------------------------------
-// All three races start at LaVell Edwards Stadium and finish at the courthouse.
-// 10K, 6.2 mi: two miles north on University Ave, turn around, then roughly
-// four miles south to the finish. 5K, 3.1 mi: the same shape with the
-// turnaround half a mile up instead of two. Fun Run, ~2 mi: the last leg of
-// both, the stadium straight down to the same finish.
-export const EVENT_LOCATION_NAME     = "LaVell Edwards Stadium";   // shared start
-export const EVENT_LOCATION_ADDRESS  = "LaVell Edwards Stadium, Provo, UT 84602";
-export const FINISH_LOCATION_NAME    = "Utah County Courthouse";   // shared finish
-export const FINISH_LOCATION_ADDRESS = "University Ave & Center St, Provo, UT 84601";
-// The Fun Run shares the 10K and 5K's start. Kept as its own pair of constants because
-// the two have been separate venues before and may be again — point them back
-// at the shared start rather than retyping the address.
-export const FUN_RUN_LOCATION_NAME    = EVENT_LOCATION_NAME;
-export const FUN_RUN_LOCATION_ADDRESS = EVENT_LOCATION_ADDRESS;
-// Set to "" until an official GPS recording of the 10K course exists —
-// the race-details page automatically shows "GPX Coming Soon" when empty.
+// Every race starts, runs, and finishes inside Creekside Park in Alpine, as
+// loops of the park. (The earlier Provo road course — LaVell Edwards Stadium
+// to the courthouse — is retired.)
+export const EVENT_LOCATION_NAME     = "Creekside Park";
+export const EVENT_CITY              = "Alpine, UT";
+// Street address shown under the park name. Leave "" until confirmed and the
+// pages show just "Creekside Park, Alpine, UT".
+export const EVENT_STREET_ADDRESS    = "100 South & 600 East";
+export const EVENT_ZIP               = "84004";
+export const EVENT_LOCATION_ADDRESS  = EVENT_STREET_ADDRESS
+  ? `${EVENT_STREET_ADDRESS}, ${EVENT_CITY} ${EVENT_ZIP}`
+  : `${EVENT_LOCATION_NAME}, ${EVENT_CITY}`;
+export const EVENT_MAPS_URL          =
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${EVENT_LOCATION_NAME}, ${EVENT_CITY}`)}`;
+// Set to "" until an official GPS recording of the loop exists.
 export const COURSE_GPX_URL          = "";
 
 // --- REGISTRATION GATE --------------------------------------
@@ -76,7 +80,7 @@ export const REGISTRATION_OPENS_LABEL = REGISTRATION_OPENS_DATE || 'soon';
 // donation field is pre-filled with. Registrants can give less, or more.
 export const RECOMMENDED_DONATION_AMOUNT  = 99; // 10K, per athlete
 export const RECOMMENDED_DONATION_5K      = 69; // 5K, per athlete
-export const RECOMMENDED_DONATION_FUN_RUN = 49; // Fun Run, per athlete
+export const RECOMMENDED_DONATION_FUN_RUN = 49; // 1-Mile Walk, per athlete (key stays "fun-run")
 // The one hard floor, and it is a payments constraint rather than a policy:
 // Stripe rejects a charge under $0.50, so the form and the server both require
 // at least this much.
@@ -93,13 +97,22 @@ export const DONATION_PRESETS_FUN_RUN = [RECOMMENDED_DONATION_FUN_RUN, 99, 199];
 export const MAX_PARTICIPANTS_PER_REGISTRATION = 100;
 export const TEN_K_LABEL           = "10K (6.2 mi)";
 export const FIVE_K_LABEL          = "5K (3.1 mi)";
-export const FUN_RUN_LABEL         = "Fun Run (~2 mi)";
+export const FUN_RUN_LABEL         = "1-Mile Walk";
 
-// --- RUNNER GOAL --------------------------------------------
-// The number on the home page tracker. The goal is people on the start line,
-// not dollars: counted in athletes rather than registrations, because one
-// sign-up can bring a whole family and every one of them runs.
-export const RUNNER_GOAL = 3052;
+// --- RUNNER MILESTONE --------------------------------------
+// The home page shows the next milestone, not progress toward the big goal:
+// a near target reads as momentum, a far one reads as "nobody's coming".
+// When registrations pass a milestone, the next one in the list shows. The
+// live count itself is only shown once it reaches SHOW_RUNNER_COUNT_FROM.
+export const RUNNER_MILESTONES    = [250, 500, 1000, 2000, 3052];
+export const SHOW_RUNNER_COUNT_FROM = 100;
+export const RUNNER_GOAL = RUNNER_MILESTONES[RUNNER_MILESTONES.length - 1];
+
+// --- IMPACT -------------------------------------------------
+// How the home page and About page describe where the money goes. Keep this
+// true: "100%" holds only while sponsors, not registrations, pay for the race.
+export const IMPACT_HEADLINE = "100% of every donation funds cancer treatment";
+export const IMPACT_FAMILIES = 3;
 
 // --- CARD PROCESSING FEE ------------------------------------
 // Stripe keeps 2.9% + $0.30 of every card charge. Rather than letting that come
@@ -164,10 +177,23 @@ export const REFERRAL_REWARD_LOGO_ALT = "";
 export const REFERRAL_REWARD_LOGO_WIDTH = 512;
 export const REFERRAL_REWARD_LOGO_HEIGHT = 512;
 
+// --- TEAM -------------------------------------------------
+// Shown in "Who we are" on the About page. Add a photo by dropping the file in
+// public/images/team/ and setting photo to its path, e.g. "/images/team/braden.jpg".
+// Until then each person shows their initials.
+export const TEAM: { name: string; photo: string }[] = [
+  { name: "Braden Crystal",      photo: "" },
+  { name: "Jack Eliason",        photo: "" },
+  { name: "Mandi White",         photo: "" },
+  { name: "Morgan Christensen",  photo: "" },
+  { name: "Flora Ferguson",      photo: "" },
+];
+
 // --- CHECK-IN -----------------------------------------------
+// Per-race times are with the start times above.
 export const CHECK_IN_DATE     = "Saturday, November 7, 2026";
-export const CHECK_IN_TIME     = "7:00 AM (1 hour before race start)";
-export const CHECK_IN_LOCATION = "LaVell Edwards Stadium, Provo — all races";
+export const CHECK_IN_NOTE     = "Check in 30 minutes before your race";
+export const CHECK_IN_LOCATION = "Creekside Park, Alpine — all races";
 
 // --- CONTACT ------------------------------------------------
 export const CONTACT_EMAIL = "events@raceagainstcancers.org";
@@ -185,4 +211,4 @@ export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";
 // Used by sitemap, robots.txt, metadataBase, and JSON-LD schema.
 export const SITE_URL         = "https://raceagainstcancers.org";
 export const META_DESCRIPTION =
-  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & Fun Run on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. Recommended donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, family-friendly Fun Run $${RECOMMENDED_DONATION_FUN_RUN}.`;
+  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & 1-Mile Walk at Creekside Park in Alpine, Utah on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. Tax-deductible. Recommended donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN}.`;

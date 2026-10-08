@@ -161,7 +161,7 @@ async function StripePanels() {
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Stat label="10K" value={stats.registrations.tenK.toLocaleString()} />
           <Stat label="5K" value={stats.registrations.fiveK.toLocaleString()} />
-          <Stat label="Fun Run" value={stats.registrations.funRun.toLocaleString()} />
+          <Stat label="1-Mile Walk" value={stats.registrations.funRun.toLocaleString()} />
           <Stat
             label="Covered entries"
             value={stats.registrations.covered.toLocaleString()}
