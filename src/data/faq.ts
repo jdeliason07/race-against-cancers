@@ -9,6 +9,17 @@ import {
   REFERRAL_REWARD,
   REGISTRATION_OPEN,
   REGISTRATION_OPENS_LABEL,
+  EVENT_LOCATION_NAME,
+  EVENT_CITY,
+  ORG_NAME,
+  ORG_EIN,
+  TEN_K_START_TIME,
+  FIVE_K_START_TIME,
+  FUN_RUN_START_TIME,
+  TEN_K_CHECK_IN_TIME,
+  FIVE_K_CHECK_IN_TIME,
+  FUN_RUN_CHECK_IN_TIME,
+  MIN_DONATION_DOLLARS,
 } from '@/config/site';
 
 export interface FAQItem {
@@ -31,31 +42,27 @@ export const faqs: FAQItem[] = [
     : []),
   {
     question: "What is the registration fee?",
-    answer: `There is no flat entry fee — your registration is simply a donation to ${CHARITY_NAME}. We recommend $${RECOMMENDED_DONATION_AMOUNT} for the 10K, $${RECOMMENDED_DONATION_5K} for the 5K, and $${RECOMMENDED_DONATION_FUN_RUN} for the family-friendly Fun Run. The recommendation is per athlete, so a family of four doing the Fun Run is pointed at $${RECOMMENDED_DONATION_FUN_RUN * 4} — and you can register all four in one go rather than filling in the form four times. We warmly encourage you to give as much as you're willing.`,
+    answer: `There is no flat entry fee — your registration is a tax-deductible donation, and 100% of it funds cancer treatment for patients at ${CHARITY_NAME}. We recommend $${RECOMMENDED_DONATION_AMOUNT} for the 10K, $${RECOMMENDED_DONATION_5K} for the 5K, and $${RECOMMENDED_DONATION_FUN_RUN} for the 1-Mile Walk. The recommendation is per athlete, so a family of four doing the walk is pointed at $${RECOMMENDED_DONATION_FUN_RUN * 4} — and you can register all four in one go. Money tight? Any amount of $${MIN_DONATION_DOLLARS} or more gets you in. We'd rather have you there.`,
   },
   {
     question: "Can I register a group, or pay for other people?",
-    answer: `Yes. On the registration form, enter how many athletes you're registering and the recommended donation adjusts automatically — $${RECOMMENDED_DONATION_AMOUNT} per athlete for the 10K, $${RECOMMENDED_DONATION_5K} for the 5K, $${RECOMMENDED_DONATION_FUN_RUN} for the Fun Run. This works for a family, a team, a company, or anyone who wants to cover entries for others. You give us your contact details once; each athlete's name and waiver are collected at check-in on race morning. For groups larger than ${MAX_PARTICIPANTS_PER_REGISTRATION}, email ${CONTACT_EMAIL} and we'll sort it out with you.`,
+    answer: `Yes. On the registration form, enter how many athletes you're registering and the recommended donation adjusts automatically — $${RECOMMENDED_DONATION_AMOUNT} per athlete for the 10K, $${RECOMMENDED_DONATION_5K} for the 5K, $${RECOMMENDED_DONATION_FUN_RUN} for the 1-Mile Walk. This works for a family, a team, a company, or anyone who wants to cover entries for others. You give us your contact details once; each athlete's name and waiver are collected at check-in on race morning. For groups larger than ${MAX_PARTICIPANTS_PER_REGISTRATION}, email ${CONTACT_EMAIL} and we'll sort it out with you.`,
   },
   {
     question: "Can I register without fundraising?",
     answer: "Yes. There is no peer-to-peer fundraising requirement. Your donation at registration is all that's needed. You won't be asked to recruit other donors or hit a fundraising goal.",
   },
   {
-    question: "What's the difference between the 10K, the 5K, and the Fun Run?",
-    answer: `All three start at LaVell Edwards Stadium on the BYU campus and finish at University Avenue and Center Street, in front of the Utah County Courthouse in downtown Provo. The 10K is 6.2 miles: north on University Avenue for two miles, a turnaround, then roughly four miles south to the finish. The recommended donation is $${RECOMMENDED_DONATION_AMOUNT}. The 5K is 3.1 miles on the same road: a half mile north to its own turnaround, back past the stadium, then south to the finish, with a $${RECOMMENDED_DONATION_5K} recommended donation. The Fun Run is approximately 2 miles — the last leg of the other two, straight from the stadium down to the same finish line — with a $${RECOMMENDED_DONATION_FUN_RUN} recommended donation. It's the one most families choose — short enough for kids to finish, easy to walk the whole way, and strollers are welcome. All three take place on November 7, 2026.`,
+    question: "What's the difference between the 10K, the 5K, and the 1-Mile Walk?",
+    answer: `All three take place inside ${EVENT_LOCATION_NAME} in ${EVENT_CITY}, run as loops of the park, and start and finish in the same spot. The 10K (6.2 miles) starts at ${TEN_K_START_TIME}, with a $${RECOMMENDED_DONATION_AMOUNT} recommended donation. The 5K (3.1 miles) starts at ${FIVE_K_START_TIME}, with a $${RECOMMENDED_DONATION_5K} recommendation. The 1-Mile Walk starts at ${FUN_RUN_START_TIME}, with a $${RECOMMENDED_DONATION_FUN_RUN} recommendation — it's the one families choose: short enough for kids, easy to walk the whole way, and strollers are welcome.`,
   },
   {
-    question: "How do I get to the 10K or 5K start line?",
-    answer: "All three races start at LaVell Edwards Stadium on the BYU campus, and all three finish downtown rather than back at the start, so runners are responsible for their own transportation to the stadium. Plan to arrive at check-in by 7:00 AM — the race starts promptly at 8:00 AM.",
-  },
-  {
-    question: "How do I get to the Fun Run start?",
-    answer: "The Fun Run starts at LaVell Edwards Stadium on the BYU campus in Provo, the same start as the 10K and 5K. Participants are responsible for their own transportation to the stadium. Check-in is at the stadium — plan to arrive by 7:00 AM. The race starts promptly at 8:00 AM.",
+    question: "Where is the race?",
+    answer: `Every race starts and finishes at ${EVENT_LOCATION_NAME} in ${EVENT_CITY}. Check-in, start, and finish are all in the park, so there's no shuttle and no getting back to your car from somewhere else. Directions are on the Race Details page.`,
   },
   {
     question: "What's included with registration?",
-    answer: "Every registered participant receives a race bib and a complimentary bandana. Additional details confirmed closer to race day.",
+    answer: "Every participant gets a race bib and a bandana in the color of the cancer they choose to run for. You pick your color when you register, and both are waiting for you at check-in. There are no shirts or medals — we'd rather that money go to treatment.",
   },
   {
     question: "What is the refund policy?",
@@ -63,11 +70,15 @@ export const faqs: FAQItem[] = [
   },
   {
     question: "When and where is check-in?",
-    answer: "Check-in is on race morning — Saturday, November 7, 2026, at 7:00 AM at LaVell Edwards Stadium for all three races. Your bib and bandana will be there.",
+    answer: `Check in 30 minutes before your race at ${EVENT_LOCATION_NAME}: ${TEN_K_CHECK_IN_TIME} for the 10K, ${FIVE_K_CHECK_IN_TIME} for the 5K, and ${FUN_RUN_CHECK_IN_TIME} for the 1-Mile Walk. Your bib and bandana will be there.`,
   },
   {
     question: "Where does my donation go?",
-    answer: "Donations from registration benefit Intermountain Cancer Center Utah Valley in Provo. We are seeking sponsors to cover the cost of putting on the race, so that as much of what you give as possible reaches the cancer center.",
+    answer: `100% of every donation funds cancer treatment for patients at ${CHARITY_NAME} — this year, three local families. None of it goes to race expenses.`,
+  },
+  {
+    question: "Is my donation tax-deductible?",
+    answer: `Yes. ${ORG_NAME} is a registered 501(c)(3) nonprofit (EIN ${ORG_EIN}), and your registration donation is tax-deductible to the extent allowed by law. Your receipt is emailed to you after you register.`,
   },
   {
     question: "Is this a timed race?",
