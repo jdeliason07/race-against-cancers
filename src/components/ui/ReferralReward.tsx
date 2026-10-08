@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import {
   REFERRAL_ENABLED,
   REFERRAL_REWARD,
@@ -80,40 +79,15 @@ export function ReferralAnnouncement({ className }: { className?: string }) {
   if (!REFERRAL_ENABLED) return null;
 
   return (
-    <section
-      aria-labelledby="referral-announcement-heading"
-      className={cn('rounded-card border-2 border-petal bg-paper p-8 md:p-10', className)}
+    <p
+      className={cn(
+        'mx-auto max-w-3xl rounded-card border border-petal bg-paper px-6 py-3 text-center font-body text-sm text-ash',
+        className,
+      )}
     >
-      <div className="flex flex-col items-center gap-6 text-center md:flex-row md:gap-8 md:text-left">
-        <RewardLogo className="w-24 md:w-32" />
-        <div className="flex-1">
-          <span className="section-label">Refer a friend</span>
-          <h2
-            id="referral-announcement-heading"
-            className="mt-2 font-display text-2xl uppercase leading-tight text-ink md:text-3xl"
-          >
-            Bring a friend, get a {REFERRAL_REWARD}
-          </h2>
-          <p className="mt-3 font-body text-sm leading-relaxed text-ash md:text-base">
-            {REGISTRATION_OPEN ? (
-              <>
-                Every friend who registers and puts your full name in the &ldquo;Who referred
-                you?&rdquo; box earns you a {REFERRAL_REWARD}. No cap — refer ten friends, get ten
-                gift cards.
-              </>
-            ) : (
-              <>
-                When registration opens, every friend who signs up and puts your full name in the
-                &ldquo;Who referred you?&rdquo; box earns you a {REFERRAL_REWARD}. No cap — refer
-                ten friends, get ten gift cards.
-              </>
-            )}
-          </p>
-        </div>
-        <Link href="/register" className="btn-primary shrink-0">
-          {REGISTRATION_OPEN ? 'Register' : 'Join the Waitlist'}
-        </Link>
-      </div>
-    </section>
+      <span className="font-bold text-pink">Bring a friend:</span> when they name you in the
+      &ldquo;Who referred you?&rdquo; box{REGISTRATION_OPEN ? '' : ' once registration opens'}, you
+      get a {REFERRAL_REWARD}. No limit.
+    </p>
   );
 }

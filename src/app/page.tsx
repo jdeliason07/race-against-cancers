@@ -11,6 +11,7 @@ import {
 } from '@/config/site';
 import Image from 'next/image';
 import { Countdown } from '@/components/ui/Countdown';
+import { SponsorMarquee } from '@/components/ui/SponsorMarquee';
 import { getRunnerTotal } from '@/lib/getRunnerTotal';
 import { RegistrationTeaser } from '@/components/ui/RegistrationTeaser';
 import { ReferralAnnouncement } from '@/components/ui/ReferralReward';
@@ -117,13 +118,7 @@ export default async function HomePage() {
           <div className="mt-10 grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)]">
             <div>
               <p className="max-w-xl font-body text-lg text-ash">
-                A 10K, 5K &amp; 1-Mile Walk at {EVENT_LOCATION_NAME} in {EVENT_CITY}.{' '}
-                <span className="font-semibold text-ink">
-                  {IMPACT_HEADLINE} for local patients at {CHARITY_NAME}.
-                </span>{' '}
-                Your registration is a tax-deductible donation — we recommend $
-                {RECOMMENDED_DONATION_AMOUNT} for the 10K, ${RECOMMENDED_DONATION_5K} for the 5K, and $
-                {RECOMMENDED_DONATION_FUN_RUN} for the walk.
+                {IMPACT_HEADLINE} for local patients at {CHARITY_NAME}
               </p>
 
               <div className="mt-10">
@@ -160,6 +155,8 @@ export default async function HomePage() {
           <span className="font-body text-sm text-ash">{CHARITY_NAME}</span>
         </div>
       </section>
+
+      <SponsorMarquee />
 
       {/* HOW IT WORKS */}
       <section className="bg-blush py-16">
@@ -200,8 +197,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* REFERRAL INCENTIVE — continues the blush band under "How it works" */}
-      <div className="bg-blush pb-16">
+      {/* REFERRAL — a slim note, continuing the blush band */}
+      <div className="bg-blush pb-14">
         <div className="mx-auto max-w-7xl px-6">
           <ReferralAnnouncement />
         </div>

@@ -4,7 +4,7 @@ import { FooterLinks } from './FooterLinks';
 export function Footer() {
   return (
     <footer className="border-t border-petal bg-blush text-ink">
-      <div className="mx-auto max-w-7xl px-6 py-16">
+      <div className="mx-auto max-w-7xl px-6 pb-28 pt-16 md:pb-16">
         <div className="mb-12 text-center">
           <p className="font-display text-[clamp(28px,9vw,72px)] uppercase leading-none">
             RACE<span className="text-pink">AGAINST</span>CANCERS

@@ -3,6 +3,7 @@ import { Anton, Saira } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { StickyRegisterBar } from '@/components/ui/StickyRegisterBar';
 import {
   EVENT_NAME, META_DESCRIPTION, SITE_URL,
 } from '@/config/site';
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <StickyRegisterBar />
       </body>
     </html>
   );
