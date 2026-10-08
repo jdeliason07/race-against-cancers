@@ -20,6 +20,7 @@ import {
   FIVE_K_CHECK_IN_TIME,
   FUN_RUN_CHECK_IN_TIME,
   MIN_DONATION_DOLLARS,
+  IMPACT_SPONSOR_LINE,
 } from '@/config/site';
 
 export interface FAQItem {
@@ -41,12 +42,12 @@ export const faqs: FAQItem[] = [
       }]
     : []),
   {
-    question: "What is the registration fee?",
-    answer: `There is no flat entry fee — your registration is a tax-deductible donation, and 100% of it funds cancer treatment for patients at ${CHARITY_NAME}. We recommend $${RECOMMENDED_DONATION_AMOUNT} for the 10K, $${RECOMMENDED_DONATION_5K} for the 5K, and $${RECOMMENDED_DONATION_FUN_RUN} for the 1-Mile Walk. The recommendation is per athlete, so a family of four doing the walk is pointed at $${RECOMMENDED_DONATION_FUN_RUN * 4} — and you can register all four in one go. Money tight? Any amount of $${MIN_DONATION_DOLLARS} or more gets you in. We'd rather have you there.`,
+    question: "Is there a registration fee?",
+    answer: `There is no fixed entry fee — your registration is a tax-deductible donation, and 100% of it funds cancer treatment for patients at ${CHARITY_NAME}. Suggested donations are $${RECOMMENDED_DONATION_AMOUNT} for the 10K, $${RECOMMENDED_DONATION_5K} for the 5K, and $${RECOMMENDED_DONATION_FUN_RUN} for the 1-Mile Walk. Suggestions are per athlete, so a family of four doing the walk is pointed at $${RECOMMENDED_DONATION_FUN_RUN * 4} — and you can register all four in one go. Give what you can. Any donation of $${MIN_DONATION_DOLLARS} or more gets you in — we'd rather have you there.`,
   },
   {
     question: "Can I register a group, or pay for other people?",
-    answer: `Yes. On the registration form, enter how many athletes you're registering and the recommended donation adjusts automatically — $${RECOMMENDED_DONATION_AMOUNT} per athlete for the 10K, $${RECOMMENDED_DONATION_5K} for the 5K, $${RECOMMENDED_DONATION_FUN_RUN} for the 1-Mile Walk. This works for a family, a team, a company, or anyone who wants to cover entries for others. You give us your contact details once; each athlete's name and waiver are collected at check-in on race morning. For groups larger than ${MAX_PARTICIPANTS_PER_REGISTRATION}, email ${CONTACT_EMAIL} and we'll sort it out with you.`,
+    answer: `Yes. On the registration form, enter how many athletes you're registering and the suggested donation adjusts automatically — $${RECOMMENDED_DONATION_AMOUNT} per athlete for the 10K, $${RECOMMENDED_DONATION_5K} for the 5K, $${RECOMMENDED_DONATION_FUN_RUN} for the 1-Mile Walk. This works for a family, a team, a company, or anyone who wants to cover entries for others. You give us your contact details once; each athlete's name and waiver are collected at check-in on race morning. For groups larger than ${MAX_PARTICIPANTS_PER_REGISTRATION}, email ${CONTACT_EMAIL} and we'll sort it out with you.`,
   },
   {
     question: "Can I register without fundraising?",
@@ -54,7 +55,7 @@ export const faqs: FAQItem[] = [
   },
   {
     question: "What's the difference between the 10K, the 5K, and the 1-Mile Walk?",
-    answer: `All three take place inside ${EVENT_LOCATION_NAME} in ${EVENT_CITY}, run as loops of the park, and start and finish in the same spot. The 10K (6.2 miles) starts at ${TEN_K_START_TIME}, with a $${RECOMMENDED_DONATION_AMOUNT} recommended donation. The 5K (3.1 miles) starts at ${FIVE_K_START_TIME}, with a $${RECOMMENDED_DONATION_5K} recommendation. The 1-Mile Walk starts at ${FUN_RUN_START_TIME}, with a $${RECOMMENDED_DONATION_FUN_RUN} recommendation — it's the one families choose: short enough for kids, easy to walk the whole way, and strollers are welcome.`,
+    answer: `All three take place inside ${EVENT_LOCATION_NAME} in ${EVENT_CITY}, run as loops of the park, and start and finish in the same spot. The 10K (6.2 miles) starts at ${TEN_K_START_TIME}, with a $${RECOMMENDED_DONATION_AMOUNT} suggested donation. The 5K (3.1 miles) starts at ${FIVE_K_START_TIME}, with a $${RECOMMENDED_DONATION_5K} suggested donation. The 1-Mile Walk starts at ${FUN_RUN_START_TIME}, with a $${RECOMMENDED_DONATION_FUN_RUN} suggested donation — it's the one families choose: short enough for kids, easy to walk the whole way, and strollers are welcome.`,
   },
   {
     question: "Where is the race?",
@@ -74,7 +75,7 @@ export const faqs: FAQItem[] = [
   },
   {
     question: "Where does my donation go?",
-    answer: `100% of every donation funds cancer treatment for patients at ${CHARITY_NAME} — this year, three local families. None of it goes to race expenses.`,
+    answer: `${IMPACT_SPONSOR_LINE} This year, that's three local families. None of it goes to race expenses.`,
   },
   {
     question: "Is my donation tax-deductible?",
