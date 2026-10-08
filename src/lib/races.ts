@@ -33,7 +33,7 @@ export interface Race {
 export const RACES: Record<RaceKey, Race> = {
   '10k':     { label: TEN_K_LABEL,   short: '10K',     presets: DONATION_PRESETS_10K },
   '5k':      { label: FIVE_K_LABEL,  short: '5K',      presets: DONATION_PRESETS_5K },
-  'fun-run': { label: FUN_RUN_LABEL, short: 'Fun Run', presets: DONATION_PRESETS_FUN_RUN },
+  'fun-run': { label: FUN_RUN_LABEL, short: '1-Mile Walk', presets: DONATION_PRESETS_FUN_RUN },
 };
 
 /** Both server actions are reachable by direct POST, so check before storing. */
