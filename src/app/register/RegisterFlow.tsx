@@ -573,9 +573,9 @@ function StepAthleteInfo({
           className="border border-petal rounded-card px-4 py-3 font-body text-sm text-ink w-full focus:outline-none focus:border-pink bg-white"
           aria-describedby="donation-amount-hint"
         />
-        <p id="donation-amount-hint" className="mt-1 font-body text-xs text-ash sr-only">
-          Recommended donation: ${recommendedDonation}. Enter any amount of $
-          {MIN_DONATION_DOLLARS} or more.
+        <p id="donation-amount-hint" className="mt-2 font-body text-xs text-ash">
+          Tax-deductible, and 100% funds cancer treatment. Money tight? Any amount of $
+          {MIN_DONATION_DOLLARS} or more gets you in — we&rsquo;d rather have you there.
         </p>
         {donationAmount < MIN_DONATION_DOLLARS && (
           <p className="mt-1 font-body text-xs text-red-700" role="alert">
