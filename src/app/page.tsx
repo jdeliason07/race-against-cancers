@@ -8,6 +8,7 @@ import {
   TEN_K_START_TIME, FIVE_K_START_TIME, FUN_RUN_START_TIME,
   ORG_NAME, ORG_EIN, SITE_URL, REGISTRATION_OPEN,
   RUNNER_MILESTONES, SHOW_RUNNER_COUNT_FROM, IMPACT_HEADLINE, IMPACT_FAMILIES,
+  IMPACT_SPONSOR_LINE, GIVE_WHAT_YOU_CAN, MIN_DONATION_DOLLARS,
 } from '@/config/site';
 import Image from 'next/image';
 import { Countdown } from '@/components/ui/Countdown';
@@ -58,6 +59,7 @@ const eventJsonLd = {
     {
       '@type': 'Offer',
       name: TEN_K_LABEL,
+      description: `Suggested donation. Any donation of $${MIN_DONATION_DOLLARS} or more registers.`,
       price: String(RECOMMENDED_DONATION_AMOUNT),
       priceCurrency: 'USD',
       url: `${SITE_URL}/register`,
@@ -67,6 +69,7 @@ const eventJsonLd = {
     {
       '@type': 'Offer',
       name: FIVE_K_LABEL,
+      description: `Suggested donation. Any donation of $${MIN_DONATION_DOLLARS} or more registers.`,
       price: String(RECOMMENDED_DONATION_5K),
       priceCurrency: 'USD',
       url: `${SITE_URL}/register`,
@@ -76,6 +79,7 @@ const eventJsonLd = {
     {
       '@type': 'Offer',
       name: FUN_RUN_LABEL,
+      description: `Suggested donation. Any donation of $${MIN_DONATION_DOLLARS} or more registers.`,
       price: String(RECOMMENDED_DONATION_FUN_RUN),
       priceCurrency: 'USD',
       url: `${SITE_URL}/register`,
@@ -84,6 +88,11 @@ const eventJsonLd = {
     },
   ],
 };
+
+// Keeps "1-Mile Walk" from breaking at its hyphen.
+function Nowrap({ children }: { children: React.ReactNode }) {
+  return <span className="whitespace-nowrap">{children}</span>;
+}
 
 export default async function HomePage() {
   const runners = await getRunnerTotal();
@@ -115,9 +124,13 @@ export default async function HomePage() {
             <em className="not-italic text-pink">MORE HERE</em>
           </h1>
 
-          <div className="mt-10 grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)]">
+          <p className="mt-6 max-w-3xl font-body text-xl font-semibold leading-snug text-ink md:text-2xl">
+            A community run supporting local families facing cancer.
+          </p>
+
+          <div className="mt-4 grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)]">
             <div>
-              <p className="max-w-xl font-body text-lg text-ash">
+              <p className="max-w-xl font-body text-base leading-relaxed text-ash">
                 {IMPACT_HEADLINE} for local patients at {CHARITY_NAME}
               </p>
 
@@ -171,7 +184,26 @@ export default async function HomePage() {
               {
                 step: '01',
                 heading: 'Choose your distance',
-                body: `Run the ${TEN_K_LABEL} ($${RECOMMENDED_DONATION_AMOUNT} recommended) or the ${FIVE_K_LABEL} ($${RECOMMENDED_DONATION_5K}) — or bring the family for the ${FUN_RUN_LABEL} ($${RECOMMENDED_DONATION_FUN_RUN}). Every race is loops of ${EVENT_LOCATION_NAME}, so family and friends can cheer you on every lap.`,
+                body: <>Run the 10K or the 5K, or bring the family for the <Nowrap>1-Mile Walk</Nowrap>. Every race is loops of {EVENT_LOCATION_NAME}, so family and friends can cheer you on every lap.</>,
+                // These are suggested donations, not entry fees — the list and
+                // the line under it say so.
+                extra: (
+                  <>
+                    <ul className="mt-5 divide-y divide-line border-y border-line font-body text-sm">
+                      {[
+                        { race: TEN_K_LABEL,   amount: RECOMMENDED_DONATION_AMOUNT },
+                        { race: FIVE_K_LABEL,  amount: RECOMMENDED_DONATION_5K },
+                        { race: FUN_RUN_LABEL, amount: RECOMMENDED_DONATION_FUN_RUN },
+                      ].map((r) => (
+                        <li key={r.race} className="py-2">
+                          <span className="block font-semibold text-ink">{r.race}</span>
+                          <span className="block text-ash">${r.amount} suggested donation</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-3 font-body text-sm font-semibold text-ink">{GIVE_WHAT_YOU_CAN}</p>
+                  </>
+                ),
               },
               {
                 step: '02',
@@ -181,13 +213,14 @@ export default async function HomePage() {
               {
                 step: '03',
                 heading: 'Show up November 7',
-                body: `10K at ${TEN_K_START_TIME}, 5K at ${FIVE_K_START_TIME}, 1-Mile Walk at ${FUN_RUN_START_TIME}. Check in 30 minutes before your race at ${EVENT_LOCATION_NAME}.`,
+                body: <>10K at {TEN_K_START_TIME}, 5K at {FIVE_K_START_TIME}, <Nowrap>1-Mile Walk</Nowrap> at {FUN_RUN_START_TIME}. Check in 30 minutes before your race at {EVENT_LOCATION_NAME}.</>,
               },
-            ].map((item) => (
+            ].map((item: { step: string; heading: string; body: React.ReactNode; extra?: React.ReactNode }) => (
               <div key={item.step} className="rounded-card border border-petal bg-paper p-8">
-                <div className="mb-4 font-display text-4xl text-petal">{item.step}</div>
+                <div className="mb-4 font-display text-4xl text-petal" aria-hidden="true">{item.step}</div>
                 <h2 className="mb-3 font-display text-xl uppercase text-ink">{item.heading}</h2>
                 <p className="font-body text-sm leading-relaxed text-ash">{item.body}</p>
+                {item.extra}
               </div>
             ))}
           </div>
@@ -212,9 +245,11 @@ export default async function HomePage() {
           <p className="mt-4 font-display text-[clamp(28px,4vw,44px)] uppercase leading-tight text-ink">
             of every donation funds cancer treatment
           </p>
-          <p className="mx-auto mt-6 max-w-2xl font-body text-base leading-relaxed text-ash">
-            Not overhead. Not race costs. Every dollar raised goes to paying for treatment for
-            cancer patients at {CHARITY_NAME} — this year, {IMPACT_FAMILIES === 3 ? 'three' : IMPACT_FAMILIES} local
+          <p className="mx-auto mt-6 max-w-2xl font-body text-base leading-relaxed text-ink">
+            {IMPACT_SPONSOR_LINE}
+          </p>
+          <p className="mx-auto mt-3 max-w-2xl font-body text-base leading-relaxed text-ash">
+            This year, that&rsquo;s {IMPACT_FAMILIES === 3 ? 'three' : IMPACT_FAMILIES} local
             families fighting cancer right now.
           </p>
           <p className="mx-auto mt-6 max-w-2xl font-body text-sm text-ash">
@@ -236,7 +271,7 @@ export default async function HomePage() {
             {[
               { dt: 'Events',   dd: `${TEN_K_LABEL} · ${FIVE_K_LABEL} · ${FUN_RUN_LABEL}` },
               { dt: 'Date',     dd: EVENT_DATE_DISPLAY },
-              { dt: 'Start times', dd: `10K ${TEN_K_START_TIME} · 5K ${FIVE_K_START_TIME} · Walk ${FUN_RUN_START_TIME}` },
+              { dt: 'Start times', dd: `10K ${TEN_K_START_TIME} · 5K ${FIVE_K_START_TIME} · 1-Mile Walk ${FUN_RUN_START_TIME}` },
               { dt: 'Where',    dd: `${EVENT_LOCATION_NAME}, ${EVENT_CITY}` },
             ].map((fact) => (
               <div key={fact.dt} className="rounded-card border border-line p-6">
