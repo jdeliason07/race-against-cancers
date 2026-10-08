@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { CHARITY_NAME, CHARITY_URL, REGISTRATION_OPEN, RUNNER_MILESTONES, ORG_NAME, ORG_EIN, TEAM } from '@/config/site';
+import { CHARITY_NAME, CHARITY_URL, REGISTRATION_OPEN, RUNNER_MILESTONES, ORG_NAME, ORG_EIN, TEAM, IMPACT_SPONSOR_LINE } from '@/config/site';
 import { RegistrationTeaser } from '@/components/ui/RegistrationTeaser';
 import type { Metadata } from 'next';
 
@@ -111,8 +111,8 @@ export default function AboutPage() {
               100% funds cancer treatment
             </p>
             <p className="font-body text-sm leading-relaxed text-ash">
-              Every dollar donated goes to paying for treatment for cancer patients at{' '}
-              {CHARITY_NAME} — this year, three local families. None of it goes to race expenses.
+              {IMPACT_SPONSOR_LINE} This year, that&rsquo;s three local families. None of it goes
+              to race expenses.
             </p>
             <p className="mt-4 font-body text-xs text-ash">
               {ORG_NAME} is a 501(c)(3) nonprofit (EIN {ORG_EIN}). Donations are tax-deductible to
