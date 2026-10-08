@@ -57,7 +57,7 @@ export function PreSignupForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
-      <p className="font-body text-sm text-ash/70">
+      <p className="font-body text-sm text-ash">
         Add your details and we&rsquo;ll reach out the moment registration opens.
       </p>
       <div className="grid gap-5 sm:grid-cols-2">
@@ -125,7 +125,7 @@ export function PreSignupForm() {
           aria-describedby="phone-hint"
           className="rounded-pill border border-line bg-paper px-6 py-4 font-body text-base text-ink placeholder:text-ash/60 focus:border-pink focus:outline-none focus:ring-2 focus:ring-pink/15"
         />
-        <p id="phone-hint" className="font-body text-xs text-ash/70">
+        <p id="phone-hint" className="font-body text-xs text-ash">
           So we can text you when registration opens. We won&rsquo;t use it for anything else.
         </p>
       </div>

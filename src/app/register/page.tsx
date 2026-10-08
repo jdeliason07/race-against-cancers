@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import {
   CHARITY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K, RECOMMENDED_DONATION_FUN_RUN,
-  REGISTRATION_OPEN, REGISTRATION_OPENS_LABEL,
+  REGISTRATION_OPEN, REGISTRATION_OPENS_LABEL, GIVE_WHAT_YOU_CAN,
 } from '@/config/site';
 import { RegisterFlow } from './RegisterFlow';
 import { PreSignupForm } from './PreSignupForm';
@@ -32,8 +32,9 @@ export default function RegisterPage() {
               Be the first to know the moment registration opens.
             </p>
             <p className="mt-3 font-body text-base text-ink">
-              10K ${RECOMMENDED_DONATION_AMOUNT} · 5K ${RECOMMENDED_DONATION_5K} · 1-Mile Walk ${RECOMMENDED_DONATION_FUN_RUN}
+              {`Suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT} · 5K $${RECOMMENDED_DONATION_5K} · 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN}`}
             </p>
+            <p className="mt-1 font-body text-sm text-ash">{GIVE_WHAT_YOU_CAN}</p>
             <p className="mt-1 font-body text-sm text-ash">
               The 1-Mile Walk is short enough for kids to finish and easy to walk the whole way.
             </p>
@@ -53,7 +54,8 @@ export default function RegisterPage() {
           <p className="section-label mb-3">November 7, 2026</p>
           <h1 className="font-display text-4xl uppercase text-ink md:text-6xl">It&rsquo;s Time</h1>
           <p className="mt-3 font-body text-base text-ash">
-            10K, 5K &amp; 1-Mile Walk at Creekside Park — 100% funds cancer treatment at {CHARITY_NAME}
+            10K, 5K &amp; 1-Mile Walk at Creekside Park, Alpine. 100% of every donation funds
+            cancer treatment at {CHARITY_NAME}.
           </p>
         </div>
       </section>
