@@ -54,10 +54,10 @@ export default function WaiverPage() {
             ))}
           </ul>
           <p className="mt-4 font-body text-sm leading-relaxed text-ash">
-            Your name, date of birth, and — for an athlete under 18 — your parent or legal
-            guardian&rsquo;s name are collected on the registration form, and we record the date and
-            time you accepted along with the version above. That record is your signature under
-            Section 11.8.
+            Your name, whether you will be 18 or older on race day, and — for an athlete under
+            18 — your parent or legal guardian&rsquo;s name are collected on the registration form,
+            and we record the date and time you accepted along with the version above. That record
+            is your signature under Section 11.8. Date of birth is collected at check-in.
           </p>
           {REGISTRATION_OPEN && (
             <Link href="/register" className="btn-primary mt-6">
