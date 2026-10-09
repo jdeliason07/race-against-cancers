@@ -85,9 +85,9 @@ export function ReferralAnnouncement({ className }: { className?: string }) {
         className,
       )}
     >
-      <span className="font-bold text-pink">Bring a friend:</span> when they name you in the
-      &ldquo;Who referred you?&rdquo; box{REGISTRATION_OPEN ? '' : ' once registration opens'}, you
-      get a {REFERRAL_REWARD}. No limit.
+      <span className="font-bold text-pink">Bring a friend:</span>{' '}
+      when they name you in the &ldquo;Who referred you?&rdquo; box
+      {REGISTRATION_OPEN ? '' : ' once registration opens'}, you get a {REFERRAL_REWARD}. No limit.
     </p>
   );
 }

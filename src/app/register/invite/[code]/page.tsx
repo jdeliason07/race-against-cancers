@@ -54,7 +54,7 @@ export default async function InvitePage({
             Your entry to Race Against Cancers 2026 has already been covered by a sponsor — there
             is nothing to pay. Fill in your details below and you&rsquo;re in.
           </p>
-          <p className="mt-3 font-body text-sm text-ash/80">
+          <p className="mt-3 font-body text-sm text-ash">
             Benefiting {CHARITY_NAME}
           </p>
         </div>

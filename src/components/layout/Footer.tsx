@@ -20,7 +20,7 @@ export function Footer() {
         <p className="mt-8 text-center font-body text-xs text-ash">
           {ORG_NAME} is a registered 501(c)(3) nonprofit organization. EIN {ORG_EIN}.
         </p>
-        <p className="mt-2 text-center font-body text-xs text-ash/70">
+        <p className="mt-2 text-center font-body text-xs text-ash">
           © {EVENT_YEAR} {ORG_NAME}. All rights reserved.
         </p>
       </div>

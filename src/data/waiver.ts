@@ -6,8 +6,15 @@
 //   • the scroll box in the register flow (src/components/legal/WaiverText.tsx)
 //   • the full-page version at /waiver
 //
-// Version 2.0 is final: reviewed and approved by the organizer's legal
-// counsel, and it is the version registrants accept.
+// Version 2.0 was reviewed and approved by the organizer's legal counsel.
+// Version 2.1 changes only the factual description of the Event (its venue
+// moved from Provo to Creekside Park in Alpine, and it is a 10K, 5K, and
+// 1-Mile Walk) and drops the Provo-specific named releasees (Brigham Young
+// University, Provo City). The substantive provisions are unchanged.
+// TODO(legal review): have counsel confirm 2.1, and decide whether any party
+// actually involved at the new venue (e.g. Alpine City, if it issues the
+// permit) should be named in 1.4. 1.1 also still reads "Race Against Cancers,
+// Inc." while src/config/site.ts says the entity has no "Inc." suffix.
 //
 // Section 11.9 of the agreement makes the accepted VERSION the thing that
 // controls, so WAIVER_VERSION below is written into every registration's Stripe
@@ -21,7 +28,7 @@
 // ============================================================
 
 /** Written into Stripe metadata on every registration. Bump with the text. */
-export const WAIVER_VERSION = '2.0';
+export const WAIVER_VERSION = '2.1';
 
 /**
  * The date this version took effect, shown in the document header.
@@ -32,10 +39,12 @@ export const WAIVER_VERSION = '2.0';
  * race. The agreement is therefore in force for every acceptance it receives
  * and every activity it covers.
  */
-export const WAIVER_EFFECTIVE_DATE = 'September 15, 2026';
+// 2.0 took effect September 15, 2026. 2.1 takes effect the day it deploys —
+// update this if it ships on a different day.
+export const WAIVER_EFFECTIVE_DATE = 'October 8, 2026';
 
 /** The Event location as the document states it, for the header block. */
-export const WAIVER_EVENT_LOCATION = 'Provo, Utah';
+export const WAIVER_EVENT_LOCATION = 'Creekside Park, Alpine, Utah';
 
 /** Used for page titles, headings, and the checkbox label. */
 export const WAIVER_SHORT_TITLE = 'Participant Agreement';
@@ -94,7 +103,7 @@ export const WAIVER_SECTIONS: WaiverSection[] = [
       },
       {
         id: '1.2',
-        text: '"Event" means the Race Against Cancers 10K & Fun Run scheduled for Saturday, November 7, 2026, in Provo, Utah, together with all related and ancillary activities, whether occurring before, during, or after the race, including online and in-person registration, packet pickup, any expo, warm-up and staging areas, the start and finish areas, the race course, parking, shuttles and transportation provided or arranged by the Organizer, aid stations, medical areas, awards ceremonies, post-race activities, and any rescheduled, relocated, modified, or virtual version of the Event.',
+        text: '"Event" means the Race Against Cancers 10K, 5K, and 1-Mile Walk scheduled for Saturday, November 7, 2026, at Creekside Park in Alpine, Utah, together with all related and ancillary activities, whether occurring before, during, or after the race, including online and in-person registration, packet pickup, any expo, warm-up and staging areas, the start and finish areas, the race course, parking, shuttles and transportation provided or arranged by the Organizer, aid stations, medical areas, awards ceremonies, post-race activities, and any rescheduled, relocated, modified, or virtual version of the Event.',
       },
       {
         id: '1.3',
@@ -102,7 +111,7 @@ export const WAIVER_SECTIONS: WaiverSection[] = [
       },
       {
         id: '1.4',
-        text: '"Releasees" means, collectively and to the extent actually involved in or connected with the Event: the Organizer; Intermountain Health, Intermountain Cancer Center Utah Valley, and their applicable affiliates; Brigham Young University and any other owner, lessor, or operator of property used for the Event; Provo City, Utah County, the State of Utah, the Utah Department of Transportation, and other governmental entities whose property, roads, or personnel are used in connection with the Event; sponsors, co-sponsors, donors, and promotional partners; timing, logistics, security, medical, emergency-services, photography, technology, registration-platform, and other vendors, contractors, and subcontractors providing goods or services for the Event; race officials; course marshals; medical and first-aid personnel; volunteers; and other Participants.',
+        text: '"Releasees" means, collectively and to the extent actually involved in or connected with the Event: the Organizer; Intermountain Health, Intermountain Cancer Center Utah Valley, and their applicable affiliates; any owner, lessor, or operator of property used for the Event; Utah County, the State of Utah, the Utah Department of Transportation, and other governmental entities whose property, roads, or personnel are used in connection with the Event; sponsors, co-sponsors, donors, and promotional partners; timing, logistics, security, medical, emergency-services, photography, technology, registration-platform, and other vendors, contractors, and subcontractors providing goods or services for the Event; race officials; course marshals; medical and first-aid personnel; volunteers; and other Participants.',
         trailing:
           '"Releasees" also includes the foregoing parties’ respective officers, directors, trustees, board members, managers, members, employees, agents, representatives, contractors, volunteers, insurers, successors, and assigns, but only to the extent applicable to their involvement with the Event.',
       },

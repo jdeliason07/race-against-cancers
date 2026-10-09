@@ -85,6 +85,10 @@ export const RECOMMENDED_DONATION_FUN_RUN = 49; // 1-Mile Walk, per athlete (key
 // Stripe rejects a charge under $0.50, so the form and the server both require
 // at least this much.
 export const MIN_DONATION_DOLLARS = 1;
+// The amounts above are suggested donations, not entry fees. This is the line
+// that says so wherever the amounts are listed.
+export const GIVE_WHAT_YOU_CAN =
+  `Give what you can. Any donation of $${MIN_DONATION_DOLLARS} or more gets you in.`;
 // One-tap amounts under the donation field, per athlete and in the order shown.
 // The first entry is the recommendation and the amount the field pre-fills
 // with, so it has to stay the recommended constant above. Keep the ladders the
@@ -113,6 +117,10 @@ export const RUNNER_GOAL = RUNNER_MILESTONES[RUNNER_MILESTONES.length - 1];
 // true: "100%" holds only while sponsors, not registrations, pay for the race.
 export const IMPACT_HEADLINE = "100% of every donation funds cancer treatment";
 export const IMPACT_FAMILIES = 3;
+// The one-line explanation of why "100%" is true. Shown on the home page,
+// About, and the FAQ — keep them saying the same thing.
+export const IMPACT_SPONSOR_LINE =
+  `Our sponsors cover the cost of the race, so 100% of every donation funds cancer treatment for local patients at ${CHARITY_NAME}.`;
 
 // --- CARD PROCESSING FEE ------------------------------------
 // Stripe keeps 2.9% + $0.30 of every card charge. Rather than letting that come
@@ -223,4 +231,4 @@ export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";
 // Used by sitemap, robots.txt, metadataBase, and JSON-LD schema.
 export const SITE_URL         = "https://raceagainstcancers.org";
 export const META_DESCRIPTION =
-  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & 1-Mile Walk at Creekside Park in Alpine, Utah on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. Tax-deductible. Recommended donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN}.`;
+  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & 1-Mile Walk at Creekside Park in Alpine, Utah on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. Tax-deductible. Suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} — any donation of $${MIN_DONATION_DOLLARS} or more gets you in.`;

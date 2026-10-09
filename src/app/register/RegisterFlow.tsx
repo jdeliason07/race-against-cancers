@@ -18,6 +18,7 @@ import { captureSource, readSource } from '@/lib/qrSource';
 import { RACES, RACE_KEYS, type RaceKey } from '@/lib/races';
 import {
   CHARITY_NAME,
+  GIVE_WHAT_YOU_CAN,
   MAX_PARTICIPANTS_PER_REGISTRATION,
   MIN_DONATION_DOLLARS,
   REFERRAL_ENABLED,
@@ -153,6 +154,9 @@ function StepRaceSelection({
       <h2 className="font-display text-2xl uppercase leading-tight text-ink">
         Ready when you are
       </h2>
+      <p className="mt-2 font-body text-sm text-ash">Choose your race</p>
+      {/* Each race shows its suggested donation before any personal details
+          are asked for — these are suggestions, not entry fees. */}
       <div className="mt-4 flex flex-col gap-3">
         {RACE_KEYS.map((key) => (
           <button
@@ -162,12 +166,16 @@ function StepRaceSelection({
               setRaceType(key);
               onNext();
             }}
-            className="btn-primary w-full"
+            className="btn-primary w-full flex-col gap-1 py-4"
           >
-            Register for the {RACES[key].short}
+            <span>{RACES[key].label}</span>
+            <span className="font-body text-sm font-semibold normal-case tracking-normal">
+              ${RACES[key].presets[0]} suggested donation
+            </span>
           </button>
         ))}
       </div>
+      <p className="mt-4 font-body text-sm font-semibold text-ink">{GIVE_WHAT_YOU_CAN}</p>
     </div>
   );
 }
@@ -277,7 +285,7 @@ function StepAthleteInfo({
     waiverAgreed;
 
   const inputClass =
-    'border border-line rounded-card px-4 py-3 font-body text-sm text-ink w-full focus:outline-none focus:border-pink';
+    'border border-line rounded-card px-4 py-3 font-body text-sm text-ink w-full focus:outline-none focus:border-pink focus:ring-2 focus:ring-pink/20';
   const labelClass =
     'font-body text-xs font-bold uppercase tracking-widest text-ash mb-1 block';
   const errorClass = 'mt-1 font-body text-xs text-red-700';
@@ -373,7 +381,7 @@ function StepAthleteInfo({
                 type="button"
                 onClick={() => setIsAdult(option.value)}
                 aria-pressed={isAdult === option.value}
-                className="rounded-card border-2 px-4 py-3 text-left font-body text-sm font-semibold transition-colors duration-150 focus-visible:outline-none"
+                className="rounded-card border-2 px-4 py-3 text-left font-body text-sm font-semibold transition-colors duration-150"
                 style={{
                   borderColor: isAdult === option.value ? '#F0307A' : '#ECE2E6',
                   backgroundColor: isAdult === option.value ? '#FDE7F0' : '#FFFFFF',
@@ -483,7 +491,7 @@ function StepAthleteInfo({
                 type="button"
                 onClick={() => setBandanaColor(opt.label)}
                 aria-pressed={selected}
-                className="rounded-card border-2 px-4 py-3 text-left transition-colors duration-150 focus-visible:outline-none"
+                className="rounded-card border-2 px-4 py-3 text-left transition-colors duration-150"
                 style={{
                   borderColor: selected ? opt.color : '#ECE2E6',
                   backgroundColor: selected ? opt.color + '18' : '#FFFFFF',
@@ -512,8 +520,9 @@ function StepAthleteInfo({
         </p>
         <p className="mb-3 font-body text-sm text-ash">
           {isGroup
-            ? `Recommended: $${recommendedDonation} — $${perAthleteRecommended} × ${participantCount} athletes. Give more if you're able.`
-            : `Recommended: $${recommendedDonation}. Give more if you're able.`}
+            ? `Suggested donation: $${recommendedDonation} ($${perAthleteRecommended} × ${participantCount} athletes).`
+            : `Suggested donation: $${recommendedDonation}.`}{' '}
+          {GIVE_WHAT_YOU_CAN}
         </p>
 
         {/* One-tap amounts. They're per athlete, so they scale with the
@@ -528,7 +537,7 @@ function StepAthleteInfo({
                 type="button"
                 onClick={() => setPresetIndex(i)}
                 aria-pressed={selected}
-                className="overflow-hidden rounded-card border-2 px-1 py-3 text-center transition-colors duration-150 focus-visible:outline-none"
+                className="overflow-hidden rounded-card border-2 px-1 py-3 text-center transition-colors duration-150"
                 style={{
                   borderColor: selected ? '#F0307A' : '#F6C9DB',
                   backgroundColor: selected ? '#F0307A' : '#FFFFFF',
@@ -542,10 +551,10 @@ function StepAthleteInfo({
                 </span>
                 {i === 0 && (
                   <span
-                    className="block font-body text-[clamp(8px,2.6vw,10px)] font-bold uppercase leading-tight tracking-normal"
+                    className="block font-body text-[10px] font-bold uppercase leading-tight tracking-normal"
                     style={{ color: selected ? '#FFFFFF' : '#6E5C64' }}
                   >
-                    Recommended
+                    Suggested
                   </span>
                 )}
               </button>
@@ -554,7 +563,7 @@ function StepAthleteInfo({
         </div>
 
         <label htmlFor="donationAmount" className="mb-1 block font-body text-xs text-ash">
-          Or enter another amount
+          Or enter your own amount (${MIN_DONATION_DOLLARS} minimum)
         </label>
         <input
           id="donationAmount"
@@ -570,12 +579,12 @@ function StepAthleteInfo({
             setPresetIndex(null);
             setCustomDonation(isNaN(val) || val < 0 ? 0 : val);
           }}
-          className="border border-petal rounded-card px-4 py-3 font-body text-sm text-ink w-full focus:outline-none focus:border-pink bg-white"
+          className="border border-petal rounded-card px-4 py-3 font-body text-sm text-ink w-full focus:outline-none focus:border-pink focus:ring-2 focus:ring-pink/20 bg-white"
           aria-describedby="donation-amount-hint"
         />
         <p id="donation-amount-hint" className="mt-2 font-body text-xs text-ash">
-          Tax-deductible, and 100% funds cancer treatment. Money tight? Any amount of $
-          {MIN_DONATION_DOLLARS} or more gets you in — we&rsquo;d rather have you there.
+          Tax-deductible, and 100% funds cancer treatment. Money tight? We&rsquo;d rather have
+          you there.
         </p>
         {donationAmount < MIN_DONATION_DOLLARS && (
           <p className="mt-1 font-body text-xs text-red-700" role="alert">

@@ -6,6 +6,7 @@ import {
   CHECK_IN_NOTE, COURSE_GPX_URL, SITE_URL, ORG_NAME, REGISTRATION_OPEN,
   TEN_K_LABEL, FIVE_K_LABEL, FUN_RUN_LABEL,
   RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K, RECOMMENDED_DONATION_FUN_RUN,
+  GIVE_WHAT_YOU_CAN,
 } from '@/config/site';
 import { MapPin, Clock, Package, Download, Heart } from 'lucide-react';
 import Link from 'next/link';
@@ -80,7 +81,7 @@ export default function RaceDetailsPage() {
                   <th className="py-3 pr-6 text-left text-xs font-bold uppercase tracking-widest text-ash">Race</th>
                   <th className="py-3 pr-6 text-left text-xs font-bold uppercase tracking-widest text-ash">Check in by</th>
                   <th className="py-3 pr-6 text-left text-xs font-bold uppercase tracking-widest text-ash">Start</th>
-                  <th className="py-3 text-left text-xs font-bold uppercase tracking-widest text-ash">Recommended</th>
+                  <th className="py-3 text-left text-xs font-bold uppercase tracking-widest text-ash">Suggested donation</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
@@ -125,12 +126,12 @@ export default function RaceDetailsPage() {
             <div className="rounded-card border border-line p-6">
               <div className="mb-2 flex items-center gap-2">
                 <Heart size={16} className="text-pink shrink-0" aria-hidden="true" />
-                <dt className="section-label">Entry Donation</dt>
+                <dt className="section-label">Suggested Donations</dt>
               </div>
               <dd className="font-body text-sm text-ink leading-relaxed">
-                Tax-deductible. Recommended: 10K ${RECOMMENDED_DONATION_AMOUNT} · 5K $
-                {RECOMMENDED_DONATION_5K} · Walk ${RECOMMENDED_DONATION_FUN_RUN}.<br />
-                <span className="text-ash text-xs">Give more if you&rsquo;re able.</span>
+                {`10K $${RECOMMENDED_DONATION_AMOUNT} · 5K $${RECOMMENDED_DONATION_5K} · 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN}. Tax-deductible.`}
+                <br />
+                <span className="text-ash text-xs">{GIVE_WHAT_YOU_CAN}</span>
               </dd>
             </div>
           </dl>
@@ -164,14 +165,14 @@ export default function RaceDetailsPage() {
               rel="noopener noreferrer"
               className="btn-primary inline-flex items-center gap-2 text-xs"
             >
-              <MapPin size={14} /> Directions to {EVENT_LOCATION_NAME}
+              <MapPin size={14} aria-hidden="true" /> Directions to {EVENT_LOCATION_NAME}
             </a>
             {COURSE_GPX_URL ? (
               <a href={COURSE_GPX_URL} download className="btn-ghost inline-flex items-center gap-2 text-xs">
-                <Download size={14} /> Download Course GPX
+                <Download size={14} aria-hidden="true" /> Download Course GPX
               </a>
             ) : (
-              <span className="inline-flex items-center gap-2 rounded-pill border border-line px-5 py-3 font-body text-xs font-bold uppercase tracking-widest text-ash opacity-50 cursor-not-allowed">
+              <span className="inline-flex items-center gap-2 rounded-pill border border-line px-5 py-3 font-body text-xs font-bold uppercase tracking-widest text-ash">
                 Course map coming soon
               </span>
             )}
