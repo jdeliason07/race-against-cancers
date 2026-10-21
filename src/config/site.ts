@@ -48,13 +48,15 @@ export const EVENT_LOCATION_NAME     = "Riverview Park";
 export const EVENT_CITY              = "Provo, UT";
 // Street address and ZIP shown under the park name. Leave "" until confirmed
 // and the pages show just "Riverview Park, Provo, UT".
-export const EVENT_STREET_ADDRESS    = "";
-export const EVENT_ZIP               = "";
+export const EVENT_STREET_ADDRESS    = "4620 N 300 W";
+export const EVENT_ZIP               = "84604";
 export const EVENT_LOCATION_ADDRESS  = EVENT_STREET_ADDRESS
   ? `${EVENT_STREET_ADDRESS}, ${EVENT_CITY} ${EVENT_ZIP}`
   : `${EVENT_LOCATION_NAME}, ${EVENT_CITY}`;
 export const EVENT_MAPS_URL          =
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${EVENT_LOCATION_NAME}, ${EVENT_CITY}`)}`;
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    EVENT_STREET_ADDRESS ? `${EVENT_LOCATION_NAME}, ${EVENT_LOCATION_ADDRESS}` : `${EVENT_LOCATION_NAME}, ${EVENT_CITY}`,
+  )}`;
 // Set to "" until an official GPS recording of the loop exists.
 export const COURSE_GPX_URL          = "";
 
