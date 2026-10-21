@@ -6,7 +6,7 @@ import {
   RECOMMENDED_DONATION_FUN_RUN,
 } from '@/config/site';
 
-export const alt = `Race Against Cancers 2026 — suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K} & 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} · Creekside Park, Alpine · Benefiting Intermountain Cancer Center Utah Valley`;
+export const alt = `Race Against Cancers 2026 — suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K} & 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} · Riverview Park, Provo · Benefiting Intermountain Cancer Center Utah Valley`;
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 

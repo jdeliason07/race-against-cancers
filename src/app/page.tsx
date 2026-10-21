@@ -40,9 +40,9 @@ const eventJsonLd = {
     address: {
       '@type': 'PostalAddress',
       ...(EVENT_STREET_ADDRESS ? { streetAddress: EVENT_STREET_ADDRESS } : {}),
-      addressLocality: 'Alpine',
+      addressLocality: 'Provo',
       addressRegion: 'UT',
-      postalCode: EVENT_ZIP,
+      ...(EVENT_ZIP ? { postalCode: EVENT_ZIP } : {}),
       addressCountry: 'US',
     },
   },

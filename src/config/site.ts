@@ -41,15 +41,15 @@ export const FUN_RUN_CHECK_IN_TIME = "8:30 AM";
 export const EVENT_YEAR          = "2026";
 
 // --- LOCATION -----------------------------------------------
-// Every race starts, runs, and finishes inside Creekside Park in Alpine, as
+// Every race starts, runs, and finishes inside Riverview Park in Provo, as
 // loops of the park. (The earlier Provo road course — LaVell Edwards Stadium
 // to the courthouse — is retired.)
-export const EVENT_LOCATION_NAME     = "Creekside Park";
-export const EVENT_CITY              = "Alpine, UT";
-// Street address shown under the park name. Leave "" until confirmed and the
-// pages show just "Creekside Park, Alpine, UT".
-export const EVENT_STREET_ADDRESS    = "100 South & 600 East";
-export const EVENT_ZIP               = "84004";
+export const EVENT_LOCATION_NAME     = "Riverview Park";
+export const EVENT_CITY              = "Provo, UT";
+// Street address and ZIP shown under the park name. Leave "" until confirmed
+// and the pages show just "Riverview Park, Provo, UT".
+export const EVENT_STREET_ADDRESS    = "";
+export const EVENT_ZIP               = "";
 export const EVENT_LOCATION_ADDRESS  = EVENT_STREET_ADDRESS
   ? `${EVENT_STREET_ADDRESS}, ${EVENT_CITY} ${EVENT_ZIP}`
   : `${EVENT_LOCATION_NAME}, ${EVENT_CITY}`;
@@ -213,7 +213,7 @@ export const TEAM: { name: string; photo: string }[] = [
 // Per-race times are with the start times above.
 export const CHECK_IN_DATE     = "Saturday, November 7, 2026";
 export const CHECK_IN_NOTE     = "Check in 30 minutes before your race";
-export const CHECK_IN_LOCATION = "Creekside Park, Alpine — all races";
+export const CHECK_IN_LOCATION = "Riverview Park, Provo — all races";
 
 // --- CONTACT ------------------------------------------------
 export const CONTACT_EMAIL = "events@raceagainstcancers.org";
@@ -231,4 +231,4 @@ export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";
 // Used by sitemap, robots.txt, metadataBase, and JSON-LD schema.
 export const SITE_URL         = "https://raceagainstcancers.org";
 export const META_DESCRIPTION =
-  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & 1-Mile Walk at Creekside Park in Alpine, Utah on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. Tax-deductible. Suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} — any donation of $${MIN_DONATION_DOLLARS} or more gets you in.`;
+  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & 1-Mile Walk at Riverview Park in Provo, Utah on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. Tax-deductible. Suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} — any donation of $${MIN_DONATION_DOLLARS} or more gets you in.`;

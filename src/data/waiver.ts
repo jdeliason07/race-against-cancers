@@ -11,8 +11,9 @@
 // moved from Provo to Creekside Park in Alpine, and it is a 10K, 5K, and
 // 1-Mile Walk) and drops the Provo-specific named releasees (Brigham Young
 // University, Provo City). The substantive provisions are unchanged.
-// TODO(legal review): have counsel confirm 2.1, and decide whether any party
-// actually involved at the new venue (e.g. Alpine City, if it issues the
+// Version 2.2 changes only the venue again, to Riverview Park in Provo.
+// TODO(legal review): have counsel confirm 2.1 and 2.2, and decide whether any
+// party actually involved at the new venue (e.g. Provo City, if it issues the
 // permit) should be named in 1.4. 1.1 also still reads "Race Against Cancers,
 // Inc." while src/config/site.ts says the entity has no "Inc." suffix.
 //
@@ -28,7 +29,7 @@
 // ============================================================
 
 /** Written into Stripe metadata on every registration. Bump with the text. */
-export const WAIVER_VERSION = '2.1';
+export const WAIVER_VERSION = '2.2';
 
 /**
  * The date this version took effect, shown in the document header.
@@ -39,12 +40,12 @@ export const WAIVER_VERSION = '2.1';
  * race. The agreement is therefore in force for every acceptance it receives
  * and every activity it covers.
  */
-// 2.0 took effect September 15, 2026. 2.1 takes effect the day it deploys —
-// update this if it ships on a different day.
-export const WAIVER_EFFECTIVE_DATE = 'October 8, 2026';
+// 2.0 took effect September 15, 2026. 2.1 took effect October 8, 2026. 2.2
+// takes effect the day it deploys — update this if it ships on a different day.
+export const WAIVER_EFFECTIVE_DATE = 'October 21, 2026';
 
 /** The Event location as the document states it, for the header block. */
-export const WAIVER_EVENT_LOCATION = 'Creekside Park, Alpine, Utah';
+export const WAIVER_EVENT_LOCATION = 'Riverview Park, Provo, Utah';
 
 /** Used for page titles, headings, and the checkbox label. */
 export const WAIVER_SHORT_TITLE = 'Participant Agreement';
@@ -103,7 +104,7 @@ export const WAIVER_SECTIONS: WaiverSection[] = [
       },
       {
         id: '1.2',
-        text: '"Event" means the Race Against Cancers 10K, 5K, and 1-Mile Walk scheduled for Saturday, November 7, 2026, at Creekside Park in Alpine, Utah, together with all related and ancillary activities, whether occurring before, during, or after the race, including online and in-person registration, packet pickup, any expo, warm-up and staging areas, the start and finish areas, the race course, parking, shuttles and transportation provided or arranged by the Organizer, aid stations, medical areas, awards ceremonies, post-race activities, and any rescheduled, relocated, modified, or virtual version of the Event.',
+        text: '"Event" means the Race Against Cancers 10K, 5K, and 1-Mile Walk scheduled for Saturday, November 7, 2026, at Riverview Park in Provo, Utah, together with all related and ancillary activities, whether occurring before, during, or after the race, including online and in-person registration, packet pickup, any expo, warm-up and staging areas, the start and finish areas, the race course, parking, shuttles and transportation provided or arranged by the Organizer, aid stations, medical areas, awards ceremonies, post-race activities, and any rescheduled, relocated, modified, or virtual version of the Event.',
       },
       {
         id: '1.3',

@@ -35,7 +35,7 @@ export function StickyRegisterBar() {
     >
       <div className="flex items-center justify-between gap-3">
         <div className="leading-tight">
-          <p className="font-display text-base uppercase text-ink">Nov 7 · Creekside Park</p>
+          <p className="font-display text-base uppercase text-ink">Nov 7 · Riverview Park</p>
           <p className="font-body text-xs text-ash">10K · 5K · 1-Mile Walk</p>
         </div>
         <Link href="/register" className="btn-primary px-6 py-3" tabIndex={visible ? undefined : -1}>
