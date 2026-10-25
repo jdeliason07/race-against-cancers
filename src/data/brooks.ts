@@ -33,10 +33,32 @@ export const BROOKS_TAGLINE = 'Small kid. Big fight.';
 // The sticker beside the name.
 export const BROOKS_BADGE = braveBuddy;
 
-// One short paragraph for the home page; the About page shows them all.
+// The photo on the image people see when the site is shared in a text or a
+// post (src/app/opengraph-image.tsx). A JPG file name in public/images/brooks/,
+// not an import — that image is drawn on the server, from the file itself.
+export const BROOKS_SHARE_PHOTO = 'cosmo.jpg';
+
+// The home page tells it a line at a time: who Brooks is, what cancer has
+// taken, the honest part, then the turn — and the photos prove it. The ask
+// comes after the photos.
+export const BROOKS_STORYLINE = {
+  intro: 'Brooks is five years old. Six months ago, he was diagnosed with leukemia.',
+  takenLabel: 'Since then, cancer has taken',
+  taken: [
+    'His hair.',
+    'Six months of just being a kid.',
+    'His first day of kindergarten.',
+  ],
+  truth: 'Round after round of treatment, every kind there is. Right now, things are hard — harder than any five-year-old should ever have to know.',
+  turn: "It hasn't taken his smile.",
+  ask: "Brooks can't run right now. So on November\u00a07, we'll run for him.",
+};
+
+// The About page tells the same story as prose.
 export const BROOKS_STORY: string[] = [
-  "Brooks Limb is a kindergartener, a die-hard Cougar fan, and a Yankees kid at heart — who has spent far too many days in a hospital bed fighting cancer.",
-  "Through all of it, Brooks keeps smiling, keeps flashing the Y, and keeps showing everyone around what brave looks like. This year, every mile we run is for Brooks.",
+  'Brooks Limb is five years old. Six months ago, he was diagnosed with leukemia, and since then he has been through round after round of treatment — every kind there is. He has lost all of his hair. He has spent more days in a hospital bed than any kid ever should. And this fall, while his classmates walked into their first day of kindergarten, Brooks was too sick to be there.',
+  'Right now, things are hard. But through all of it, Brooks keeps smiling, keeps flashing the Y, and keeps showing everyone around him what brave looks like.',
+  "Brooks can't run right now. So on November\u00a07, we'll run for him — every lap, every mile, every step.",
 ];
 
 export interface BrooksPhoto {
@@ -55,7 +77,7 @@ export const BROOKS_PHOTOS: BrooksPhoto[] = [
   {
     src: kindergarten,
     alt: 'Brooks in a Yankees cap holding a "My First Day of Kindergarten" chalkboard sign on the front porch',
-    caption: 'First day of kindergarten',
+    caption: 'Ready for kindergarten',
   },
   {
     src: thumbsUp,

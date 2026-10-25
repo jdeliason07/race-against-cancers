@@ -19,6 +19,7 @@ import { RACES, RACE_KEYS, type RaceKey } from '@/lib/races';
 import {
   BENEFICIARY_NAME,
   BENEFICIARY_FIRST_NAME,
+  BENEFICIARY_BANDANA,
   GIVE_WHAT_YOU_CAN,
   MAX_PARTICIPANTS_PER_REGISTRATION,
   MIN_DONATION_DOLLARS,
@@ -504,6 +505,12 @@ function StepAthleteInfo({
                 >
                   {opt.label}
                 </span>
+                {/* The color this year's race is run for. */}
+                {opt.label === BENEFICIARY_BANDANA && (
+                  <span className="mt-0.5 block font-body text-[11px] font-bold uppercase tracking-widest text-ash">
+                    For {BENEFICIARY_FIRST_NAME}
+                  </span>
+                )}
               </button>
             );
           })}

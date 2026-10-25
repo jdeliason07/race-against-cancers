@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import {
   EVENT_NAME, EVENT_DATE_DISPLAY, EVENT_DATE_ISO,
-  BENEFICIARY_NAME, BENEFICIARY_FIRST_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K,
+  BENEFICIARY_NAME, BENEFICIARY_FIRST_NAME, BENEFICIARY_DESCRIPTION, BENEFICIARY_BANDANA,
+  RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K,
   RECOMMENDED_DONATION_FUN_RUN,
   TEN_K_LABEL, FIVE_K_LABEL, FUN_RUN_LABEL,
   EVENT_LOCATION_NAME, EVENT_CITY, EVENT_STREET_ADDRESS, EVENT_ZIP,
@@ -14,7 +15,7 @@ import Image from 'next/image';
 import { Countdown } from '@/components/ui/Countdown';
 import { SponsorMarquee } from '@/components/ui/SponsorMarquee';
 import { PhotoCarousel } from '@/components/ui/PhotoCarousel';
-import { BROOKS_BADGE, BROOKS_PHOTOS, BROOKS_STORY, BROOKS_TAGLINE } from '@/data/brooks';
+import { BROOKS_BADGE, BROOKS_PHOTOS, BROOKS_STORYLINE, BROOKS_TAGLINE } from '@/data/brooks';
 import { getRunnerTotal } from '@/lib/getRunnerTotal';
 import { RegistrationTeaser } from '@/components/ui/RegistrationTeaser';
 import { ReferralAnnouncement } from '@/components/ui/ReferralReward';
@@ -31,7 +32,7 @@ const eventJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SportsEvent',
   name: EVENT_NAME,
-  description: `A 10K, 5K & 1-Mile Walk charity race benefiting ${BENEFICIARY_NAME}, run as loops of ${EVENT_LOCATION_NAME} in ${EVENT_CITY} on ${EVENT_DATE_DISPLAY}.`,
+  description: `A 10K, 5K & 1-Mile Walk charity race benefiting ${BENEFICIARY_NAME}, ${BENEFICIARY_DESCRIPTION}, run as loops of ${EVENT_LOCATION_NAME} in ${EVENT_CITY} on ${EVENT_DATE_DISPLAY}.`,
   startDate: EVENT_DATE_ISO,
   endDate: '2026-11-07T12:00:00-07:00',
   eventStatus: 'https://schema.org/EventScheduled',
@@ -127,7 +128,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="mt-6 max-w-3xl font-body text-xl font-semibold leading-snug text-ink md:text-2xl">
-            A community run for {BENEFICIARY_NAME}, a kindergartener fighting cancer.
+            A community run for {BENEFICIARY_NAME}, {BENEFICIARY_DESCRIPTION}.
           </p>
 
           <div className="mt-4 grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)]">
@@ -153,9 +154,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* WHO WE RACE FOR — the story up top, the photos in the middle, the ask
-          at the end. Photos and words live in src/data/brooks.ts. */}
-      <section id="brooks" aria-labelledby="brooks-heading" className="overflow-hidden border-y border-line bg-mist py-16 md:py-20">
+      {/* WHO WE RACE FOR — told a line at a time: who Brooks is, what cancer
+          has taken, the honest part, then the turn, which the photos prove.
+          The ask comes last. Words and photos live in src/data/brooks.ts. */}
+      <section id="brooks" aria-labelledby="brooks-heading" className="overflow-clip border-y border-line bg-mist py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="rule-line mb-10">
             <div className="h-px flex-1 bg-petal" aria-hidden="true" />
@@ -179,19 +181,44 @@ export default async function HomePage() {
               <p className="mt-3 font-display text-2xl uppercase tracking-wide text-pink">{BROOKS_TAGLINE}</p>
             </div>
           </div>
+        </div>
 
-          <p className="mx-auto mt-10 max-w-2xl text-center font-body text-base leading-relaxed text-ink md:text-lg">
-            {BROOKS_STORY[0]}
+        <div className="mx-auto mt-14 max-w-3xl px-6 text-center">
+          <p className="reveal text-balance font-body text-xl font-semibold leading-snug text-ink md:text-2xl">
+            {BROOKS_STORYLINE.intro}
+          </p>
+
+          <p className="reveal section-label mb-5 mt-14">{BROOKS_STORYLINE.takenLabel}</p>
+          <ul className="space-y-3 md:space-y-4">
+            {BROOKS_STORYLINE.taken.map((line) => (
+              <li key={line} className="reveal text-balance font-display text-[clamp(34px,6.5vw,68px)] uppercase leading-[1.08] text-ink">
+                {line}
+              </li>
+            ))}
+          </ul>
+
+          <p className="reveal mx-auto mt-12 max-w-xl font-body text-base leading-relaxed text-ash md:text-lg">
+            {BROOKS_STORYLINE.truth}
+          </p>
+
+          <p className="reveal mt-12 text-balance font-display text-[clamp(40px,8vw,92px)] uppercase leading-[0.95] text-pink">
+            {BROOKS_STORYLINE.turn}
           </p>
         </div>
 
-        <PhotoCarousel photos={BROOKS_PHOTOS} label={`Photos of ${BENEFICIARY_FIRST_NAME}`} className="mt-4" />
+        <PhotoCarousel photos={BROOKS_PHOTOS} label={`Photos of ${BENEFICIARY_FIRST_NAME}`} className="mt-6" />
 
-        <div className="mx-auto mt-10 max-w-2xl px-6 text-center">
-          {BROOKS_STORY.slice(1).map((paragraph) => (
-            <p key={paragraph} className="mb-8 font-body text-base leading-relaxed text-ash md:text-lg">{paragraph}</p>
-          ))}
-          <Link href="/register" className="btn-primary px-10 py-5 text-base">
+        <div className="mx-auto mt-12 max-w-2xl px-6 text-center">
+          <p className="text-balance font-display text-[clamp(30px,5vw,48px)] uppercase leading-tight text-ink">
+            {BROOKS_STORYLINE.ask}
+          </p>
+          {REGISTRATION_OPEN && (
+            <p className="mt-4 font-body text-base text-ash">
+              When you register, pick the <span className="font-semibold text-ink">{BENEFICIARY_BANDANA}</span>{' '}
+              bandana and wear it for {BENEFICIARY_FIRST_NAME}.
+            </p>
+          )}
+          <Link href="/register" className="btn-primary mt-8 px-10 py-5 text-base">
             {REGISTRATION_OPEN ? `Run for ${BENEFICIARY_FIRST_NAME}` : cta}
           </Link>
         </div>

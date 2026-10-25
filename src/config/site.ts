@@ -11,6 +11,13 @@
 // The story and photos live in src/data/brooks.ts.
 export const BENEFICIARY_NAME       = "Brooks Limb";
 export const BENEFICIARY_FIRST_NAME = "Brooks";
+// Who he is, as it reads after his name: "Brooks Limb, ___". Used in the
+// home page hero, the search/share description, and the share image.
+export const BENEFICIARY_DESCRIPTION = "a five-year-old fighting leukemia";
+// The bandana on the registration form that gets a "For Brooks" tag, and the
+// one the home page asks runners to wear. Must match a label in the bandana
+// list in src/app/register/RegisterFlow.tsx.
+export const BENEFICIARY_BANDANA    = "Leukemia";
 // Where the money ends up, as it reads mid-sentence: "100% goes to ___".
 // Kept apart from the name so the race can stay "for Brooks" if the proceeds
 // are ever routed through a hospital or foundation instead.
@@ -237,4 +244,4 @@ export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";
 // Used by sitemap, robots.txt, metadataBase, and JSON-LD schema.
 export const SITE_URL         = "https://raceagainstcancers.org";
 export const META_DESCRIPTION =
-  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & 1-Mile Walk at Riverview Park in Provo, Utah on ${EVENT_DATE_DISPLAY}, benefiting ${BENEFICIARY_NAME}. Tax-deductible. Suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} — any donation of $${MIN_DONATION_DOLLARS} or more gets you in.`;
+  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & 1-Mile Walk at Riverview Park in Provo, Utah on ${EVENT_DATE_DISPLAY}, benefiting ${BENEFICIARY_NAME}, ${BENEFICIARY_DESCRIPTION}. Tax-deductible. Suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} — any donation of $${MIN_DONATION_DOLLARS} or more gets you in.`;
