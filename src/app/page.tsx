@@ -215,7 +215,8 @@ export default async function HomePage() {
           {REGISTRATION_OPEN && (
             <p className="mt-4 font-body text-base text-ash">
               When you register, pick the <span className="font-semibold text-ink">{BENEFICIARY_BANDANA}</span>{' '}
-              bandana and wear it for {BENEFICIARY_FIRST_NAME}.
+              bandana and wear it for {BENEFICIARY_FIRST_NAME} — and leave him a note. We&rsquo;re
+              printing every one in a book for him.
             </p>
           )}
           <Link href="/register" className="btn-primary mt-8 px-10 py-5 text-base">

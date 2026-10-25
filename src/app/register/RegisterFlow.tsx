@@ -14,6 +14,7 @@ import { createPaymentIntent } from './actions';
 import { submitCompRegistration } from './comp-actions';
 import { ADULT_AGE } from '@/lib/utils';
 import { normalizePhone } from '@/lib/phone';
+import { BENEFICIARY_NOTE_MAX_CHARS } from '@/lib/beneficiaryNote';
 import { captureSource, readSource } from '@/lib/qrSource';
 import { RACES, RACE_KEYS, type RaceKey } from '@/lib/races';
 import {
@@ -94,6 +95,8 @@ interface FormData {
   // Only asked for when the athlete is under 18 on race day.
   guardianName: string;
   referredByName: string;
+  // Optional, for this year's beneficiary — printed into a book for him.
+  beneficiaryNote: string;
 }
 
 /**
@@ -518,6 +521,34 @@ function StepAthleteInfo({
         {bandanaColor === '' && (
           <p className="mt-2 font-body text-xs text-ash">Select a bandana color to continue.</p>
         )}
+      </div>
+
+      {/* Every note is printed into a book for the beneficiary — see
+          /admin/notes. Right after the bandana, while they're thinking of him. */}
+      <div className="mb-6 rounded-card border border-petal bg-mist p-5">
+        <label htmlFor="beneficiaryNote" className={labelClass}>
+          A note for {BENEFICIARY_FIRST_NAME}{' '}
+          <span className="font-normal normal-case tracking-normal">(optional)</span>
+        </label>
+        <textarea
+          id="beneficiaryNote"
+          rows={3}
+          maxLength={BENEFICIARY_NOTE_MAX_CHARS}
+          value={formData.beneficiaryNote}
+          onChange={(e) => setFormData({ ...formData, beneficiaryNote: e.target.value })}
+          className={`${inputClass} resize-y bg-white`}
+          placeholder={`You've got this, ${BENEFICIARY_FIRST_NAME}! — The Jensen family`}
+          aria-describedby="beneficiaryNote-help"
+        />
+        <p id="beneficiaryNote-help" className="mt-2 flex justify-between gap-4 font-body text-xs text-ash">
+          <span>
+            We&rsquo;re printing every note in a book for {BENEFICIARY_FIRST_NAME}. Sign it however
+            you like.
+          </span>
+          <span className="shrink-0 tabular-nums" aria-hidden="true">
+            {formData.beneficiaryNote.length}/{BENEFICIARY_NOTE_MAX_CHARS}
+          </span>
+        </p>
       </div>
 
       {/* Donation amount — the buttons pre-fill it, and any amount is accepted */}
@@ -1027,6 +1058,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
     phone: '',
     guardianName: '',
     referredByName: '',
+    beneficiaryNote: '',
   });
   const [isAdult, setIsAdult] = useState<AdultAnswer>(null);
   const [waiverAgreed, setWaiverAgreed] = useState(false);
@@ -1071,6 +1103,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
           isAdult,
           guardianName: formData.guardianName,
           waiverAgreed,
+          beneficiaryNote: formData.beneficiaryNote,
         });
         if ('error' in result) setIntentError(result.error);
         else setStep(confirmationStep);
@@ -1091,6 +1124,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
         waiverAgreed,
         referredByName: formData.referredByName,
         qrSource: readSource(),
+        beneficiaryNote: formData.beneficiaryNote,
       });
       if ('error' in result) {
         setIntentError(result.error);

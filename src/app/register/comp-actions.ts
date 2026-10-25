@@ -10,6 +10,7 @@ import {
   isRegistered,
 } from '@/lib/stripeRegistration';
 import { checkCompCode, compMetadata } from '@/lib/compRegistration';
+import { cleanBeneficiaryNote } from '@/lib/beneficiaryNote';
 import { WAIVER_SHORT_TITLE, WAIVER_VERSION } from '@/data/waiver';
 
 /**
@@ -36,6 +37,8 @@ export async function submitCompRegistration(data: {
   isAdult: boolean | null;
   guardianName: string;
   waiverAgreed: boolean;
+  // Optional; see the same field on RegistrationInput in ./actions.ts.
+  beneficiaryNote?: string;
 }): Promise<{ ok: true } | { error: string }> {
   const stripe = getStripe();
   if (!stripe) {
@@ -91,6 +94,7 @@ export async function submitCompRegistration(data: {
     }
 
     const name = `${data.firstName.trim()} ${data.lastName.trim()}`;
+    const note = cleanBeneficiaryNote(data.beneficiaryNote);
     const details: Record<string, string> = {
       ...compMetadata(comp.code),
       registered: 'true',
@@ -108,6 +112,9 @@ export async function submitCompRegistration(data: {
       // Deliberately no referral credit: a free entry shouldn't be able to
       // earn anyone a gift card.
       referredByName: '',
+      // Only when they wrote one: an empty value would erase a note already
+      // on the record.
+      ...(note ? { beneficiaryNote: note } : {}),
     };
 
     // Blank never overwrites: a waitlist number stays unless they gave a new one.

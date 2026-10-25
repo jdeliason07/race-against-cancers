@@ -70,6 +70,12 @@ async function recordSuccessfulRegistration(
       // report counts these records, never a running tally, so a duplicate
       // webhook delivery can't inflate anyone's total.
       referredByName: intent.metadata.referredByName ?? '',
+      // The note for the book at /admin/notes. Written only when there is one:
+      // Stripe deletes a key set to '', and a group organizer coming back to
+      // register themselves shouldn't wipe the note they left the first time.
+      ...(intent.metadata.beneficiaryNote
+        ? { beneficiaryNote: intent.metadata.beneficiaryNote }
+        : {}),
     },
   });
 

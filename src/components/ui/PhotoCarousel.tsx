@@ -1,18 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { Caveat } from 'next/font/google';
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { handwriting } from '@/lib/fonts';
 import type { BrooksPhoto } from '@/data/brooks';
-
-// Handwritten captions, polaroid-style. Only loaded where a carousel renders.
-const caveat = Caveat({
-  subsets: ['latin'],
-  weight: ['600'],
-  display: 'swap',
-});
 
 const ADVANCE_MS = 4500;
 
@@ -198,7 +191,7 @@ export function PhotoCarousel({ photos, label, className }: PhotoCarouselProps) 
                     style={photo.focus ? { objectPosition: photo.focus } : undefined}
                   />
                 </div>
-                <figcaption className={cn(caveat.className, 'mt-3 text-center text-2xl leading-tight text-ink')}>
+                <figcaption className={cn(handwriting.className, 'mt-3 text-center text-2xl leading-tight text-ink')}>
                   {photo.caption}
                 </figcaption>
               </figure>

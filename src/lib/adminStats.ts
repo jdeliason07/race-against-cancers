@@ -74,6 +74,8 @@ export interface AdminStats {
     fiveK: number;
     funRun: number;
     covered: number;
+    /** Completed registrations that left a note for the book at /admin/notes. */
+    notes: number;
     people: PersonRow[];
     series: Series;
   };
@@ -210,6 +212,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
   let fiveK = 0;
   let funRun = 0;
   let covered = 0;
+  let notes = 0;
 
   const customerPass = eachEventCustomer(stripe, (customer) => {
     const meta = customer.metadata ?? {};
@@ -231,6 +234,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       else if (meta.raceType === '5k') fiveK++;
       else if (meta.raceType === '10k') tenK++;
       if (isCovered) covered++;
+      if (meta.beneficiaryNote?.trim()) notes++;
       return;
     }
 
@@ -307,6 +311,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       fiveK,
       funRun,
       covered,
+      notes,
       people: registrations,
       series: registrationSeries,
     },

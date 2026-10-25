@@ -75,6 +75,10 @@ export const faqs: FAQItem[] = [
     answer: `Check in 30 minutes before your race at ${EVENT_LOCATION_NAME}: ${TEN_K_CHECK_IN_TIME} for the 10K, ${FIVE_K_CHECK_IN_TIME} for the 5K, and ${FUN_RUN_CHECK_IN_TIME} for the 1-Mile Walk. Your bib and bandana will be there.`,
   },
   {
+    question: `Can I send ${BENEFICIARY_FIRST_NAME} a message?`,
+    answer: `Yes. When you register there's a box for a note to ${BENEFICIARY_FIRST_NAME}. We're printing every note in a book for him, exactly as you write it — so sign it however you like.`,
+  },
+  {
     question: "Where does my donation go?",
     answer: `${IMPACT_SPONSOR_LINE} None of it goes to race expenses.`,
   },

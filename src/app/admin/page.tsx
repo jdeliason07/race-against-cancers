@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
+import Link from 'next/link';
 import {
+  BENEFICIARY_FIRST_NAME,
   CONTACT_EMAIL,
   REFERRAL_ENABLED,
   REFERRAL_MIN_DONATION_DOLLARS,
@@ -181,6 +183,21 @@ async function StripePanels() {
           <PeopleList rows={stats.registrations.people} empty="No registrations yet." />
         </Panel>
       )}
+
+      <Panel title={`Notes for ${BENEFICIARY_FIRST_NAME}`}>
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-line p-5">
+          <p className="font-body text-sm text-ash">
+            <span className="mr-2 font-display text-3xl leading-none text-ink">
+              {stats.registrations.notes.toLocaleString()}
+            </span>
+            {stats.registrations.notes === 1 ? 'note' : 'notes'} written on the registration form,
+            ready to read through and print as a book.
+          </p>
+          <Link href="/admin/notes" className="btn-ghost px-5 py-3">
+            Open the book
+          </Link>
+        </div>
+      </Panel>
 
       {REFERRAL_ENABLED && (
         <Panel title="Referrals">

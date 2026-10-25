@@ -7,6 +7,7 @@ import {
   MIN_DONATION_DOLLARS,
   REFERRAL_ENABLED,
 } from '@/config/site';
+import { cleanBeneficiaryNote } from '@/lib/beneficiaryNote';
 import { chargeCentsFor } from '@/lib/fees';
 import { normalizePhone } from '@/lib/phone';
 import { normalizeSource } from '@/lib/qrSource';
@@ -50,6 +51,9 @@ interface RegistrationInput {
   // "DON'T SCAN ME" codes. Attribution only — nothing about the charge depends
   // on it, and it is empty whenever someone arrived by any other route.
   qrSource?: string;
+  // The optional note for this year's beneficiary, printed into a book for
+  // him. Missing from a form loaded before the field existed.
+  beneficiaryNote?: string;
 }
 
 /**
@@ -228,6 +232,9 @@ export async function createPaymentIntent(
         // nothing; this is the number that says which poster was worth
         // printing again.
         qrSource: normalizeSource(registrationData.qrSource),
+        // Like the referral, copied onto the customer by the webhook — only a
+        // completed registration's note goes in the book.
+        beneficiaryNote: cleanBeneficiaryNote(registrationData.beneficiaryNote),
       },
     });
 

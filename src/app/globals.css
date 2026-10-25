@@ -129,3 +129,17 @@
     }
   }
 }
+
+/* The notes book (src/app/admin/notes). Printed, it is only the book: none of
+   the site's own header or footer, and the pink actually printed rather than
+   dropped to save ink. */
+@media print {
+  body:has(.notes-book) header,
+  body:has(.notes-book) footer {
+    display: none !important;
+  }
+  .notes-book {
+    -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+  }
+}
