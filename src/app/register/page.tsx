@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import {
-  CHARITY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K, RECOMMENDED_DONATION_FUN_RUN,
+  IMPACT_HEADLINE, PROCEEDS_TO, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K, RECOMMENDED_DONATION_FUN_RUN,
   REGISTRATION_OPEN, REGISTRATION_OPENS_LABEL, GIVE_WHAT_YOU_CAN,
 } from '@/config/site';
 import { RegisterFlow } from './RegisterFlow';
@@ -11,7 +11,7 @@ const opensCopy = `Registration opens ${REGISTRATION_OPENS_LABEL}`;
 export const metadata: Metadata = REGISTRATION_OPEN
   ? {
       title: 'Register',
-      description: `Register for Race Against Cancers 2026 — 10K, 5K & 1-Mile Walk on November 7, 2026 at Riverview Park, Provo. Your registration is a tax-deductible donation to ${CHARITY_NAME}.`,
+      description: `Register for Race Against Cancers 2026 — 10K, 5K & 1-Mile Walk on November 7, 2026 at Riverview Park, Provo. Your registration is a tax-deductible donation, and 100% of it goes to ${PROCEEDS_TO}.`,
     }
   : {
       title: 'Join the Waitlist',
@@ -54,8 +54,7 @@ export default function RegisterPage() {
           <p className="section-label mb-3">November 7, 2026</p>
           <h1 className="font-display text-4xl uppercase text-ink md:text-6xl">It&rsquo;s Time</h1>
           <p className="mt-3 font-body text-base text-ash">
-            10K, 5K &amp; 1-Mile Walk at Riverview Park, Provo. 100% of every donation funds
-            cancer treatment at {CHARITY_NAME}.
+            10K, 5K &amp; 1-Mile Walk at Riverview Park, Provo. {IMPACT_HEADLINE}.
           </p>
         </div>
       </section>

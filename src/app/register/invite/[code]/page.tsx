@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { CHARITY_NAME, CONTACT_EMAIL, EVENT_DATE_DISPLAY } from '@/config/site';
+import { BENEFICIARY_NAME, CONTACT_EMAIL, EVENT_DATE_DISPLAY } from '@/config/site';
 import { getStripe } from '@/lib/stripeRegistration';
 import { checkCompCode } from '@/lib/compRegistration';
 import { RegisterFlow } from '../../RegisterFlow';
@@ -55,7 +55,7 @@ export default async function InvitePage({
             is nothing to pay. Fill in your details below and you&rsquo;re in.
           </p>
           <p className="mt-3 font-body text-sm text-ash">
-            Benefiting {CHARITY_NAME}
+            Benefiting {BENEFICIARY_NAME}
           </p>
         </div>
       </section>

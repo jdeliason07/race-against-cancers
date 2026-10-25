@@ -224,10 +224,12 @@ registration off once a number is hit.
 
 ## Editing content
 
-Content lives in two places:
+Content lives in three places:
 - **`src/config/site.ts`** — event facts, links, contacts, social handles. The one file to edit
   for most changes; everything on the site reads from it.
 - **`src/data/faq.ts`** — FAQ questions and answers.
+- **`src/data/brooks.ts`** — Brooks's story and the photos in the carousel on the home and About
+  pages. Adding a photo is a file in `public/images/brooks/`, an import, and one entry.
 
 ### Still unfilled
 Placeholders are written as `[[...]]`. Run `grep -rn '\[\[' src/` to list them; as of now:
@@ -247,7 +249,7 @@ official GPS recording of the 10K course exists.
 - **Favicon:** `src/app/icon.svg`.
 - **Social share image:** generated at build time by `src/app/opengraph-image.tsx` — it's code, not
   a JPG, so edit that file rather than dropping in an image.
-- `public/images/` holds the Intermountain Health logo; `public/fonts/` holds the display typeface.
+- `public/images/brooks/` holds the photos of Brooks; `public/fonts/` holds the display typeface.
 
 ---
 

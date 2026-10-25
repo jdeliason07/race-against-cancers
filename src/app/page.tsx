@@ -1,18 +1,20 @@
 import Link from 'next/link';
 import {
   EVENT_NAME, EVENT_DATE_DISPLAY, EVENT_DATE_ISO,
-  CHARITY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K,
+  BENEFICIARY_NAME, BENEFICIARY_FIRST_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K,
   RECOMMENDED_DONATION_FUN_RUN,
   TEN_K_LABEL, FIVE_K_LABEL, FUN_RUN_LABEL,
   EVENT_LOCATION_NAME, EVENT_CITY, EVENT_STREET_ADDRESS, EVENT_ZIP,
   TEN_K_START_TIME, FIVE_K_START_TIME, FUN_RUN_START_TIME,
   ORG_NAME, ORG_EIN, SITE_URL, REGISTRATION_OPEN,
-  RUNNER_MILESTONES, SHOW_RUNNER_COUNT_FROM, IMPACT_HEADLINE, IMPACT_FAMILIES,
+  RUNNER_MILESTONES, SHOW_RUNNER_COUNT_FROM, IMPACT_HEADLINE,
   IMPACT_SPONSOR_LINE, GIVE_WHAT_YOU_CAN, MIN_DONATION_DOLLARS,
 } from '@/config/site';
 import Image from 'next/image';
 import { Countdown } from '@/components/ui/Countdown';
 import { SponsorMarquee } from '@/components/ui/SponsorMarquee';
+import { PhotoCarousel } from '@/components/ui/PhotoCarousel';
+import { BROOKS_BADGE, BROOKS_PHOTOS, BROOKS_STORY, BROOKS_TAGLINE } from '@/data/brooks';
 import { getRunnerTotal } from '@/lib/getRunnerTotal';
 import { RegistrationTeaser } from '@/components/ui/RegistrationTeaser';
 import { ReferralAnnouncement } from '@/components/ui/ReferralReward';
@@ -29,7 +31,7 @@ const eventJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SportsEvent',
   name: EVENT_NAME,
-  description: `A 10K, 5K & 1-Mile Walk charity race benefiting ${CHARITY_NAME}, run as loops of ${EVENT_LOCATION_NAME} in ${EVENT_CITY} on ${EVENT_DATE_DISPLAY}.`,
+  description: `A 10K, 5K & 1-Mile Walk charity race benefiting ${BENEFICIARY_NAME}, run as loops of ${EVENT_LOCATION_NAME} in ${EVENT_CITY} on ${EVENT_DATE_DISPLAY}.`,
   startDate: EVENT_DATE_ISO,
   endDate: '2026-11-07T12:00:00-07:00',
   eventStatus: 'https://schema.org/EventScheduled',
@@ -125,13 +127,13 @@ export default async function HomePage() {
           </h1>
 
           <p className="mt-6 max-w-3xl font-body text-xl font-semibold leading-snug text-ink md:text-2xl">
-            A community run supporting local families facing cancer.
+            A community run for {BENEFICIARY_NAME}, a kindergartener fighting cancer.
           </p>
 
           <div className="mt-4 grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)]">
             <div>
               <p className="max-w-xl font-body text-base leading-relaxed text-ash">
-                {IMPACT_HEADLINE} for local patients at {CHARITY_NAME}
+                {IMPACT_HEADLINE}.
               </p>
 
               <div className="mt-10">
@@ -151,21 +153,47 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* BENEFITING */}
-      <section className="border-y border-line bg-paper py-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 text-center sm:flex-row sm:justify-center sm:gap-8 sm:text-left">
-          <span className="section-label">Benefiting</span>
-          <a href="/about" aria-label={`About ${CHARITY_NAME}`}>
+      {/* WHO WE RACE FOR — the story up top, the photos in the middle, the ask
+          at the end. Photos and words live in src/data/brooks.ts. */}
+      <section id="brooks" aria-labelledby="brooks-heading" className="overflow-hidden border-y border-line bg-mist py-16 md:py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="rule-line mb-10">
+            <div className="h-px flex-1 bg-petal" aria-hidden="true" />
+            <span className="section-label">This year we race for</span>
+            <div className="h-px flex-1 bg-petal" aria-hidden="true" />
+          </div>
+
+          <div className="flex flex-col items-center gap-6 text-center md:flex-row md:justify-center md:gap-10 md:text-left">
             <Image
-              src="/images/intermountain-health-logo.svg"
-              alt="Intermountain Health"
-              width={220}
-              height={67}
-              className="object-contain"
-              unoptimized
+              src={BROOKS_BADGE}
+              alt={`Brave Buddy: ${BROOKS_TAGLINE.toLowerCase()}`}
+              width={144}
+              height={144}
+              className="h-32 w-32 -rotate-6 rounded-[18px] border-4 border-white shadow-[0_14px_34px_-14px_rgba(28,23,25,0.45)] md:h-36 md:w-36"
             />
-          </a>
-          <span className="font-body text-sm text-ash">{CHARITY_NAME}</span>
+            <div>
+              <h2 id="brooks-heading" className="font-display text-[clamp(56px,11vw,128px)] uppercase leading-[0.9] text-ink">
+                {BENEFICIARY_FIRST_NAME}{' '}
+                <span className="text-pink">{BENEFICIARY_NAME.slice(BENEFICIARY_FIRST_NAME.length + 1)}</span>
+              </h2>
+              <p className="mt-3 font-display text-2xl uppercase tracking-wide text-pink">{BROOKS_TAGLINE}</p>
+            </div>
+          </div>
+
+          <p className="mx-auto mt-10 max-w-2xl text-center font-body text-base leading-relaxed text-ink md:text-lg">
+            {BROOKS_STORY[0]}
+          </p>
+        </div>
+
+        <PhotoCarousel photos={BROOKS_PHOTOS} label={`Photos of ${BENEFICIARY_FIRST_NAME}`} className="mt-4" />
+
+        <div className="mx-auto mt-10 max-w-2xl px-6 text-center">
+          {BROOKS_STORY.slice(1).map((paragraph) => (
+            <p key={paragraph} className="mb-8 font-body text-base leading-relaxed text-ash md:text-lg">{paragraph}</p>
+          ))}
+          <Link href="/register" className="btn-primary px-10 py-5 text-base">
+            {REGISTRATION_OPEN ? `Run for ${BENEFICIARY_FIRST_NAME}` : cta}
+          </Link>
         </div>
       </section>
 
@@ -243,14 +271,10 @@ export default async function HomePage() {
           <p className="section-label mb-6">Where your donation goes</p>
           <p className="font-display text-[clamp(72px,16vw,160px)] uppercase leading-none text-pink">100%</p>
           <p className="mt-4 font-display text-[clamp(28px,4vw,44px)] uppercase leading-tight text-ink">
-            of every donation funds cancer treatment
+            of every donation goes to {BENEFICIARY_FIRST_NAME}
           </p>
           <p className="mx-auto mt-6 max-w-2xl font-body text-base leading-relaxed text-ink">
             {IMPACT_SPONSOR_LINE}
-          </p>
-          <p className="mx-auto mt-3 max-w-2xl font-body text-base leading-relaxed text-ash">
-            This year, that&rsquo;s {IMPACT_FAMILIES === 3 ? 'three' : IMPACT_FAMILIES} local
-            families fighting cancer right now.
           </p>
           <p className="mx-auto mt-6 max-w-2xl font-body text-sm text-ash">
             {ORG_NAME} is a 501(c)(3) nonprofit (EIN {ORG_EIN}). Your registration donation is

@@ -2,11 +2,11 @@ import { ImageResponse } from 'next/og';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
-  EVENT_DATE_DISPLAY, CHARITY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K,
+  EVENT_DATE_DISPLAY, BENEFICIARY_NAME, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K,
   RECOMMENDED_DONATION_FUN_RUN,
 } from '@/config/site';
 
-export const alt = `Race Against Cancers 2026 — suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K} & 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} · Riverview Park, Provo · Benefiting Intermountain Cancer Center Utah Valley`;
+export const alt = `Race Against Cancers 2026 — suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K} & 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} · Riverview Park, Provo · Benefiting ${BENEFICIARY_NAME}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -49,7 +49,7 @@ export default async function Image() {
 
         {/* Charity */}
         <div style={{ display: 'flex', marginTop: '18px', fontFamily: 'sans-serif', fontSize: '18px', color: '#F0307A', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-          Benefiting {CHARITY_NAME}
+          Benefiting {BENEFICIARY_NAME}
         </div>
       </div>
     ),

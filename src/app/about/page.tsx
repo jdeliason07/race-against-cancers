@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { CHARITY_NAME, CHARITY_URL, REGISTRATION_OPEN, RUNNER_MILESTONES, ORG_NAME, ORG_EIN, TEAM, IMPACT_SPONSOR_LINE } from '@/config/site';
+import { BENEFICIARY_NAME, BENEFICIARY_FIRST_NAME, REGISTRATION_OPEN, RUNNER_MILESTONES, ORG_NAME, ORG_EIN, TEAM, IMPACT_SPONSOR_LINE } from '@/config/site';
 import { RegistrationTeaser } from '@/components/ui/RegistrationTeaser';
+import { PhotoCarousel } from '@/components/ui/PhotoCarousel';
+import { BROOKS_BADGE, BROOKS_PHOTOS, BROOKS_STORY, BROOKS_TAGLINE } from '@/data/brooks';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -19,7 +21,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-3xl space-y-16 px-6 py-20">
+      <div className="mx-auto max-w-3xl px-6 py-20">
         <section>
           <h2 className="mb-6 font-display text-3xl uppercase text-ink">Who we are</h2>
           <div className="space-y-4 font-body text-base leading-relaxed text-ash">
@@ -63,56 +65,43 @@ export default function AboutPage() {
             })}
           </ul>
         </section>
+      </div>
 
-        <section>
-          <h2 className="mb-6 font-display text-3xl uppercase text-ink">
-            The charity: {CHARITY_NAME}
+      {/* Full width so the photos can run edge to edge. Photos and words live
+          in src/data/brooks.ts. */}
+      <section id="brooks" aria-labelledby="brooks-heading" className="overflow-hidden border-y border-line bg-mist py-20">
+        <div className="mx-auto max-w-3xl px-6">
+          <h2 id="brooks-heading" className="mb-8 font-display text-3xl uppercase text-ink">
+            Who we&rsquo;re racing for: {BENEFICIARY_NAME}
           </h2>
-
-          {/* Logo */}
-          <div className="mb-8 flex justify-center">
+          <div className="flex flex-col items-start gap-8 sm:flex-row">
             <Image
-              src="/images/intermountain-health-logo.svg"
-              alt="Intermountain Health"
-              width={320}
-              height={98}
-              className="object-contain"
-              unoptimized
+              src={BROOKS_BADGE}
+              alt={`Brave Buddy: ${BROOKS_TAGLINE.toLowerCase()}`}
+              width={128}
+              height={128}
+              className="h-28 w-28 shrink-0 -rotate-6 rounded-[16px] border-4 border-white shadow-[0_14px_34px_-14px_rgba(28,23,25,0.45)] sm:h-32 sm:w-32"
             />
+            <div className="space-y-4 font-body text-base leading-relaxed text-ash">
+              <p className="font-display text-2xl uppercase tracking-wide text-pink">{BROOKS_TAGLINE}</p>
+              {BROOKS_STORY.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
           </div>
+        </div>
+        <PhotoCarousel photos={BROOKS_PHOTOS} label={`Photos of ${BENEFICIARY_FIRST_NAME}`} className="mt-6" />
+      </section>
 
-          <p className="mb-4 font-body text-base leading-relaxed text-ash">
-            Intermountain Cancer Center Utah Valley, in Provo, brings comprehensive cancer care
-            close to home for Utah County. Part of Intermountain Health, the center treats more
-            than 20 forms of cancer with a team of multidisciplinary experts, advanced technology,
-            and seamless coordination across every step of a patient&apos;s journey.
-          </p>
-          <p className="mb-6 font-body text-base leading-relaxed text-ash">
-            The center offers medical, radiation, and surgical oncology alongside supportive
-            services like patient navigation, nutrition, palliative care, survivorship programs,
-            and access to clinical trials. Free support groups and wellness classes help patients
-            and families find strength in community throughout treatment and beyond.
-          </p>
-
-          <a
-            href={CHARITY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-body text-sm font-bold uppercase tracking-widest text-pink transition-colors hover:text-raspberry"
-          >
-            Visit Intermountain Cancer Center Utah Valley →
-          </a>
-        </section>
-
+      <div className="mx-auto max-w-3xl space-y-16 px-6 py-20">
         <section>
           <h2 className="mb-6 font-display text-3xl uppercase text-ink">Where the money goes</h2>
           <div className="rounded-card border-2 border-pink bg-blush p-8">
             <p className="mb-4 font-display text-2xl uppercase text-ink">
-              100% funds cancer treatment
+              100% goes to {BENEFICIARY_FIRST_NAME}
             </p>
             <p className="font-body text-sm leading-relaxed text-ash">
-              {IMPACT_SPONSOR_LINE} This year, that&rsquo;s three local families. None of it goes
-              to race expenses.
+              {IMPACT_SPONSOR_LINE} None of it goes to race expenses.
             </p>
             <p className="mt-4 font-body text-xs text-ash">
               {ORG_NAME} is a 501(c)(3) nonprofit (EIN {ORG_EIN}). Donations are tax-deductible to
@@ -128,7 +117,7 @@ export default function AboutPage() {
               {RUNNER_MILESTONES[0].toLocaleString()} Runners
             </p>
             <p className="mt-4 font-body text-base text-ash">
-              That&apos;s our first target on the start line for Intermountain Cancer Center Utah Valley.
+              That&apos;s our first target on the start line for {BENEFICIARY_FIRST_NAME}.
               Every registration is a donation too, and every one of them gets us closer.
             </p>
           </div>

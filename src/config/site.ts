@@ -5,11 +5,16 @@
 // Non-developers: only touch this file and src/data/*.ts
 // ============================================================
 
-// --- CHARITY ------------------------------------------------
-// The beneficiary. We don't publish Intermountain's own tax ID — the entity
-// that receives registrations, and so the one a donor would cite, is us.
-export const CHARITY_NAME = "Intermountain Cancer Center Utah Valley";
-export const CHARITY_URL  = "https://intermountainhealthcare.org/locations/utah-valley-clinic/cancer-center-utah-valley";
+// --- BENEFICIARY --------------------------------------------
+// Who this year's race is for. Registrations are still donations to us — the
+// entity a donor would cite is us — and we pass the proceeds on.
+// The story and photos live in src/data/brooks.ts.
+export const BENEFICIARY_NAME       = "Brooks Limb";
+export const BENEFICIARY_FIRST_NAME = "Brooks";
+// Where the money ends up, as it reads mid-sentence: "100% goes to ___".
+// Kept apart from the name so the race can stay "for Brooks" if the proceeds
+// are ever routed through a hospital or foundation instead.
+export const PROCEEDS_TO            = "Brooks and the Limb family";
 
 // --- EVENT --------------------------------------------------
 // The registered entity name, in full. There is no corporate suffix — the
@@ -117,12 +122,11 @@ export const RUNNER_GOAL = RUNNER_MILESTONES[RUNNER_MILESTONES.length - 1];
 // --- IMPACT -------------------------------------------------
 // How the home page and About page describe where the money goes. Keep this
 // true: "100%" holds only while sponsors, not registrations, pay for the race.
-export const IMPACT_HEADLINE = "100% of every donation funds cancer treatment";
-export const IMPACT_FAMILIES = 3;
+export const IMPACT_HEADLINE = `100% of every donation goes to ${PROCEEDS_TO}`;
 // The one-line explanation of why "100%" is true. Shown on the home page,
 // About, and the FAQ — keep them saying the same thing.
 export const IMPACT_SPONSOR_LINE =
-  `Our sponsors cover the cost of the race, so 100% of every donation funds cancer treatment for local patients at ${CHARITY_NAME}.`;
+  `Our sponsors cover the cost of the race, so 100% of every donation goes straight to ${PROCEEDS_TO}.`;
 
 // --- CARD PROCESSING FEE ------------------------------------
 // Stripe keeps 2.9% + $0.30 of every card charge. Rather than letting that come
@@ -233,4 +237,4 @@ export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";
 // Used by sitemap, robots.txt, metadataBase, and JSON-LD schema.
 export const SITE_URL         = "https://raceagainstcancers.org";
 export const META_DESCRIPTION =
-  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & 1-Mile Walk at Riverview Park in Provo, Utah on ${EVENT_DATE_DISPLAY}, benefiting ${CHARITY_NAME}. Tax-deductible. Suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} — any donation of $${MIN_DONATION_DOLLARS} or more gets you in.`;
+  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & 1-Mile Walk at Riverview Park in Provo, Utah on ${EVENT_DATE_DISPLAY}, benefiting ${BENEFICIARY_NAME}. Tax-deductible. Suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} — any donation of $${MIN_DONATION_DOLLARS} or more gets you in.`;

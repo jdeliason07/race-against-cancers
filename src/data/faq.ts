@@ -1,5 +1,6 @@
 import {
-  CHARITY_NAME,
+  BENEFICIARY_FIRST_NAME,
+  PROCEEDS_TO,
   CONTACT_EMAIL,
   MAX_PARTICIPANTS_PER_REGISTRATION,
   RECOMMENDED_DONATION_AMOUNT,
@@ -43,7 +44,7 @@ export const faqs: FAQItem[] = [
     : []),
   {
     question: "Is there a registration fee?",
-    answer: `There is no fixed entry fee — your registration is a tax-deductible donation, and 100% of it funds cancer treatment for patients at ${CHARITY_NAME}. Suggested donations are $${RECOMMENDED_DONATION_AMOUNT} for the 10K, $${RECOMMENDED_DONATION_5K} for the 5K, and $${RECOMMENDED_DONATION_FUN_RUN} for the 1-Mile Walk. Suggestions are per athlete, so a family of four doing the walk is pointed at $${RECOMMENDED_DONATION_FUN_RUN * 4} — and you can register all four in one go. Give what you can. Any donation of $${MIN_DONATION_DOLLARS} or more gets you in — we'd rather have you there.`,
+    answer: `There is no fixed entry fee — your registration is a tax-deductible donation, and 100% of it goes to ${PROCEEDS_TO}. Suggested donations are $${RECOMMENDED_DONATION_AMOUNT} for the 10K, $${RECOMMENDED_DONATION_5K} for the 5K, and $${RECOMMENDED_DONATION_FUN_RUN} for the 1-Mile Walk. Suggestions are per athlete, so a family of four doing the walk is pointed at $${RECOMMENDED_DONATION_FUN_RUN * 4} — and you can register all four in one go. Give what you can. Any donation of $${MIN_DONATION_DOLLARS} or more gets you in — we'd rather have you there.`,
   },
   {
     question: "Can I register a group, or pay for other people?",
@@ -63,7 +64,7 @@ export const faqs: FAQItem[] = [
   },
   {
     question: "What's included with registration?",
-    answer: "Every participant gets a race bib and a bandana in the color of the cancer they choose to run for. You pick your color when you register, and both are waiting for you at check-in. There are no shirts or medals — we'd rather that money go to treatment.",
+    answer: `Every participant gets a race bib and a bandana in the color of the cancer they choose to run for. You pick your color when you register, and both are waiting for you at check-in. There are no shirts or medals — we'd rather that money go to ${BENEFICIARY_FIRST_NAME}.`,
   },
   {
     question: "What is the refund policy?",
@@ -75,7 +76,7 @@ export const faqs: FAQItem[] = [
   },
   {
     question: "Where does my donation go?",
-    answer: `${IMPACT_SPONSOR_LINE} This year, that's three local families. None of it goes to race expenses.`,
+    answer: `${IMPACT_SPONSOR_LINE} None of it goes to race expenses.`,
   },
   {
     question: "Is my donation tax-deductible?",

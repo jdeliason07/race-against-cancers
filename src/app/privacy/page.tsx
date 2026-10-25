@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { CONTACT_PHONE, CONTACT_EMAIL, EVENT_YEAR, CHARITY_NAME, ORG_NAME } from '@/config/site';
+import { CONTACT_PHONE, CONTACT_EMAIL, EVENT_YEAR, BENEFICIARY_NAME, ORG_NAME } from '@/config/site';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -24,7 +24,7 @@ export default function PrivacyPage() {
           <p className="font-body text-base leading-relaxed text-ash">
             {ORG_NAME} (&ldquo;we,&rdquo; &ldquo;our,&rdquo; &ldquo;us&rdquo;) respects your privacy. This policy
             explains what information we collect when you use this website, how we use it, and
-            your rights. All donations collected through this event benefit {CHARITY_NAME}.
+            your rights. All donations collected through this event benefit {BENEFICIARY_NAME}.
           </p>
         </section>
 
@@ -65,7 +65,6 @@ export default function PrivacyPage() {
           </p>
           <ul className="mt-4 space-y-3 font-body text-base text-ash">
             {[
-              `${CHARITY_NAME} — as needed to process your donation and issue receipts.`,
               'Stripe — our payment processor, which securely handles payments and stores our waitlist and registration records.',
               'Race logistics providers (timing company, check-in) — limited to name and bib information necessary for event operations.',
               'Law enforcement or legal authorities — only when required by law.',

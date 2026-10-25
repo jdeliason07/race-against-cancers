@@ -17,7 +17,8 @@ import { normalizePhone } from '@/lib/phone';
 import { captureSource, readSource } from '@/lib/qrSource';
 import { RACES, RACE_KEYS, type RaceKey } from '@/lib/races';
 import {
-  CHARITY_NAME,
+  BENEFICIARY_NAME,
+  BENEFICIARY_FIRST_NAME,
   GIVE_WHAT_YOU_CAN,
   MAX_PARTICIPANTS_PER_REGISTRATION,
   MIN_DONATION_DOLLARS,
@@ -583,7 +584,7 @@ function StepAthleteInfo({
           aria-describedby="donation-amount-hint"
         />
         <p id="donation-amount-hint" className="mt-2 font-body text-xs text-ash">
-          Tax-deductible, and 100% funds cancer treatment. Money tight? We&rsquo;d rather have
+          Tax-deductible, and 100% goes to {BENEFICIARY_FIRST_NAME}. Money tight? We&rsquo;d rather have
           you there.
         </p>
         {donationAmount < MIN_DONATION_DOLLARS && (
@@ -831,7 +832,7 @@ function PaymentForm({
               ${donationAmount}
             </p>
             <p className="mt-2 font-body text-sm leading-snug text-ash">
-              to <span className="font-semibold text-ink">{CHARITY_NAME}</span>
+              to <span className="font-semibold text-ink">{BENEFICIARY_NAME}</span>
               {participantCount > 1 && <> for {participantCount} athletes</>}.
             </p>
 

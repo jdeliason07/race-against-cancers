@@ -93,3 +93,18 @@
 @media (prefers-reduced-motion: reduce) {
   .sponsor-track { animation: none; }
 }
+
+/* Photo carousel (src/components/ui/PhotoCarousel.tsx). Swipes and scrolls
+   like any strip, just without a scrollbar, and the photos at either end fade
+   out so the one in the middle carries the eye. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.photo-carousel {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
