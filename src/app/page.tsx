@@ -14,6 +14,8 @@ import {
 import Image from 'next/image';
 import { Countdown } from '@/components/ui/Countdown';
 import { SponsorMarquee } from '@/components/ui/SponsorMarquee';
+import { SponsorLogo } from '@/components/ui/SponsorLogo';
+import { SPONSORS, PRESENTING_SPONSORS } from '@/data/sponsors';
 import { PhotoCarousel } from '@/components/ui/PhotoCarousel';
 import { BROOKS_BADGE, BROOKS_PHOTOS, BROOKS_STORYLINE, BROOKS_TAGLINE } from '@/data/brooks';
 import { getRunnerTotal } from '@/lib/getRunnerTotal';
@@ -116,11 +118,29 @@ export default async function HomePage() {
       {/* HERO */}
       <section className="bg-paper pb-20 pt-16 md:pb-28 md:pt-24">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="rule-line mb-8">
+          <div className={PRESENTING_SPONSORS.length > 0 ? 'rule-line mb-5' : 'rule-line mb-8'}>
             <div className="h-px flex-1 bg-petal" aria-hidden="true" />
             <span className="section-label">{EVENT_DATE_DISPLAY} · {EVENT_LOCATION_NAME}, {EVENT_CITY}</span>
             <div className="h-px flex-1 bg-petal" aria-hidden="true" />
           </div>
+
+          {/* Presented by — small and quiet under the date line, so it never
+              competes with the headline, Brooks, or the Register button. The
+              label sits above the logos on phones so all three fit one row. */}
+          {PRESENTING_SPONSORS.length > 0 && (
+            <div className="mb-10 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-5">
+              <span className="font-body text-[11px] font-semibold uppercase tracking-widest text-ash">
+                Presented by
+              </span>
+              <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+                {PRESENTING_SPONSORS.map((s) => (
+                  <li key={s.name}>
+                    <SponsorLogo sponsor={s} className="h-7 w-[5.5rem] sm:h-8 sm:w-24" />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <h1 className="font-display text-[clamp(52px,10vw,132px)] uppercase leading-[0.92] tracking-[0.01em] text-ink">
             MILES MEAN{' '}
@@ -301,6 +321,22 @@ export default async function HomePage() {
           <p className="mt-4 font-display text-[clamp(28px,4vw,44px)] uppercase leading-tight text-ink">
             of every donation goes to families fighting cancer
           </p>
+          {/* Who pays for the race, so the 100% holds. Three to a row on
+              phones, all five in one row from the sm breakpoint. */}
+          {SPONSORS.length > 0 && (
+            <>
+              <p className="mx-auto mt-10 max-w-2xl font-body text-sm font-semibold text-ink">
+                Race costs are covered by our sponsors, so every dollar you give goes to families.
+              </p>
+              <ul className="mx-auto mt-5 flex max-w-3xl flex-wrap justify-center gap-3">
+                {SPONSORS.map((s) => (
+                  <li key={s.name} className="w-[30%] sm:w-[18%]">
+                    <SponsorLogo sponsor={s} tile className="h-16 w-full sm:h-20" />
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           <p className="mx-auto mt-6 max-w-2xl font-body text-base leading-relaxed text-ink">
             {IMPACT_SPONSOR_LINE}
           </p>

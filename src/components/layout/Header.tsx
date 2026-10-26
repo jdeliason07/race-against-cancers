@@ -9,6 +9,7 @@ const navLinks = [
   { href: '/register', label: REGISTRATION_OPEN ? 'Register' : 'Join the Waitlist' },
   { href: '/race-details',  label: 'Race Details' },
   { href: '/volunteer',     label: 'Become a Volunteer' },
+  { href: '/sponsors',      label: 'Our Sponsors' },
   { href: '/sponsor',       label: 'Become a Sponsor' },
   { href: '/faq',           label: 'FAQ' },
   { href: '/about',         label: 'About' },
