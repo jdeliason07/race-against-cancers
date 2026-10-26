@@ -230,6 +230,7 @@ export const SPONSORS: { name: string; logo: string; url: string }[] = [
   { name: "Rockwell Ice Cream",   logo: "/images/sponsors/rockwell-ice-cream.png",  url: "https://rockwellicecream.com/" },
   { name: "Moxie Pest Control",   logo: "/images/sponsors/moxie-pest-control.png",  url: "https://moxieservices.com/locations/salt-lake-city/" },
   { name: "WealthWave",           logo: "/images/sponsors/wealthwave.png",          url: "https://wealthwave.com/" },
+  { name: "Owala",                logo: "/images/sponsors/owala.png",               url: "https://owalalife.com/" },
 ];
 
 // --- TEAM -------------------------------------------------
