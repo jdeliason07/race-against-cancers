@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import {
   IMPACT_HEADLINE, PROCEEDS_TO, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K, RECOMMENDED_DONATION_FUN_RUN,
   REGISTRATION_OPEN, REGISTRATION_OPENS_LABEL, GIVE_WHAT_YOU_CAN,
+  BENEFICIARY_FIRST_NAME, NONPROFIT_PARTNERS, PARTNER_SHARE_PERCENT, PARTNERS_ENABLED,
 } from '@/config/site';
 import { RegisterFlow } from './RegisterFlow';
 import { PreSignupForm } from './PreSignupForm';
@@ -61,6 +62,47 @@ export default function RegisterPage() {
       <div className="mx-auto max-w-2xl px-6 py-8">
         <RegisterFlow />
       </div>
+      {PARTNERS_ENABLED && <PartnerBlurbs />}
     </div>
+  );
+}
+
+/**
+ * Who the nonprofit partners are, under the form — on every step, so a runner
+ * who followed a partner's link sees why that partner's name is in the box.
+ * The split is spelled out because the header above says 100% goes to the
+ * beneficiary, and for these registrations it doesn't.
+ */
+function PartnerBlurbs() {
+  return (
+    <section aria-label="Nonprofit partners" className="mx-auto max-w-2xl px-6 pb-16">
+      <div className="space-y-6 rounded-card border border-petal bg-mist p-6">
+        {NONPROFIT_PARTNERS.map((partner) => (
+          <div key={partner.name}>
+            <p className="section-label mb-2">In partnership with</p>
+            <h2 className="font-display text-3xl uppercase leading-tight text-ink">
+              {partner.url ? (
+                <a
+                  href={partner.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-petal underline-offset-4 hover:text-pink"
+                >
+                  {partner.name}
+                </a>
+              ) : (
+                partner.name
+              )}
+            </h2>
+            <p className="mt-2 font-body text-sm leading-relaxed text-ash">{partner.blurb}</p>
+            <p className="mt-2 font-body text-sm leading-relaxed text-ash">
+              Here with {partner.name}? Name them in the &ldquo;Nonprofit partner&rdquo; box when
+              you register, and your donation is split {100 - PARTNER_SHARE_PERCENT}/
+              {PARTNER_SHARE_PERCENT} between {BENEFICIARY_FIRST_NAME} and {partner.name}.
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

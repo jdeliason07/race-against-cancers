@@ -205,7 +205,18 @@ export const REFERRAL_REWARD_LOGO_HEIGHT = 512;
 // listed here. The /admin dashboard tallies the answers by partner and prices
 // each partner's cut at PARTNER_SHARE_PERCENT of those donations.
 // Empty the list to remove the question site-wide.
-export const NONPROFIT_PARTNERS: string[] = ["Gather for Good"];
+//
+// Each partner gets a link to share that fills their name in for the runner —
+// /register?partner=gather-for-good, built from `name` and shown on /admin.
+// `blurb` is the paragraph about them on the register page: swap in their own
+// description, and their website as `url` (shown as a link when set).
+export const NONPROFIT_PARTNERS: { name: string; url: string; blurb: string }[] = [
+  {
+    name: "Gather for Good",
+    url: "",
+    blurb: "Gather for Good is a nonprofit partnering with Race Against Cancers to bring more runners to the start line for Brooks.",
+  },
+];
 export const PARTNERS_ENABLED = NONPROFIT_PARTNERS.length > 0;
 export const PARTNER_SHARE_PERCENT = 50;
 

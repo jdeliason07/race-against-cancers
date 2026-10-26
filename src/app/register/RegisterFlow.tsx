@@ -15,7 +15,7 @@ import { submitCompRegistration } from './comp-actions';
 import { ADULT_AGE } from '@/lib/utils';
 import { normalizePhone } from '@/lib/phone';
 import { BENEFICIARY_NOTE_MAX_CHARS } from '@/lib/beneficiaryNote';
-import { PARTNER_NAME_MAX_CHARS } from '@/lib/partner';
+import { PARTNER_NAME_MAX_CHARS, capturePartner } from '@/lib/partner';
 import { captureSource, readSource } from '@/lib/qrSource';
 import { RACES, RACE_KEYS, type RaceKey } from '@/lib/races';
 import {
@@ -27,6 +27,7 @@ import {
   MIN_DONATION_DOLLARS,
   NONPROFIT_PARTNERS,
   ORG_NAME,
+  PARTNER_SHARE_PERCENT,
   PARTNERS_ENABLED,
   REFERRAL_ENABLED,
   STRIPE_FEE_LABEL,
@@ -478,14 +479,15 @@ function StepAthleteInfo({
 
       {/* Partners split the donations of the runners they bring in, so this is
           attribution like the referral box — tallied by partner on /admin.
-          Free text, because "any other partner" can't be a fixed list. */}
+          Free text, because "any other partner" can't be a fixed list; a
+          partner's link fills it in (src/lib/partner.ts). */}
       {PARTNERS_ENABLED && !isComp && (
         <div className="mb-6">
           <label htmlFor="partnerOrg" className={labelClass}>
             Nonprofit partner <span className="font-normal normal-case tracking-normal">(optional)</span>
           </label>
           <p id="partnerOrg-question" className="mb-2 font-body text-sm text-ash">
-            Are you affiliated with {NONPROFIT_PARTNERS[0]} or any other nonprofit partner of{' '}
+            Are you affiliated with {NONPROFIT_PARTNERS[0].name} or any other nonprofit partner of{' '}
             {ORG_NAME}? If so, which one?
           </p>
           <input
@@ -497,9 +499,15 @@ function StepAthleteInfo({
             className={inputClass}
             // Not "organization": the browser would fill in their employer.
             autoComplete="off"
-            placeholder={`e.g. ${NONPROFIT_PARTNERS[0]}`}
-            aria-describedby="partnerOrg-question"
+            placeholder={`e.g. ${NONPROFIT_PARTNERS[0].name}`}
+            aria-describedby="partnerOrg-question partnerOrg-split"
           />
+          {/* Said here, where the choice is made: the rest of the site says
+              every donation goes to the beneficiary, and for these it's split. */}
+          <p id="partnerOrg-split" className="mt-2 font-body text-xs text-ash">
+            Name one and your donation is split {100 - PARTNER_SHARE_PERCENT}/{PARTNER_SHARE_PERCENT}{' '}
+            between {BENEFICIARY_FIRST_NAME} and that partner.
+          </p>
         </div>
       )}
 
@@ -645,8 +653,10 @@ function StepAthleteInfo({
           aria-describedby="donation-amount-hint"
         />
         <p id="donation-amount-hint" className="mt-2 font-body text-xs text-ash">
-          Tax-deductible, and 100% goes to {BENEFICIARY_FIRST_NAME}. Money tight? We&rsquo;d rather have
-          you there.
+          {formData.partnerOrg.trim()
+            ? `Tax-deductible, and split ${100 - PARTNER_SHARE_PERCENT}/${PARTNER_SHARE_PERCENT} between ${BENEFICIARY_FIRST_NAME} and the partner you named.`
+            : `Tax-deductible, and 100% goes to ${BENEFICIARY_FIRST_NAME}.`}{' '}
+          Money tight? We&rsquo;d rather have you there.
         </p>
         {donationAmount < MIN_DONATION_DOLLARS && (
           <p className="mt-1 font-body text-xs text-red-700" role="alert">
@@ -1101,12 +1111,27 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
   const [loadingIntent, setLoadingIntent] = useState(false);
   const [intentError, setIntentError] = useState<string | null>(null);
 
-  // Remember which printed QR code brought them here, before anything in the
-  // flow can change the URL. Writes to sessionStorage only — no state, so it
-  // cannot re-render anything.
+  // Remember which printed QR code or partner's link (/register?partner=…)
+  // brought them here, before anything in the flow can change the URL. Writes
+  // to sessionStorage only — no state, so it cannot re-render anything.
   useEffect(() => {
     captureSource();
+    capturePartner();
   }, []);
+
+  // Picking a race opens the athlete form. The first time, a partner's link
+  // fills in the partner box — here rather than on mount, because the page is
+  // static and setting state from an effect costs a second render; and once
+  // only, so a box someone cleared stays cleared if they step back to step 1.
+  const [partnerOffered, setPartnerOffered] = useState(false);
+  const startAthleteInfo = () => {
+    if (!partnerOffered) {
+      setPartnerOffered(true);
+      const partner = capturePartner();
+      if (partner) setFormData((prev) => ({ ...prev, partnerOrg: prev.partnerOrg || partner }));
+    }
+    setStep(2);
+  };
 
   // Not memoized by hand — the React Compiler handles that, and a manual
   // useCallback here blocks it from optimizing the component at all.
@@ -1171,7 +1196,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
       {step === 1 && (
         <StepRaceSelection
           setRaceType={setRaceType}
-          onNext={() => setStep(2)}
+          onNext={startAthleteInfo}
         />
       )}
 

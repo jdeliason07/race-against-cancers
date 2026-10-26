@@ -4,6 +4,7 @@ import {
   BENEFICIARY_BANDANA,
   BENEFICIARY_FIRST_NAME,
   CONTACT_EMAIL,
+  NONPROFIT_PARTNERS,
   PARTNER_SHARE_PERCENT,
   PARTNERS_ENABLED,
   REFERRAL_ENABLED,
@@ -11,8 +12,10 @@ import {
   REFERRAL_REWARD,
   REFERRAL_REWARD_VALUE_CENTS,
   REGISTRATION_OPEN,
+  SITE_URL,
 } from '@/config/site';
 import { getStripe } from '@/lib/stripeRegistration';
+import { partnerSlug } from '@/lib/partner';
 import { buildAdminStats, type AdminStats } from '@/lib/adminStats';
 import { buildReferralReport } from '@/lib/referralReport';
 import { isSenderConfigured, listCampaigns } from '@/lib/senderNet';
@@ -221,6 +224,27 @@ async function StripePanels() {
 
       {PARTNERS_ENABLED && (
         <Panel title="Nonprofit partners">
+          {/* The link to hand each partner: it fills their name into the box
+              for anyone who follows it. Shown first — before anyone has
+              registered, this is the only thing in the panel worth having. */}
+          <ul className="mb-4 space-y-2">
+            {NONPROFIT_PARTNERS.map((partner) => {
+              const link = `${SITE_URL}/register?partner=${partnerSlug(partner.name)}`;
+              return (
+                <li key={partner.name} className="rounded-card border border-line bg-mist px-4 py-3">
+                  <p className="font-body text-xs font-bold uppercase tracking-widest text-ash">
+                    {partner.name}&rsquo;s link
+                  </p>
+                  <a
+                    href={link}
+                    className="mt-1 block break-all font-body text-sm text-pink underline underline-offset-2"
+                  >
+                    {link}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
           {stats.partners.rows.length > 0 ? (
             <>
               <p className="mb-4 font-body text-sm text-ash">
