@@ -29,7 +29,7 @@
 // ============================================================
 
 /** Written into Stripe metadata on every registration. Bump with the text. */
-export const WAIVER_VERSION = '2.2';
+export const WAIVER_VERSION = '2.3';
 
 /**
  * The date this version took effect, shown in the document header.
@@ -40,9 +40,10 @@ export const WAIVER_VERSION = '2.2';
  * race. The agreement is therefore in force for every acceptance it receives
  * and every activity it covers.
  */
-// 2.0 took effect September 15, 2026. 2.1 took effect October 8, 2026. 2.2
-// takes effect the day it deploys — update this if it ships on a different day.
-export const WAIVER_EFFECTIVE_DATE = 'October 21, 2026';
+// 2.0 took effect September 15, 2026. 2.1 took effect October 8, 2026. 2.2 took
+// effect October 21, 2026. 2.3 takes effect the day it deploys — update this if
+// it ships on a different day.
+export const WAIVER_EFFECTIVE_DATE = 'October 26, 2026';
 
 /** The Event location as the document states it, for the header block. */
 export const WAIVER_EVENT_LOCATION = 'Riverview Park, Provo, Utah';
@@ -318,7 +319,7 @@ export const WAIVER_SECTIONS: WaiverSection[] = [
       {
         id: '9.2',
         lead: 'Donations and tax treatment.',
-        text: 'The Organizer is a Utah nonprofit corporation. The Organizer accepts the registration amount as a charitable donation in support of its mission, and the Organizer in turn donates the proceeds of the Event to Intermountain Cancer Center Utah Valley. Because a Participant also receives goods and services in connection with the Event, including race entry, event materials, and on-course support, the portion of any payment that is deductible for tax purposes may be limited to the amount by which the payment exceeds the value of those benefits. Any separate voluntary donation will be treated separately for applicable tax purposes. The Organizer does not provide tax advice, and each Participant is responsible for determining the tax treatment of the Participant\u2019s own payment.',
+        text: 'The Organizer is a Utah nonprofit corporation. The Organizer accepts the registration amount as a charitable donation in support of its mission of assisting local families affected by cancer, and uses the proceeds of the Event at the discretion of its board of directors for that charitable purpose. Because a Participant also receives goods and services in connection with the Event, including race entry, event materials, and on-course support, the portion of any payment that is deductible for tax purposes may be limited to the amount by which the payment exceeds the value of those benefits. Any separate voluntary donation will be treated separately for applicable tax purposes. The Organizer does not provide tax advice, and each Participant is responsible for determining the tax treatment of the Participant\u2019s own payment.',
       },
       {
         id: '9.3',

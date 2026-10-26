@@ -19,7 +19,7 @@ import { PARTNER_NAME_MAX_CHARS, capturePartner } from '@/lib/partner';
 import { captureSource, readSource } from '@/lib/qrSource';
 import { RACES, RACE_KEYS, type RaceKey } from '@/lib/races';
 import {
-  BENEFICIARY_NAME,
+  PROCEEDS_TO,
   BENEFICIARY_FIRST_NAME,
   BENEFICIARY_BANDANA,
   GIVE_WHAT_YOU_CAN,
@@ -506,7 +506,7 @@ function StepAthleteInfo({
               every donation goes to the beneficiary, and for these it's split. */}
           <p id="partnerOrg-split" className="mt-2 font-body text-xs text-ash">
             Name one and your donation is split {100 - PARTNER_SHARE_PERCENT}/{PARTNER_SHARE_PERCENT}{' '}
-            between {BENEFICIARY_FIRST_NAME} and that partner.
+            between {PROCEEDS_TO} and that partner.
           </p>
         </div>
       )}
@@ -654,8 +654,8 @@ function StepAthleteInfo({
         />
         <p id="donation-amount-hint" className="mt-2 font-body text-xs text-ash">
           {formData.partnerOrg.trim()
-            ? `Tax-deductible, and split ${100 - PARTNER_SHARE_PERCENT}/${PARTNER_SHARE_PERCENT} between ${BENEFICIARY_FIRST_NAME} and the partner you named.`
-            : `Tax-deductible, and 100% goes to ${BENEFICIARY_FIRST_NAME}.`}{' '}
+            ? `Tax-deductible, and split ${100 - PARTNER_SHARE_PERCENT}/${PARTNER_SHARE_PERCENT} between ${PROCEEDS_TO} and the partner you named.`
+            : `Tax-deductible, and 100% goes to ${PROCEEDS_TO}.`}{' '}
           Money tight? We&rsquo;d rather have you there.
         </p>
         {donationAmount < MIN_DONATION_DOLLARS && (
@@ -903,7 +903,7 @@ function PaymentForm({
               ${donationAmount}
             </p>
             <p className="mt-2 font-body text-sm leading-snug text-ash">
-              to <span className="font-semibold text-ink">{BENEFICIARY_NAME}</span>
+              to <span className="font-semibold text-ink">{PROCEEDS_TO}</span>
               {participantCount > 1 && <> for {participantCount} athletes</>}.
             </p>
 

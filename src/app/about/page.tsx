@@ -72,7 +72,7 @@ export default function AboutPage() {
       <section id="brooks" aria-labelledby="brooks-heading" className="overflow-hidden border-y border-line bg-mist py-20">
         <div className="mx-auto max-w-3xl px-6">
           <h2 id="brooks-heading" className="mb-8 font-display text-3xl uppercase text-ink">
-            Who we&rsquo;re racing for: {BENEFICIARY_NAME}
+            Who we race in honor of: {BENEFICIARY_NAME}
           </h2>
           <div className="flex flex-col items-start gap-8 sm:flex-row">
             <Image
@@ -98,14 +98,16 @@ export default function AboutPage() {
           <h2 className="mb-6 font-display text-3xl uppercase text-ink">Where the money goes</h2>
           <div className="rounded-card border-2 border-pink bg-blush p-8">
             <p className="mb-4 font-display text-2xl uppercase text-ink">
-              100% goes to {BENEFICIARY_FIRST_NAME}
+              100% goes to families fighting cancer
             </p>
             <p className="font-body text-sm leading-relaxed text-ash">
               {IMPACT_SPONSOR_LINE} None of it goes to race expenses.
             </p>
             <p className="mt-4 font-body text-xs text-ash">
               {ORG_NAME} is a 501(c)(3) nonprofit (EIN {ORG_EIN}). Donations are tax-deductible to
-              the extent allowed by law.
+              the extent allowed by law. Donations are pooled and used at the board&rsquo;s discretion
+              for our charitable purpose, so gifts can&rsquo;t be designated for a specific individual
+              or family.
             </p>
           </div>
         </section>

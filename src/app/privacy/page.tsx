@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { CONTACT_PHONE, CONTACT_EMAIL, EVENT_YEAR, BENEFICIARY_NAME, BENEFICIARY_FIRST_NAME, PROCEEDS_TO, ORG_NAME } from '@/config/site';
+import { CONTACT_PHONE, CONTACT_EMAIL, EVENT_YEAR, BENEFICIARY_FIRST_NAME, ORG_NAME } from '@/config/site';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -24,7 +24,7 @@ export default function PrivacyPage() {
           <p className="font-body text-base leading-relaxed text-ash">
             {ORG_NAME} (&ldquo;we,&rdquo; &ldquo;our,&rdquo; &ldquo;us&rdquo;) respects your privacy. This policy
             explains what information we collect when you use this website, how we use it, and
-            your rights. All donations collected through this event benefit {BENEFICIARY_NAME}.
+            your rights. All donations collected through this event are used for our charitable purpose of supporting local families fighting cancer.
           </p>
         </section>
 
@@ -65,7 +65,7 @@ export default function PrivacyPage() {
           </p>
           <ul className="mt-4 space-y-3 font-body text-base text-ash">
             {[
-              `${PROCEEDS_TO} — any note you write for ${BENEFICIARY_FIRST_NAME} when you register, printed in a book exactly as you wrote it. Nothing else about you goes with it.`,
+              `Brooks and the Limb family — any note you write for ${BENEFICIARY_FIRST_NAME} when you register, printed in a book exactly as you wrote it. Nothing else about you goes with it.`,
               'Stripe — our payment processor, which securely handles payments and stores our waitlist and registration records.',
               'Race logistics providers (timing company, check-in) — limited to name and bib information necessary for event operations.',
               'Law enforcement or legal authorities — only when required by law.',

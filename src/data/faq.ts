@@ -64,7 +64,7 @@ export const faqs: FAQItem[] = [
   },
   {
     question: "What's included with registration?",
-    answer: `Every participant gets a race bib and a bandana in the color of the cancer they choose to run for. You pick your color when you register, and both are waiting for you at check-in. There are no shirts or medals — we'd rather that money go to ${BENEFICIARY_FIRST_NAME}.`,
+    answer: `Every participant gets a race bib and a bandana in the color of the cancer they choose to run for. You pick your color when you register, and both are waiting for you at check-in. There are no shirts or medals — we'd rather that money go to ${PROCEEDS_TO}.`,
   },
   {
     question: "What is the refund policy?",
@@ -84,7 +84,7 @@ export const faqs: FAQItem[] = [
   },
   {
     question: "Is my donation tax-deductible?",
-    answer: `Yes. ${ORG_NAME} is a registered 501(c)(3) nonprofit (EIN ${ORG_EIN}), and your registration donation is tax-deductible to the extent allowed by law. Your receipt is emailed to you after you register.`,
+    answer: `Yes. ${ORG_NAME} is a registered 501(c)(3) nonprofit (EIN ${ORG_EIN}), and your registration donation is tax-deductible to the extent allowed by law. Donations are pooled and used at the board's discretion for our charitable purpose, so gifts can't be designated for a specific individual or family. Your receipt is emailed to you after you register.`,
   },
   {
     question: "Is this a timed race?",

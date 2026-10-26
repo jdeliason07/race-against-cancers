@@ -21,7 +21,7 @@ export const BENEFICIARY_BANDANA    = "Leukemia";
 // Where the money ends up, as it reads mid-sentence: "100% goes to ___".
 // Kept apart from the name so the race can stay "for Brooks" if the proceeds
 // are ever routed through a hospital or foundation instead.
-export const PROCEEDS_TO            = "Brooks and the Limb family";
+export const PROCEEDS_TO            = "local families fighting cancer";
 
 // --- EVENT --------------------------------------------------
 // The registered entity name, in full. There is no corporate suffix — the
@@ -133,7 +133,7 @@ export const IMPACT_HEADLINE = `100% of every donation goes to ${PROCEEDS_TO}`;
 // The one-line explanation of why "100%" is true. Shown on the home page,
 // About, and the FAQ — keep them saying the same thing.
 export const IMPACT_SPONSOR_LINE =
-  `Our sponsors cover the cost of the race, so 100% of every donation goes straight to ${PROCEEDS_TO}.`;
+  "Our sponsors cover the cost of the race, so 100% of every donation goes to local families facing the cost of cancer treatment. Our board selects recipient families based on financial need and active treatment, and wherever possible we pay medical bills and treatment costs directly.";
 
 // --- CARD PROCESSING FEE ------------------------------------
 // Stripe keeps 2.9% + $0.30 of every card charge. Rather than letting that come
@@ -267,4 +267,4 @@ export const SOCIAL_YOUTUBE   = "[[https://youtube.com/@YOURCHANNEL]]";
 // Used by sitemap, robots.txt, metadataBase, and JSON-LD schema.
 export const SITE_URL         = "https://raceagainstcancers.org";
 export const META_DESCRIPTION =
-  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & 1-Mile Walk at Riverview Park in Provo, Utah on ${EVENT_DATE_DISPLAY}, benefiting ${BENEFICIARY_NAME}, ${BENEFICIARY_DESCRIPTION}. Tax-deductible. Suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} — any donation of $${MIN_DONATION_DOLLARS} or more gets you in.`;
+  `Run for a reason. ${EVENT_NAME} — a 10K, 5K & 1-Mile Walk at Riverview Park in Provo, Utah on ${EVENT_DATE_DISPLAY}, benefiting ${PROCEEDS_TO}, in honor of ${BENEFICIARY_NAME}, ${BENEFICIARY_DESCRIPTION}. Tax-deductible. Suggested donations: 10K $${RECOMMENDED_DONATION_AMOUNT}, 5K $${RECOMMENDED_DONATION_5K}, 1-Mile Walk $${RECOMMENDED_DONATION_FUN_RUN} — any donation of $${MIN_DONATION_DOLLARS} or more gets you in.`;
