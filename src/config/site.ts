@@ -16,7 +16,7 @@ export const BENEFICIARY_FIRST_NAME = "Brooks";
 export const BENEFICIARY_DESCRIPTION = "a five-year-old fighting leukemia";
 // The bandana on the registration form that gets a "For Brooks" tag, and the
 // one the home page asks runners to wear. Must match a label in the bandana
-// list in src/app/register/RegisterFlow.tsx.
+// list in src/data/bandanas.ts.
 export const BENEFICIARY_BANDANA    = "Leukemia";
 // Where the money ends up, as it reads mid-sentence: "100% goes to ___".
 // Kept apart from the name so the race can stay "for Brooks" if the proceeds
@@ -197,6 +197,17 @@ export const REFERRAL_REWARD_LOGO: string = "";
 export const REFERRAL_REWARD_LOGO_ALT = "";
 export const REFERRAL_REWARD_LOGO_WIDTH = 512;
 export const REFERRAL_REWARD_LOGO_HEIGHT = 512;
+
+// --- NONPROFIT PARTNERS -------------------------------------
+// Nonprofits promoting the race, who split the donations of the runners they
+// bring in with us. Registration asks, in an optional box, whether the
+// registrant is affiliated with one — the question names the first partner
+// listed here. The /admin dashboard tallies the answers by partner and prices
+// each partner's cut at PARTNER_SHARE_PERCENT of those donations.
+// Empty the list to remove the question site-wide.
+export const NONPROFIT_PARTNERS: string[] = ["Gather for Good"];
+export const PARTNERS_ENABLED = NONPROFIT_PARTNERS.length > 0;
+export const PARTNER_SHARE_PERCENT = 50;
 
 // --- SPONSORS ----------------------------------------------
 // The scrolling logo banner under the Intermountain strip on the home page.

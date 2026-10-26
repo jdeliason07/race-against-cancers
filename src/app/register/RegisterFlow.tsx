@@ -15,6 +15,7 @@ import { submitCompRegistration } from './comp-actions';
 import { ADULT_AGE } from '@/lib/utils';
 import { normalizePhone } from '@/lib/phone';
 import { BENEFICIARY_NOTE_MAX_CHARS } from '@/lib/beneficiaryNote';
+import { PARTNER_NAME_MAX_CHARS } from '@/lib/partner';
 import { captureSource, readSource } from '@/lib/qrSource';
 import { RACES, RACE_KEYS, type RaceKey } from '@/lib/races';
 import {
@@ -24,9 +25,13 @@ import {
   GIVE_WHAT_YOU_CAN,
   MAX_PARTICIPANTS_PER_REGISTRATION,
   MIN_DONATION_DOLLARS,
+  NONPROFIT_PARTNERS,
+  ORG_NAME,
+  PARTNERS_ENABLED,
   REFERRAL_ENABLED,
   STRIPE_FEE_LABEL,
 } from '@/config/site';
+import { BANDANAS } from '@/data/bandanas';
 import { ReferralRewardCallout } from '@/components/ui/ReferralReward';
 import { WaiverText } from '@/components/legal/WaiverText';
 import {
@@ -95,6 +100,8 @@ interface FormData {
   // Only asked for when the athlete is under 18 on race day.
   guardianName: string;
   referredByName: string;
+  // Optional — which nonprofit partner, if any, they're affiliated with.
+  partnerOrg: string;
   // Optional, for this year's beneficiary — printed into a book for him.
   beneficiaryNote: string;
 }
@@ -184,17 +191,6 @@ function StepRaceSelection({
     </div>
   );
 }
-
-const bandanaOptions = [
-  { label: 'Breast Cancer',     color: '#F0307A' },
-  { label: 'Leukemia',          color: '#DC2626' },
-  { label: 'Pancreatic Cancer', color: '#9333EA' },
-  { label: 'Colon Cancer',      color: '#2563EB' },
-  { label: 'Melanoma',          color: '#111111' },
-  { label: 'Childhood Cancer',  color: '#EAB308' },
-  { label: 'Lung Cancer',       color: '#9CA3AF' },
-  { label: 'Lymphoma',          color: '#16A34A' },
-];
 
 // Step 2 — Athlete Info + Donation + Waiver
 function StepAthleteInfo({
@@ -480,6 +476,33 @@ function StepAthleteInfo({
         </ReferralRewardCallout>
       )}
 
+      {/* Partners split the donations of the runners they bring in, so this is
+          attribution like the referral box — tallied by partner on /admin.
+          Free text, because "any other partner" can't be a fixed list. */}
+      {PARTNERS_ENABLED && !isComp && (
+        <div className="mb-6">
+          <label htmlFor="partnerOrg" className={labelClass}>
+            Nonprofit partner <span className="font-normal normal-case tracking-normal">(optional)</span>
+          </label>
+          <p id="partnerOrg-question" className="mb-2 font-body text-sm text-ash">
+            Are you affiliated with {NONPROFIT_PARTNERS[0]} or any other nonprofit partner of{' '}
+            {ORG_NAME}? If so, which one?
+          </p>
+          <input
+            id="partnerOrg"
+            type="text"
+            maxLength={PARTNER_NAME_MAX_CHARS}
+            value={formData.partnerOrg}
+            onChange={update('partnerOrg')}
+            className={inputClass}
+            // Not "organization": the browser would fill in their employer.
+            autoComplete="off"
+            placeholder={`e.g. ${NONPROFIT_PARTNERS[0]}`}
+            aria-describedby="partnerOrg-question"
+          />
+        </div>
+      )}
+
       {/* Bandana color */}
       <div className="mb-6">
         <p id="bandana-label" className="font-body text-xs font-bold uppercase tracking-widest text-ash mb-3">
@@ -488,7 +511,7 @@ function StepAthleteInfo({
             : 'Which color bandana will you race with?'}
         </p>
         <div role="group" aria-labelledby="bandana-label" className="grid grid-cols-2 gap-2">
-          {bandanaOptions.map((opt) => {
+          {BANDANAS.map((opt) => {
             const selected = bandanaColor === opt.label;
             return (
               <button
@@ -1058,6 +1081,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
     phone: '',
     guardianName: '',
     referredByName: '',
+    partnerOrg: '',
     beneficiaryNote: '',
   });
   const [isAdult, setIsAdult] = useState<AdultAnswer>(null);
@@ -1124,6 +1148,7 @@ export function RegisterFlow({ comp }: { comp?: { code: string } }) {
         waiverAgreed,
         referredByName: formData.referredByName,
         qrSource: readSource(),
+        partnerOrg: formData.partnerOrg,
         beneficiaryNote: formData.beneficiaryNote,
       });
       if ('error' in result) {

@@ -6,7 +6,9 @@ import {
   eventTagOf, intentOf, recordedDonationCentsOf,
 } from '@/lib/stripeRegistration';
 import { COMP_SOURCE } from '@/lib/compRegistration';
+import { partnerGroupOf } from '@/lib/partner';
 import { EVENT_NAME } from '@/config/site';
+import { BANDANAS } from '@/data/bandanas';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -63,6 +65,34 @@ export interface PersonRow {
   covered?: boolean;
 }
 
+export interface BandanaCount {
+  label: string;
+  /** The swatch, or null for a label the form no longer offers. */
+  color: string | null;
+  /** Bandanas to hand out — one per athlete, so a group of six counts six. */
+  athletes: number;
+  registrations: number;
+}
+
+/** One paid registration that named a partner. */
+export interface PartnerSupporter {
+  name: string;
+  athletes: number;
+  /** Its donation in cents, net of refunds and without the card fee. */
+  donationCents: number;
+}
+
+export interface PartnerRow {
+  /** As listed in NONPROFIT_PARTNERS, or as first typed for anyone else. */
+  name: string;
+  registrations: number;
+  athletes: number;
+  /** What those registrations donated, in cents — the amount the split is taken from. */
+  donationCents: number;
+  /** Newest first. */
+  supporters: PartnerSupporter[];
+}
+
 export interface AdminStats {
   /** `people` is every row, newest first — the UI decides how many to show. */
   waitlist: { total: number; newThisWeek: number; people: PersonRow[]; series: Series };
@@ -76,6 +106,14 @@ export interface AdminStats {
     covered: number;
     /** Completed registrations that left a note for the book at /admin/notes. */
     notes: number;
+    /**
+     * Every color on the form in its order, zeros included, then any retired
+     * label. Paid registrations are counted off their PaymentIntents, like the
+     * partner tally below, so a group organizer who registers again doesn't
+     * replace the first group's bandanas; covered entries, which have no
+     * payment, off their customer records.
+     */
+    bandanas: BandanaCount[];
     people: PersonRow[];
     series: Series;
   };
@@ -91,6 +129,34 @@ export interface AdminStats {
     payingRegistrations: number;
     series: Series;
   };
+  /**
+   * Paid registrations that named a nonprofit partner, grouped by partner and
+   * read off the PaymentIntents rather than the customers: a customer record
+   * keeps only its latest registration, and a group organizer who comes back
+   * to register themselves would otherwise lose the first one's donation.
+   */
+  partners: { rows: PartnerRow[]; registrations: number; donationCents: number };
+}
+
+/** The bandana counts in the form's order, with any retired label after them. */
+function bandanaList(counts: Map<string, { athletes: number; registrations: number }>): BandanaCount[] {
+  const offered = BANDANAS.map(({ label, color }) => ({
+    label,
+    color,
+    athletes: counts.get(label)?.athletes ?? 0,
+    registrations: counts.get(label)?.registrations ?? 0,
+  }));
+  const offeredLabels = new Set(BANDANAS.map((b) => b.label));
+  const retired = [...counts]
+    .filter(([label]) => !offeredLabels.has(label))
+    .map(([label, count]) => ({ label, color: null, ...count }))
+    .sort((a, b) => b.athletes - a.athletes);
+  return [...offered, ...retired];
+}
+
+function supporterName(intent: Stripe.PaymentIntent): string {
+  const name = [intent.metadata.firstName, intent.metadata.lastName].filter(Boolean).join(' ');
+  return name || intent.receipt_email || '(no name)';
 }
 
 function startOfDay(ms: number): Date {
@@ -214,6 +280,16 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
   let covered = 0;
   let notes = 0;
 
+  const bandanaCounts = new Map<string, { athletes: number; registrations: number }>();
+  const countBandana = (label: string | undefined, athleteCount: number) => {
+    const key = label?.trim();
+    if (!key) return;
+    const count = bandanaCounts.get(key) ?? { athletes: 0, registrations: 0 };
+    count.athletes += athleteCount;
+    count.registrations++;
+    bandanaCounts.set(key, count);
+  };
+
   const customerPass = eachEventCustomer(stripe, (customer) => {
     const meta = customer.metadata ?? {};
 
@@ -229,6 +305,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       if (registeredMs !== null) registrationEvents.push({ ms: registeredMs, value: 1 });
 
       athletes += athleteCountOf(customer);
+      if (isCovered) countBandana(meta.bandanaColor, athleteCountOf(customer));
 
       if (meta.raceType === 'fun-run') funRun++;
       else if (meta.raceType === '5k') fiveK++;
@@ -251,6 +328,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
   let refundedCents = 0;
   let thisWeekCents = 0;
   let payingRegistrations = 0;
+  const partners = new Map<string, PartnerRow>();
 
   const chargePass = eachAccountCharge(stripe, (charge) => {
     if (charge.status !== 'succeeded') return;
@@ -277,6 +355,26 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
     if (isRegistration) {
       registrationCents += net;
       if (net > 0) payingRegistrations++;
+      // Refunded in full, they aren't coming — and there is nothing to split.
+      if (net > 0) countBandana(intent.metadata.bandanaColor, athleteCountOf(intent));
+
+      const answer = intent.metadata.partnerOrg?.trim();
+      if (answer && net > 0) {
+        const group = partnerGroupOf(answer);
+        const row = partners.get(group.key) ?? {
+          name: group.name,
+          registrations: 0,
+          athletes: 0,
+          donationCents: 0,
+          supporters: [],
+        };
+        const athleteCount = athleteCountOf(intent);
+        row.registrations++;
+        row.athletes += athleteCount;
+        row.donationCents += net;
+        row.supporters.push({ name: supporterName(intent), athletes: athleteCount, donationCents: net });
+        partners.set(group.key, row);
+      }
     } else {
       otherCents += net;
     }
@@ -290,6 +388,11 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
 
   waitlist.sort(byNewest);
   registrations.sort(byNewest);
+
+  // Charges list newest first, so each partner's supporters already are.
+  const partnerRows = [...partners.values()].sort(
+    (a, b) => b.donationCents - a.donationCents || b.registrations - a.registrations,
+  );
 
   const [waitlistSeries, registrationSeries, moneySeries] = buildSeriesSet(
     [waitlistEvents, registrationEvents, paymentEvents],
@@ -312,6 +415,7 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       funRun,
       covered,
       notes,
+      bandanas: bandanaList(bandanaCounts),
       people: registrations,
       series: registrationSeries,
     },
@@ -323,6 +427,11 @@ export async function buildAdminStats(stripe: Stripe): Promise<AdminStats> {
       thisWeekCents,
       payingRegistrations,
       series: moneySeries,
+    },
+    partners: {
+      rows: partnerRows,
+      registrations: partnerRows.reduce((sum, row) => sum + row.registrations, 0),
+      donationCents: partnerRows.reduce((sum, row) => sum + row.donationCents, 0),
     },
   };
 }

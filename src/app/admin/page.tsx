@@ -1,8 +1,11 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import {
+  BENEFICIARY_BANDANA,
   BENEFICIARY_FIRST_NAME,
   CONTACT_EMAIL,
+  PARTNER_SHARE_PERCENT,
+  PARTNERS_ENABLED,
   REFERRAL_ENABLED,
   REFERRAL_MIN_DONATION_DOLLARS,
   REFERRAL_REWARD,
@@ -52,6 +55,11 @@ function raisedSub(money_: AdminStats['money']): string {
   if (money_.refundedCents > 0) parts.push(`${money(money_.refundedCents)} refunded`);
   parts.push(`${money(money_.thisWeekCents)} this week`);
   return parts.join(' · ');
+}
+
+/** A partner's cut of the donations credited to it, in cents. */
+function partnerShareCents(donationCents: number): number {
+  return Math.round((donationCents * PARTNER_SHARE_PERCENT) / 100);
 }
 
 function Stat({
@@ -170,6 +178,115 @@ async function StripePanels() {
             sub="claimed via invite link"
           />
         </div>
+      )}
+
+      {stats.registrations.total > 0 && (
+        <Panel title="Bandanas">
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {stats.registrations.bandanas.map((bandana) => (
+              <li
+                key={bandana.label}
+                className="flex items-center gap-3 rounded-card border border-line p-4"
+              >
+                <span
+                  aria-hidden="true"
+                  className="h-8 w-8 shrink-0 rounded-full border border-line"
+                  style={{ backgroundColor: bandana.color ?? 'transparent' }}
+                />
+                <div className="min-w-0">
+                  <p className="font-display text-2xl leading-none text-ink">
+                    {bandana.athletes.toLocaleString()}
+                  </p>
+                  <p className="mt-1 font-body text-xs text-ash">
+                    {bandana.label}
+                    {bandana.label === BENEFICIARY_BANDANA && ` · for ${BENEFICIARY_FIRST_NAME}`}
+                    {bandana.color === null && ' · no longer offered'}
+                  </p>
+                  {bandana.registrations !== bandana.athletes && (
+                    <p className="font-body text-xs text-ash">
+                      across {bandana.registrations}{' '}
+                      {bandana.registrations === 1 ? 'registration' : 'registrations'}
+                    </p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 font-body text-xs text-ash">
+            One bandana per athlete: a group registration picks one color for all of its athletes.
+            Covered entries are included; registrations refunded in full are not.
+          </p>
+        </Panel>
+      )}
+
+      {PARTNERS_ENABLED && (
+        <Panel title="Nonprofit partners">
+          {stats.partners.rows.length > 0 ? (
+            <>
+              <p className="mb-4 font-body text-sm text-ash">
+                <span className="mr-2 font-display text-3xl leading-none text-ink">
+                  {stats.partners.registrations.toLocaleString()}
+                </span>
+                paid {stats.partners.registrations === 1 ? 'registration' : 'registrations'} named
+                a partner, donating {exactMoney(stats.partners.donationCents)} —{' '}
+                <span className="font-bold text-ink">
+                  {exactMoney(partnerShareCents(stats.partners.donationCents))}
+                </span>{' '}
+                is the partners&rsquo; {PARTNER_SHARE_PERCENT}%.
+              </p>
+              <ul className="divide-y divide-line rounded-card border border-line">
+                {stats.partners.rows.map((row) => (
+                  <li key={row.name} className="px-4 py-3">
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                      <span className="font-body text-sm font-bold text-ink">{row.name}</span>
+                      <span className="font-body text-xs text-ash">
+                        {row.registrations} {row.registrations === 1 ? 'registration' : 'registrations'}
+                        {row.athletes !== row.registrations && ` · ${row.athletes} athletes`} ·{' '}
+                        {exactMoney(row.donationCents)} donated ·{' '}
+                        <span className="font-bold text-pink">
+                          {exactMoney(partnerShareCents(row.donationCents))} their{' '}
+                          {PARTNER_SHARE_PERCENT}%
+                        </span>
+                      </span>
+                    </div>
+                    {/* Who, for checking the list with the partner before
+                        settling up. Collapsed: it can run to hundreds. */}
+                    <details className="mt-2">
+                      <summary className="cursor-pointer font-body text-xs text-pink">
+                        Who named them
+                      </summary>
+                      <ul className="mt-2 space-y-1 border-l-2 border-line pl-3">
+                        {row.supporters.map((supporter, i) => (
+                          <li
+                            key={`${supporter.name}-${i}`}
+                            className="flex items-baseline justify-between gap-3 font-body text-xs text-ash"
+                          >
+                            <span className="min-w-0 truncate">
+                              {supporter.name}
+                              {supporter.athletes > 1 && ` × ${supporter.athletes}`}
+                            </span>
+                            <span className="shrink-0">{exactMoney(supporter.donationCents)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 font-body text-xs text-ash">
+                Typed by registrants and not verified. An answer containing a listed partner&rsquo;s
+                name counts for that partner; anything else is shown as typed. Donations are net of
+                refunds and leave out the card fee.
+              </p>
+            </>
+          ) : (
+            <p className="font-body text-sm text-ash">
+              No paid registration has named a partner yet. Answers to the &ldquo;Nonprofit
+              partner&rdquo; box on the registration form show up here once that registration is
+              paid.
+            </p>
+          )}
+        </Panel>
       )}
 
       {!REGISTRATION_OPEN && (

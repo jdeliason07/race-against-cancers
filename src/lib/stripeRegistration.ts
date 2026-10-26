@@ -83,9 +83,11 @@ export function recordedDonationCentsOf(customer: Stripe.Customer): number | nul
  * One person can register and pay for a group, so the count of registrations
  * and the count of runners are different numbers. Metadata is free-form, so a
  * missing or nonsense value falls back to the single athlete we know about.
+ *
+ * Takes the customer or the PaymentIntent it paid with — both carry the count.
  */
-export function athleteCountOf(customer: Stripe.Customer): number {
-  const count = Number.parseInt(customer.metadata?.participantCount ?? '1', 10);
+export function athleteCountOf(record: { metadata: Stripe.Metadata | null }): number {
+  const count = Number.parseInt(record.metadata?.participantCount ?? '1', 10);
   return Number.isInteger(count) && count > 0 ? count : 1;
 }
 

@@ -70,6 +70,10 @@ async function recordSuccessfulRegistration(
       // report counts these records, never a running tally, so a duplicate
       // webhook delivery can't inflate anyone's total.
       referredByName: intent.metadata.referredByName ?? '',
+      // Kept on the customer so the Stripe Dashboard shows it too; the
+      // dashboard's partner tally reads the PaymentIntent. Written only when
+      // there is one, for the same reason as the note below.
+      ...(intent.metadata.partnerOrg ? { partnerOrg: intent.metadata.partnerOrg } : {}),
       // The note for the book at /admin/notes. Written only when there is one:
       // Stripe deletes a key set to '', and a group organizer coming back to
       // register themselves shouldn't wipe the note they left the first time.
