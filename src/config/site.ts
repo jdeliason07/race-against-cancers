@@ -221,17 +221,8 @@ export const PARTNERS_ENABLED = NONPROFIT_PARTNERS.length > 0;
 export const PARTNER_SHARE_PERCENT = 50;
 
 // --- SPONSORS ----------------------------------------------
-// The scrolling logo banner under the Intermountain strip on the home page.
-// Drop each logo in public/images/sponsors/ and point `logo` at it. A sponsor
-// without a logo shows its name instead. `url` is optional. Empty list = the
-// banner is hidden.
-export const SPONSORS: { name: string; logo: string; url: string }[] = [
-  { name: "Fat Daddy's Pizzeria", logo: "/images/sponsors/fat-daddys-pizzeria.png", url: "https://fatdaddyspizzeria.com/" },
-  { name: "Rockwell Ice Cream",   logo: "/images/sponsors/rockwell-ice-cream.png",  url: "https://rockwellicecream.com/" },
-  { name: "Moxie Pest Control",   logo: "/images/sponsors/moxie-pest-control.png",  url: "https://moxieservices.com/locations/salt-lake-city/" },
-  { name: "WealthWave",           logo: "/images/sponsors/wealthwave.png",          url: "https://wealthwave.com/" },
-  { name: "Owala",                logo: "/images/sponsors/owala.png",               url: "https://owalalife.com/" },
-];
+// Sponsors live in src/data/sponsors.ts: name, logo, link, tier, owner quote,
+// and race-day moment, read by every sponsor section on the site.
 
 // --- TEAM -------------------------------------------------
 // Shown in "Who we are" on the About page. Add a photo by dropping the file in

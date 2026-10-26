@@ -8,8 +8,10 @@ import {
   RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K, RECOMMENDED_DONATION_FUN_RUN,
   GIVE_WHAT_YOU_CAN,
 } from '@/config/site';
-import { MapPin, Clock, Package, Download, Heart } from 'lucide-react';
+import { MapPin, Clock, Package, Download, Heart, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import { SponsorLogo } from '@/components/ui/SponsorLogo';
+import { SPONSOR_MOMENTS } from '@/data/sponsors';
 import { RegistrationTeaser } from '@/components/ui/RegistrationTeaser';
 import type { Metadata } from 'next';
 
@@ -136,6 +138,28 @@ export default function RaceDetailsPage() {
             </div>
           </dl>
         </section>
+
+        {/* Race-day moments — each one credited to the sponsor who provides
+            it, from the `moment` field in src/data/sponsors.ts. */}
+        {SPONSOR_MOMENTS.length > 0 && (
+          <section>
+            <div className="mb-2 flex items-center gap-3">
+              <Sparkles size={22} className="shrink-0 text-pink" aria-hidden="true" />
+              <h2 className="font-display text-3xl uppercase text-ink">Race-Day Moments</h2>
+            </div>
+            <p className="mb-6 font-body text-sm text-ash">
+              Around the loop and at the finish, courtesy of our sponsors.
+            </p>
+            <ul className="grid gap-4 sm:grid-cols-3">
+              {SPONSOR_MOMENTS.map((s) => (
+                <li key={s.name} className="flex items-center gap-4 rounded-card border border-line bg-mist p-5 sm:flex-col sm:items-start">
+                  <SponsorLogo sponsor={s} tile className="h-14 w-24 p-2" />
+                  <p className="font-display text-xl uppercase leading-tight text-ink">{s.moment}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* The course */}
         <section>

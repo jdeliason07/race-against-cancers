@@ -25,6 +25,7 @@ export function FooterLinks({ children }: { children: React.ReactNode }) {
         <Link href="/register" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">{REGISTRATION_OPEN ? 'Register' : 'Join the Waitlist'}</Link>
         <Link href="/race-details" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">Race Details</Link>
         <Link href="/volunteer" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">Volunteer</Link>
+        <Link href="/sponsors" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">Our Sponsors</Link>
         <Link href="/sponsor" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">Sponsor</Link>
         <Link href="/faq" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">FAQ</Link>
         <Link href="/about" className="font-body text-xs text-ash hover:text-pink transition-colors uppercase tracking-widest">About</Link>

@@ -1,10 +1,11 @@
 import Image from 'next/image';
-import { SPONSORS } from '@/config/site';
+import Link from 'next/link';
+import { SPONSORS } from '@/data/sponsors';
 
 /**
  * Sideways-scrolling sponsor logos. The list is repeated so the strip is
  * always wider than the screen, then doubled so the CSS loop is seamless.
- * Renders nothing until SPONSORS in site.ts has entries.
+ * Renders nothing until SPONSORS in src/data/sponsors.ts has entries.
  */
 export function SponsorMarquee() {
   if (SPONSORS.length === 0) return null;
@@ -50,6 +51,14 @@ export function SponsorMarquee() {
           })}
         </ul>
       </div>
+      <p className="mt-6 text-center">
+        <Link
+          href="/sponsors"
+          className="font-body text-xs font-bold uppercase tracking-widest text-pink underline decoration-petal underline-offset-4 transition-colors hover:text-raspberry"
+        >
+          Meet our sponsors
+        </Link>
+      </p>
     </section>
   );
 }
