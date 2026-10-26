@@ -174,9 +174,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* WHO WE RACE FOR — told a line at a time: who Brooks is, what cancer
-          has taken, the honest part, then the turn, which the photos prove.
-          The ask comes last. Words and photos live in src/data/brooks.ts. */}
+      {/* WHO WE RACE FOR — who Brooks is, then straight to the photos. The ask
+          comes last. Words and photos live in src/data/brooks.ts. */}
       <section id="brooks" aria-labelledby="brooks-heading" className="overflow-clip border-y border-line bg-mist py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="rule-line mb-10">
@@ -206,23 +205,6 @@ export default async function HomePage() {
         <div className="mx-auto mt-14 max-w-3xl px-6 text-center">
           <p className="reveal text-balance font-body text-xl font-semibold leading-snug text-ink md:text-2xl">
             {BROOKS_STORYLINE.intro}
-          </p>
-
-          <p className="reveal section-label mb-5 mt-14">{BROOKS_STORYLINE.takenLabel}</p>
-          <ul className="space-y-3 md:space-y-4">
-            {BROOKS_STORYLINE.taken.map((line) => (
-              <li key={line} className="reveal text-balance font-display text-[clamp(34px,6.5vw,68px)] uppercase leading-[1.08] text-ink">
-                {line}
-              </li>
-            ))}
-          </ul>
-
-          <p className="reveal mx-auto mt-12 max-w-xl font-body text-base leading-relaxed text-ash md:text-lg">
-            {BROOKS_STORYLINE.truth}
-          </p>
-
-          <p className="reveal mt-12 text-balance font-display text-[clamp(40px,8vw,92px)] uppercase leading-[0.95] text-pink">
-            {BROOKS_STORYLINE.turn}
           </p>
         </div>
 

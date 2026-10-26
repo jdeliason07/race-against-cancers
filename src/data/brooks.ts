@@ -38,19 +38,10 @@ export const BROOKS_BADGE = braveBuddy;
 // not an import — that image is drawn on the server, from the file itself.
 export const BROOKS_SHARE_PHOTO = 'cosmo.jpg';
 
-// The home page tells it a line at a time: who Brooks is, what cancer has
-// taken, the honest part, then the turn — and the photos prove it. The ask
-// comes after the photos.
+// The home page: who Brooks is, then straight to the photos. The ask comes
+// after the photos.
 export const BROOKS_STORYLINE = {
   intro: 'Brooks is five years old. Six months ago, he was diagnosed with leukemia.',
-  takenLabel: 'Since then, cancer has taken',
-  taken: [
-    'His hair.',
-    'Six months of just being a kid.',
-    'His first day of kindergarten.',
-  ],
-  truth: 'Round after round of treatment, every kind there is. Right now, things are hard — harder than any five-year-old should ever have to know.',
-  turn: "It hasn't taken his smile.",
   ask: "Brooks can't run right now. So on November\u00a07, we'll run for him.",
 };
 
