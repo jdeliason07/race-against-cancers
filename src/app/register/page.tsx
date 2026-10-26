@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import {
   IMPACT_HEADLINE, PROCEEDS_TO, RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K, RECOMMENDED_DONATION_FUN_RUN,
   REGISTRATION_OPEN, REGISTRATION_OPENS_LABEL, GIVE_WHAT_YOU_CAN,
-  BENEFICIARY_FIRST_NAME, NONPROFIT_PARTNERS, PARTNER_SHARE_PERCENT, PARTNERS_ENABLED,
+  NONPROFIT_PARTNERS, PARTNER_SHARE_PERCENT, PARTNERS_ENABLED,
 } from '@/config/site';
 import { RegisterFlow } from './RegisterFlow';
 import { PreSignupForm } from './PreSignupForm';
@@ -98,7 +98,7 @@ function PartnerBlurbs() {
             <p className="mt-2 font-body text-sm leading-relaxed text-ash">
               Here with {partner.name}? Name them in the &ldquo;Nonprofit partner&rdquo; box when
               you register, and your donation is split {100 - PARTNER_SHARE_PERCENT}/
-              {PARTNER_SHARE_PERCENT} between {BENEFICIARY_FIRST_NAME} and {partner.name}.
+              {PARTNER_SHARE_PERCENT} between {PROCEEDS_TO} and {partner.name}.
             </p>
           </div>
         ))}

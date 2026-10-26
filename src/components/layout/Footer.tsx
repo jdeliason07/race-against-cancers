@@ -1,4 +1,4 @@
-import { BENEFICIARY_NAME, EVENT_YEAR, ORG_NAME, ORG_EIN } from '@/config/site';
+import { PROCEEDS_TO, EVENT_YEAR, ORG_NAME, ORG_EIN } from '@/config/site';
 import { FooterLinks } from './FooterLinks';
 
 export function Footer() {
@@ -15,7 +15,7 @@ export function Footer() {
         </div>
 
         {/* Hidden on /register — see FooterLinks. */}
-        <FooterLinks>Benefiting {BENEFICIARY_NAME}</FooterLinks>
+        <FooterLinks>Benefiting {PROCEEDS_TO}</FooterLinks>
 
         <p className="mt-8 text-center font-body text-xs text-ash">
           {ORG_NAME} is a registered 501(c)(3) nonprofit organization. EIN {ORG_EIN}.

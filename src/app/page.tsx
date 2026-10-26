@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {
   EVENT_NAME, EVENT_DATE_DISPLAY, EVENT_DATE_ISO,
-  BENEFICIARY_NAME, BENEFICIARY_FIRST_NAME, BENEFICIARY_DESCRIPTION, BENEFICIARY_BANDANA,
+  BENEFICIARY_NAME, BENEFICIARY_FIRST_NAME, BENEFICIARY_DESCRIPTION, BENEFICIARY_BANDANA, PROCEEDS_TO,
   RECOMMENDED_DONATION_AMOUNT, RECOMMENDED_DONATION_5K,
   RECOMMENDED_DONATION_FUN_RUN,
   TEN_K_LABEL, FIVE_K_LABEL, FUN_RUN_LABEL,
@@ -32,7 +32,7 @@ const eventJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SportsEvent',
   name: EVENT_NAME,
-  description: `A 10K, 5K & 1-Mile Walk charity race benefiting ${BENEFICIARY_NAME}, ${BENEFICIARY_DESCRIPTION}, run as loops of ${EVENT_LOCATION_NAME} in ${EVENT_CITY} on ${EVENT_DATE_DISPLAY}.`,
+  description: `A 10K, 5K & 1-Mile Walk charity race benefiting ${PROCEEDS_TO}, in honor of ${BENEFICIARY_NAME}, ${BENEFICIARY_DESCRIPTION}, run as loops of ${EVENT_LOCATION_NAME} in ${EVENT_CITY} on ${EVENT_DATE_DISPLAY}.`,
   startDate: EVENT_DATE_ISO,
   endDate: '2026-11-07T12:00:00-07:00',
   eventStatus: 'https://schema.org/EventScheduled',
@@ -128,7 +128,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="mt-6 max-w-3xl font-body text-xl font-semibold leading-snug text-ink md:text-2xl">
-            A community run for {BENEFICIARY_NAME}, {BENEFICIARY_DESCRIPTION}.
+            A community run for local families fighting cancer. This year, we run in honor of {BENEFICIARY_NAME}, {BENEFICIARY_DESCRIPTION}.
           </p>
 
           <div className="mt-4 grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)]">
@@ -161,7 +161,7 @@ export default async function HomePage() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="rule-line mb-10">
             <div className="h-px flex-1 bg-petal" aria-hidden="true" />
-            <span className="section-label">This year we race for</span>
+            <span className="section-label">This year we race in honor of</span>
             <div className="h-px flex-1 bg-petal" aria-hidden="true" />
           </div>
 
@@ -299,14 +299,16 @@ export default async function HomePage() {
           <p className="section-label mb-6">Where your donation goes</p>
           <p className="font-display text-[clamp(72px,16vw,160px)] uppercase leading-none text-pink">100%</p>
           <p className="mt-4 font-display text-[clamp(28px,4vw,44px)] uppercase leading-tight text-ink">
-            of every donation goes to {BENEFICIARY_FIRST_NAME}
+            of every donation goes to families fighting cancer
           </p>
           <p className="mx-auto mt-6 max-w-2xl font-body text-base leading-relaxed text-ink">
             {IMPACT_SPONSOR_LINE}
           </p>
           <p className="mx-auto mt-6 max-w-2xl font-body text-sm text-ash">
             {ORG_NAME} is a 501(c)(3) nonprofit (EIN {ORG_EIN}). Your registration donation is
-            tax-deductible to the extent allowed by law.
+            tax-deductible to the extent allowed by law. Donations are pooled and used at the
+            board&rsquo;s discretion for our charitable purpose, so gifts can&rsquo;t be designated
+            for a specific individual or family.
           </p>
         </div>
       </section>
