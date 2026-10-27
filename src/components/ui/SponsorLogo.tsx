@@ -12,11 +12,14 @@ export function SponsorLogo({
   sponsor,
   className,
   tile = false,
+  card = false,
 }: {
   sponsor: Sponsor;
   className?: string;
   /** Sit the logo on a white card with a hairline border. */
   tile?: boolean;
+  /** On a /sponsors card: use the sponsor's `cardLogo` when they have one. */
+  card?: boolean;
 }) {
   return (
     <a
@@ -31,7 +34,7 @@ export function SponsorLogo({
     >
       <span className="relative block h-full w-full">
         <Image
-          src={sponsor.logo}
+          src={card && sponsor.cardLogo ? sponsor.cardLogo : sponsor.logo}
           alt={sponsor.name}
           fill
           sizes="240px"

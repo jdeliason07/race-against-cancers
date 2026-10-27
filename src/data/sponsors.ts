@@ -16,6 +16,9 @@
 //            "Water stations by Owala". "" means they have none.
 //   photo  — a team photo for their /sponsors card, e.g.
 //            "/images/sponsors/team/owala.jpg". "" hides the slot.
+//   cardLogo — optional. A fuller logo for their /sponsors card only, e.g.
+//            one with contact details too small to read anywhere else. Leave
+//            it off and the card uses `logo`.
 //
 // Keep every sponsor mention an acknowledgment, to protect our 501(c)(3)
 // status: name, logo, link, and neutral description only. No quality claims
@@ -33,10 +36,11 @@ export type Sponsor = {
   quote: string;
   moment: string;
   photo: string;
+  cardLogo?: string;
 };
 
 export const SPONSORS: Sponsor[] = [
-  { name: "WealthWave",           logo: "/images/sponsors/wealthwave.png",          url: "https://wealthwave.com/",                             tier: "presenting", quote: "", moment: "",                                           photo: "" },
+  { name: "WealthWave",           logo: "/images/sponsors/wealthwave.png",          url: "https://wealthwave.com/",                             tier: "presenting", quote: "", moment: "",                                           photo: "", cardLogo: "/images/sponsors/wealthwave-contact.png" },
   { name: "Moxie Pest Control",   logo: "/images/sponsors/moxie-pest-control.png",  url: "https://moxieservices.com/locations/salt-lake-city/", tier: "presenting", quote: "", moment: "",                                           photo: "" },
   { name: "Owala",                logo: "/images/sponsors/owala.png",               url: "https://owalalife.com/",                              tier: "presenting", quote: "", moment: "Water stations by Owala",                    photo: "" },
   { name: "Fat Daddy's Pizzeria", logo: "/images/sponsors/fat-daddys-pizzeria.png", url: "https://fatdaddyspizzeria.com/",                      tier: "supporting", quote: "", moment: "Post-race pizza from Fat Daddy's Pizzeria",  photo: "" },

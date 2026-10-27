@@ -46,7 +46,7 @@ export default function SponsorsPage() {
             <ul className="grid gap-6 md:grid-cols-3">
               {PRESENTING_SPONSORS.map((s) => (
                 <li key={s.name} className="flex flex-col rounded-card border-2 border-petal bg-paper p-6">
-                  <SponsorLogo sponsor={s} tile className="h-32 w-full p-5" />
+                  <SponsorLogo sponsor={s} tile card className="h-32 w-full p-5" />
                   <h3 className="mt-6 font-display text-3xl uppercase leading-tight text-ink">{s.name}</h3>
                   <SponsorQuote quote={s.quote} />
                   <TeamPhoto sponsor={s} />
@@ -63,7 +63,7 @@ export default function SponsorsPage() {
             <ul className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2">
               {SUPPORTING_SPONSORS.map((s) => (
                 <li key={s.name} className="flex flex-col gap-4 rounded-card border border-line bg-paper p-5 sm:flex-row sm:items-start">
-                  <SponsorLogo sponsor={s} tile className="h-20 w-full p-3 sm:w-32" />
+                  <SponsorLogo sponsor={s} tile card className="h-20 w-full p-3 sm:w-32" />
                   <div className="flex-1">
                     <h3 className="font-display text-2xl uppercase leading-tight text-ink">{s.name}</h3>
                     <SponsorQuote quote={s.quote} small />
