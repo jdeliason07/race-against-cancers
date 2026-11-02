@@ -40,7 +40,7 @@ export type Sponsor = {
 };
 
 export const SPONSORS: Sponsor[] = [
-  { name: "WealthWave",           logo: "/images/sponsors/wealthwave.png",          url: "https://wealthwave.com/",                             tier: "presenting", quote: "", moment: "",                                           photo: "", cardLogo: "/images/sponsors/wealthwave-contact.png" },
+  { name: "WealthWave",           logo: "/images/sponsors/wealthwave.png",          url: "https://howmoneyworks.com/stevenkingrey",            tier: "presenting", quote: "", moment: "",                                           photo: "", cardLogo: "/images/sponsors/wealthwave-contact.png" },
   { name: "Moxie Pest Control",   logo: "/images/sponsors/moxie-pest-control.png",  url: "https://moxieservices.com/locations/salt-lake-city/", tier: "presenting", quote: "", moment: "",                                           photo: "" },
   { name: "Owala",                logo: "/images/sponsors/owala.png",               url: "https://owalalife.com/",                              tier: "presenting", quote: "", moment: "Water stations by Owala",                    photo: "" },
   { name: "Fat Daddy's Pizzeria", logo: "/images/sponsors/fat-daddys-pizzeria.png", url: "https://fatdaddyspizzeria.com/",                      tier: "supporting", quote: "", moment: "Post-race pizza from Fat Daddy's Pizzeria",  photo: "" },
