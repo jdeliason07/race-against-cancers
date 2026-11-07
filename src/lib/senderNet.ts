@@ -24,16 +24,25 @@ async function call<T>(
   const key = token();
   if (!key) throw new Error('SENDER_API_TOKEN is not set.');
 
-  const response = await fetch(`${API_BASE}${path}`, {
-    method: init.method,
-    headers: {
-      Authorization: `Bearer ${key}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-    body: init.body === undefined ? undefined : JSON.stringify(init.body),
-    cache: 'no-store',
-  });
+  const send = () =>
+    fetch(`${API_BASE}${path}`, {
+      method: init.method,
+      headers: {
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: init.body === undefined ? undefined : JSON.stringify(init.body),
+      cache: 'no-store',
+    });
+
+  // Parallel syncs can trip Sender's rate limit. Back off and retry rather than
+  // count a throttled subscriber as one that already exists.
+  let response = await send();
+  for (let attempt = 0; response.status === 429 && attempt < 3; attempt++) {
+    await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempt));
+    response = await send();
+  }
 
   const raw = await response.text();
   if (!response.ok) {

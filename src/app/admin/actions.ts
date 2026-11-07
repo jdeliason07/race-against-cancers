@@ -111,11 +111,14 @@ export async function syncAudienceToGroup(
     let phonesDropped = 0;
     let firstCreateError = '';
 
-    for (const person of people) {
+    // A few at a time rather than one after another. Waiting on each Sender call
+    // in turn made a sync of a few hundred people run for minutes in a single
+    // request; this keeps the request to a fraction of that.
+    await mapWithConcurrency(people, SYNC_CONCURRENCY, async (person) => {
       try {
         await createSubscriber({ ...person, groups: [groupId] });
         created++;
-        continue;
+        return;
       } catch (err) {
         if (!firstCreateError) firstCreateError = err instanceof Error ? err.message : String(err);
       }
@@ -127,14 +130,14 @@ export async function syncAudienceToGroup(
           await createSubscriber({ ...person, phone: '', groups: [groupId] });
           created++;
           phonesDropped++;
-          continue;
+          return;
         } catch {
           // fall through
         }
       }
 
       alreadyExist.push(person.email);
-    }
+    });
 
     let addedToGroup = 0;
     let groupAddError = '';
@@ -173,6 +176,26 @@ export async function syncAudienceToGroup(
   } catch (err) {
     return { error: err instanceof Error ? err.message : 'Sync failed.' };
   }
+}
+
+// Sender calls in flight at once during a sync. Low enough to stay clear of
+// Sender's rate limits; any 429 that still happens is retried in senderNet.
+const SYNC_CONCURRENCY = 6;
+
+/** Runs `worker` over `items`, never more than `limit` at once. */
+async function mapWithConcurrency<T>(
+  items: T[],
+  limit: number,
+  worker: (item: T) => Promise<void>,
+): Promise<void> {
+  let next = 0;
+  const lanes = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) {
+      const item = items[next++];
+      await worker(item);
+    }
+  });
+  await Promise.all(lanes);
 }
 
 const FOOTER_STYLE =
